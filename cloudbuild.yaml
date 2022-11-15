@@ -5,7 +5,7 @@
     args:
     - '-c'
     - |
-      git config -f .gitmodules submodule.common.url https://source.developers.google.com/p/rocket-tools-299da/github_thzero_rocket_tools-common
+      git config -f .gitmodules submodule.common.url https://source.cloud.google.com/rocket-tools-299da/github_thzero_rocket_tools-common
       git submodule init
       git submodule update
   - name: 'gcr.io/cloud-builders/git'

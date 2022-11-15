@@ -1,0 +1,34 @@
+---
+  steps:
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      git config -f .gitmodules submodule.common.url https://source.developers.google.com/p/rockettools/r/github_thzero_rocket_tools-common
+      git submodule init
+      git submodule update
+  - name: "docker:stable"
+    args:
+    - "build"
+    - "-t"
+    - "gcr.io/$PROJECT_ID/api:$COMMIT_SHA"
+    - "."
+  - name: "docker:latest"
+    args:
+    - "push"
+    - "gcr.io/$PROJECT_ID/api:$COMMIT_SHA"
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+    - "run"
+    - "deploy"
+    - "api"
+    - "--image"
+    - "gcr.io/$PROJECT_ID/api:$COMMIT_SHA"
+    - "--region"
+    - "us-central1"
+    - "--platform"
+    - "managed"
+  images:
+  - "gcr.io/$PROJECT_ID/api:$COMMIT_SHA"

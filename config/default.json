@@ -1,0 +1,21 @@
+{
+	"app": {
+		"api": {
+			"version": "v1"
+		},
+		"auth": {
+			"apiKey": "",
+			"claims": {
+				"check": false,
+				"useDefault": false
+			}
+		},
+		"cors": {
+			"origin": "*"
+		},
+		"logging": {
+			"level": null,
+			"prettify": true
+		}
+	}
+}

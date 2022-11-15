@@ -1,0 +1,6 @@
+.gitignore
+Dockerfile
+firebase-debug.log
+node_modules
+security.bat
+*/config/development.json

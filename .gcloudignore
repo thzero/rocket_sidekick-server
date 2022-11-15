@@ -1,0 +1,10 @@
+.gitignore
+firebase-debug.log
+node_modules
+notes.txt
+security.bat
+*/config/development.json
+
+!config/production.json
+!config/productionManual.json
+!config/serviceAccountKey.json

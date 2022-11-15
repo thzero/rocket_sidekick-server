@@ -1,0 +1,27 @@
+{
+	"app": {
+		"auth": {
+			"apiKey": "AUTH_API_KEY",
+			"claims": {
+				"check": "AUTH_CLAIMS_CHECK",
+				"useDefault": "AUTH_CLAIMS_USE_DEFAULT"
+			}
+		},
+		"cors": {
+			"origin": "ORIGIN"
+		},
+		"db": {
+			"atlas" : {
+				"connection": "ALTAS_DB_CONNECTION",
+				"name": "ALTAS_DB_NAME"
+			}
+		},
+		"http2": "HTTP2_ENABLED",
+		"ip": "IP_ADDRESS",
+		"logging": {
+			"level": "LOGGING_LEVEL",
+			"prettify": "LOGGING_PRETTIFY"
+		},
+		"port": "PORT"
+	}
+}

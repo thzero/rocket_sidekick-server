@@ -2,7 +2,7 @@
 ![David](https://img.shields.io/david/thzero/rocket_tools-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# rocket_tools
+# RocketTools
 
 An API layer to manage rocket tools.  The following features are available currently
 
@@ -114,3 +114,74 @@ npm run debug
 Install VisualCode, open the 'server' folder via 'Open Folder'.
 
 Using the Menu->Run->Start Debugging will launch the application in debug mode with hot reloading via Nodemon
+
+## Google Cloud Hosting
+
+Login to Google Cloud hosting, select the same account that was setup for Firebase.
+
+Enable the following APIs
+
+* Cloud Source Repositories API
+* Cloud Build API
+
+### Setup Google Cloud Source Repositories
+
+This is a mirror of the GitHub repo for https://img.shields.io/github/package-json/v/thzero/rocket_tools-common.
+
+* Add Repository
+* Connect external repository
+* Select the project setup by Firebase, then GitHub
+* Select the rocket_tools-common repo
+* Connect selected repositories
+
+Select repository, then permissions.  Verify that the Cloud Build Service Account is listed.
+
+### Deploy to CloudRun
+
+https://cloud.google.com/run/docs/continuous-deployment-with-cloud-build
+https://cloud.google.com/run/docs/deploying#service
+
+#### Settings for Cloud Run configuration
+
+##### Capacity
+* 512mb 1 cpu
+* Requested Timeout 300
+* Max Request per Container 80
+
+##### Autoscaling
+* Minimum 0
+* Maximum 1000
+
+##### Environment variables
+
+Add these variables:
+
+* SERVICE_ACCOUNT_KEY - <Firebase service account key JSON>
+* AUTH_API_KEY - <guid>
+* ALTAS_DB_CONNECTION -
+* ALTAS_DB_NAME - production
+* LOG_LEVEL - debug
+* IP_ADDRESS - 0.0.0.0
+
+#### Cloud Build Trigger
+
+##### Event
+* Push to branch
+
+##### Source
+* Select the repository
+* Select "^master$" branch
+
+##### Configuration
+
+###### Type
+* Cloud Build configuration file (yaml or json)
+
+###### Location
+* Repository
+* Cloud Build configuration file location
+ * / cloudbuild.yaml
+
+##### Deploy
+
+Run the trigger to kick of a deploy.

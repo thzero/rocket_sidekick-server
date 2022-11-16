@@ -1,3 +1,5 @@
+#https://cloud.google.com/run/docs/continuous-deployment-with-cloud-build
+#https://cloud.google.com/run/docs/deploying#service
 ---
   steps:
   - name: 'gcr.io/cloud-builders/git'

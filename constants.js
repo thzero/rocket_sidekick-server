@@ -1,5 +1,3 @@
-import SharedConstants from './common/constants.js';
-
 const Constants = {
 	InjectorKeys: {
 

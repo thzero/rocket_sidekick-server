@@ -22,9 +22,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "debug": "set NODE_ENV=dev && SET LOG_LEVEL=debug && nodemon --experimental-specifier-resolution=node --nolazy --inspect-brk=9229 index.js",
-    "docker-build": "docker build -t thzero/rocketTools:latest .",
-    "docker-run": "docker run -p 7984:8081 --env PORT=9091 thzero/rocketTools:latest",
+    "debug": "set NODE_ENV=dev && SET LOG_LEVEL=debug && nodemon --nolazy --inspect-brk=9229 index.js",
     "start": "node -nolazy --trace-uncaught index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "./node_modules/.bin/eslint .",
@@ -32,14 +30,14 @@
     "cli-update": "library-cli --updateversion --pi"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.16.2",
+    "@thzero/library_common": "^0.16.4",
     "@thzero/library_common_service": "^0.16.1",
-    "@thzero/library_server": "^0.16.2",
-    "@thzero/library_server_fastify": "^0.16.5",
-    "@thzero/library_server_firebase": "^0.16.1",
-    "@thzero/library_server_logger_pino": "^0.16.2",
-    "@thzero/library_server_repository_mongo": "^0.16.2",
-    "@thzero/library_server_validation_joi": "^0.16.2",
+    "@thzero/library_server": "^0.16.4",
+    "@thzero/library_server_fastify": "^0.16.6",
+    "@thzero/library_server_firebase": "^0.16.2",
+    "@thzero/library_server_logger_pino": "^0.16.3",
+    "@thzero/library_server_repository_mongo": "^0.16.3",
+    "@thzero/library_server_validation_joi": "^0.16.3",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^9.1.1"
   },
@@ -48,9 +46,9 @@
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.0",
-    "eslint": "^8.27.0",
+    "eslint": "^8.28.0",
     "eslint-plugin-node": "^11.1.0",
     "webpack": "^5.75.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^5.0.0"
   }
 }

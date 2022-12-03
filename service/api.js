@@ -6,6 +6,9 @@ import Service from '@thzero/library_server/service/index.js';
 class ApiService extends Service {
 	constructor() {
 		super();
+
+		this._servicePlans = null;
+		this._serviceVersion = null;
 	}
 
 	async init(injector) {

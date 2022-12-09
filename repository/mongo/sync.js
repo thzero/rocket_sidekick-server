@@ -1,24 +1,18 @@
+import Utility from '@thzero/library_common/utility/index.js';
+
 import AppMongoRepository from './app.js';
 
 class SyncMongoRepository extends AppMongoRepository {
-	async syncFromChecklists(correlationId, lastSyncTimestamp) {
+	async syncChecklists(correlationId, lastSyncTimestamp) {
 		return await this._syncFrom(correlationId, lastSyncTimestamp, await this._getCollectionChecklists(correlationId));
 	}
-	
-	async syncFromPreparations(correlationId, lastSyncTimestamp) {
-		return await this._syncFrom(correlationId, lastSyncTimestamp, await this._getCollectionPreparations(correlationId));
-	}
 
-	async syncFromRockets(correlationId, lastSyncTimestamp) {
+	async syncRockets(correlationId, lastSyncTimestamp) {
 		return await this._syncFrom(correlationId, lastSyncTimestamp, await this._getCollectionRockets(correlationId));
 	}
 
 	async updateChecklists(correlationId, userId, objects) {
 		return await this._updateFrom(correlationId, userId, objects, await this._getCollectionChecklists(correlationId));
-	}
-
-	async updatePreparations(correlationId, userId, objects) {
-		return await this._updateFrom(correlationId, userId, objects, await this._getCollectionPreparations(correlationId));
 	}
 
 	// eslint-disable-next-line
@@ -30,7 +24,7 @@ class SyncMongoRepository extends AppMongoRepository {
 		const response = this._initResponse(correlationId);
 
 		const defaultFilter = { 
-			lastUpdatedTimestamp: {
+			syncTimestamp: {
 				$gt: lastSyncTimestamp
 			}
 		};
@@ -59,15 +53,27 @@ class SyncMongoRepository extends AppMongoRepository {
 		try {
 			await this._transactionStart(correlationId, session);
 
+			let output = [];
 			let response;
 			for (const item of objects) {
-				response = await this._update(correlationId, collection, userId, item.identifier, item, 'identifier');
+				// delete item.id;
+				item.id = item.identifier;
+				if (!item.createdTimestamp)
+					item.createdTimestamp = Utility.getTimestamp();
+				if (!String.isNullOrEmpty(item.createdUserId))
+					item.createdUserId = userId;
+					
+				item.syncTimestamp = Utility.getTimestamp();
+
+				response = await this._update(correlationId, collection, userId, item.id, item); //, 'identifier');
 				if (this._hasFailed(response))
 					return this._transactionAbort(correlationId, correlationId, session, 'Unable to update the value');
+
+				output.push(response.results);
 			}
 
 			await this._transactionCommit(correlationId, session);
-			return this._initResponse(correlationId);
+			return this._successResponse(output, correlationId);
 		}
 		catch (err) {
 			return this._transactionAbort(correlationId, session, null, err);

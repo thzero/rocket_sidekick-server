@@ -25,12 +25,19 @@ class SyncService extends Service {
 		if (this._hasFailed(validationSyncResponse))
 			return validationSyncResponse;
 
+		// const responseSyncChecklists = await this._syncChecklists(correlationId, user, params.rockets, params.lastSyncTimestamp);
+		// if (this._hasFailed(responseSyncChecklists))
+		// 	return responseSyncChecklists;
+
 		const responseSyncRockets = await this._syncRockets(correlationId, user, params.rockets, params.lastSyncTimestamp);
 		if (this._hasFailed(responseSyncRockets))
 			return responseSyncRockets;
 
 		const response = this._initResponse(correlationId);
-		response.results.updates.rockets = responseSyncRockets.results.updates;
+		response.results = {
+			// checklists: responseSyncChecklists.results,
+			rockets: responseSyncRockets.results
+		}
 		response.results.lastSyncTimestamp = Utility.getTimestamp();
 		return response;
 	}
@@ -103,25 +110,38 @@ class SyncService extends Service {
 	// 	return response;
 	// }
 
-	// async _syncPreparations(correlationId, user, clientObjects, lastSyncTimestamp) {
-	// 	const responseSyncServer = await this._repositorySync.syncPreparations(correlationId, user.id, lastSyncTimestamp);
-	// 	if (this._hasFailed(responseSyncServer))
-	// 		return responseSyncServer;
-
 	// 	const responseSync = this._sync(correlationId, [ ...clientObjects ], [ ...responseSyncServer.results.data]);
 	// 	if (this._hasFailed(responseSync))
 	// 		return responseSync;
-
-	// 	// update the client objects onto the server
-	// 	const responseSyncServerUpdates = await this._repositorySync.updatePreparations(correlationId, user.id, responseSync.results.clientObjects);
-	// 	if (this._hasFailed(responseSyncServerUpdates))
-	// 		return responseSyncServerUpdates;
 
 	// 	// return server objects to the client
 	// 	const response = this._initResponse(correlationId);
 	// 	response.results.updates = responseSync.results.serverObjects;
 	// 	return response;
 	// }
+
+	async _syncChecklists(correlationId, user, clientObjects, lastSyncTimestamp) {
+		const responseSyncServer = await this._repositorySync.syncChecklists(correlationId, user.id, lastSyncTimestamp);
+		if (this._hasFailed(responseSyncServer))
+			return responseSyncServer;
+
+		const responseSync = await this._sync(correlationId, [ ...clientObjects ], [ ...responseSyncServer.results.data]);
+		if (this._hasFailed(responseSync))
+			return responseSync;
+
+		// update the client objects onto the server
+		const responseSyncServerUpdates = await this._repositorySync.updateChecklists(correlationId, user.id, responseSync.results.clientObjects);
+		if (this._hasFailed(responseSyncServerUpdates))
+			return responseSyncServerUpdates;
+
+		// return server objects to the client
+		const response = this._initResponse(correlationId);
+		response.results = { 
+			clientObjects: responseSyncServerUpdates.results,
+			serverObjects: responseSync.results.serverObjects 
+		};
+		return response;
+	}
 
 	async _syncRockets(correlationId, user, clientObjects, lastSyncTimestamp) {
 		const responseSyncServer = await this._repositorySync.syncRockets(correlationId, user.id, lastSyncTimestamp);
@@ -139,7 +159,10 @@ class SyncService extends Service {
 
 		// return server objects to the client
 		const response = this._initResponse(correlationId);
-		response.results.updates = responseSync.results.serverObjects;
+		response.results = { 
+			clientObjectIds: responseSyncServerUpdates.results.map(l => l.id),
+			serverObjects: responseSync.results.serverObjects 
+		};
 		return response;
 	}
 }

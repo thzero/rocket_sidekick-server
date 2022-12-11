@@ -3,12 +3,26 @@ import Utility from '@thzero/library_common/utility/index.js';
 import AppMongoRepository from './app.js';
 
 class SyncMongoRepository extends AppMongoRepository {
-	async syncChecklists(correlationId, lastSyncTimestamp) {
-		return await this._syncFrom(correlationId, lastSyncTimestamp, await this._getCollectionChecklists(correlationId));
+	async searchBySyncTimestamp(correlationId, collectionName, userId, lastSyncTimestamp) {
+		const collection = await this._getCollectionByName(correlationId, collectionName);
+		if (!collection)
+			return this._error('SyncMongoRepository', 'searchBySyncTimestamp', `Can't find collection ${collectionName}'.`, null, null, null, correlationId);
+		return await this._searchBySyncTimestamp(correlationId, userId, lastSyncTimestamp, collection);
 	}
 
-	async syncRockets(correlationId, lastSyncTimestamp) {
-		return await this._syncFrom(correlationId, lastSyncTimestamp, await this._getCollectionRockets(correlationId));
+	async searchBySyncTimestampChecklists(correlationId, userId, lastSyncTimestamp) {
+		return await this._searchBySyncTimestamp(correlationId, userId, lastSyncTimestamp, await this._getCollectionChecklists(correlationId));
+	}
+
+	async searchBySyncTimestampRockets(correlationId, userId, lastSyncTimestamp) {
+		return await this._searchBySyncTimestamp(correlationId, userId, lastSyncTimestamp, await this._getCollectionRockets(correlationId));
+	}
+
+	async update(correlationId, collectionName, userId, objects) {
+		const collection = await this._getCollectionByName(correlationId, collectionName);
+		if (!collection)
+			return this._error('SyncMongoRepository', 'update', `Can't find collection ${collectionName}'.`, null, null, null, correlationId);
+		return await this._updateFrom(correlationId, userId, objects, collection);
 	}
 
 	async updateChecklists(correlationId, userId, objects) {
@@ -20,13 +34,18 @@ class SyncMongoRepository extends AppMongoRepository {
 		return await this._updateFrom(correlationId, userId, objects, await this._getCollectionRockets(correlationId));
 	}
 
-	async _syncFrom(correlationId, lastSyncTimestamp, collection) {
+	async _searchBySyncTimestamp(correlationId, userId, lastSyncTimestamp, collection) {
 		const response = this._initResponse(correlationId);
 
 		const defaultFilter = { 
-			syncTimestamp: {
-				$gt: lastSyncTimestamp
-			}
+			$and: [
+				{ 
+					syncTimestamp: {
+						$gt: lastSyncTimestamp
+					}
+				},
+				{ 'id': userId }
+			]
 		};
 
 		const queryF = defaultFilter;
@@ -51,9 +70,12 @@ class SyncMongoRepository extends AppMongoRepository {
 		const client = await this._getClient(correlationId);
 		const session = await this._transactionInit(correlationId, client);
 		try {
+			let output = [];
+			if (!objects && (objects && objects.length === 0))
+				return this._successResponse(output, correlationId);
+			
 			await this._transactionStart(correlationId, session);
 
-			let output = [];
 			let response;
 			for (const item of objects) {
 				// delete item.id;

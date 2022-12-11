@@ -4,6 +4,12 @@ class AppCollectionsService extends ApiCollectionsService {
 	getClientName() {
 		return AppCollectionsService.Client;
 	}
+	
+	getCollectionByName(correlationId, collectionName) {
+		if (String.isNullOrEmpty(collectionName))
+			return null;
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, collectionName);
+	}
 
 	getCollectionChecklists(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionChecklists);

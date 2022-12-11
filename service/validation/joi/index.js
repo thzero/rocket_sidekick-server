@@ -10,9 +10,9 @@ class JoiValidationService extends GamerJoiValidationService {
 	_any = Joi.any().allow(null);
 	
 	syncFrom = Joi.object({
-		checklists: Joi.array().items(this._any).allow(null),
-		rockets: Joi.array().items(this._any).allow(null),
-		lastSyncTimestamp: Joi.number().allow(null)
+		collections: Joi.array().items(Joi.string()),
+		lastSyncTimestamp: Joi.number().allow(null),
+		objects: Joi.array().items(this._any)
 	});
 
 	syncTo = Joi.object({

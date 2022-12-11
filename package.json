@@ -30,9 +30,9 @@
     "cli-update": "library-cli --updateversion --pi"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.16.6",
+    "@thzero/library_common": "^0.16.7",
     "@thzero/library_common_service": "^0.16.3",
-    "@thzero/library_server": "^0.16.5",
+    "@thzero/library_server": "^0.16.6",
     "@thzero/library_server_fastify": "^0.16.9",
     "@thzero/library_server_firebase": "^0.16.3",
     "@thzero/library_server_logger_pino": "^0.16.4",
@@ -49,6 +49,6 @@
     "eslint": "^8.29.0",
     "eslint-plugin-node": "^11.1.0",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.0"
+    "webpack-cli": "^5.0.1"
   }
 }

@@ -30,10 +30,10 @@
     "cli-update": "library-cli --updateversion --pi"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.16.7",
+    "@thzero/library_common": "^0.16.8",
     "@thzero/library_common_service": "^0.16.3",
     "@thzero/library_server": "^0.16.6",
-    "@thzero/library_server_fastify": "^0.16.9",
+    "@thzero/library_server_fastify": "^0.16.10",
     "@thzero/library_server_firebase": "^0.16.3",
     "@thzero/library_server_logger_pino": "^0.16.4",
     "@thzero/library_server_repository_mongo": "^0.16.8",

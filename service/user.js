@@ -2,7 +2,7 @@ import Constants from '../constants.js';
 import LibraryConstants from '@thzero/library_server/constants.js';
 import SharedConstants from '../common/constants.js';
 
-// import AppUtility from '../utility/app.js'
+import AppUtility from '../utility/app.js'
 
 import BaseUserService from '@thzero/library_server/service/baseUser.js';
 
@@ -34,6 +34,16 @@ class UserService extends BaseUserService {
 	}
 
 	async _updateSettings(correlationId, requestedSettings) {
+		if (requestedSettings.settings.gamerTag) {
+			requestedSettings.settings.gamerTag = requestedSettings.settings.gamerTag.trim();
+			requestedSettings.settings.gamerTagSearch = AppUtility.generateGamerTagSearch(requestedSettings.settings.gamerTag);
+		}
+		else {
+			requestedSettings.settings.gamerTag = null;
+			requestedSettings.settings.gamerTagSearch = null;
+		}
+
+		return this._success(correlationId);
 	}
 
 	async _updateSettingsValidation(correlationId, requestedSettings) {

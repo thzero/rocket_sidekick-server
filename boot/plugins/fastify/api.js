@@ -15,6 +15,7 @@ import securityService from '../../../service/security.js';
 import syncService from '../../../service/sync.js';
 import validationService from '../../../service/validation/joi/index.js';
 import versionService from '../../../service/version.js';
+import utilityService from '../../../service/utility.js';
 
 class AppApiBootPlugin extends FrontApiBootPlugin {
 	async _initRepositories() {
@@ -52,6 +53,10 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 	_initServicesVersion() {
 		return new versionService();
+	}
+
+	_initServicesUtility() {
+		return new utilityService();
 	}
 }
 

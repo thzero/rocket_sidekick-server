@@ -34,7 +34,8 @@ class SyncRoute extends BaseRoute {
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[Constants.InjectorKeys.SERVICE_SYNC].syncFrom(request.correlationId, request.user, request.body)).check(request);
-				this._jsonResponse(reply, response);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
 			}
 		);
 	}

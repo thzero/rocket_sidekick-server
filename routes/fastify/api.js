@@ -18,13 +18,6 @@ class ApiRoute extends BaseRoute {
 	}
 
 	_initializeRoutes(router) {
-		router.get(this._join('/initialize'),
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_API].initialize(request.correlationId)).check(request);
-				this._jsonResponse(reply, response);
-			}
-		);
 	}
 }
 

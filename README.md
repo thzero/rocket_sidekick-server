@@ -99,6 +99,16 @@ Install the submodule dependencies for the client.
 git submodule add https://github.com/thzero/rocket_tools-common "common"
 ```
 
+### Routes
+
+````
+async (request, reply) => {
+				const response = {};
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+````
+
 ### Compiles and hot-reloads for development
 
 #### NPM CLI

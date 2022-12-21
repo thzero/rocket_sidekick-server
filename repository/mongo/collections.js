@@ -15,6 +15,10 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionChecklists);
 	}
 
+	getCollectionConfig(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionConfig);
+	}
+
 	getCollectionNews(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionNews);
 	}
@@ -38,6 +42,7 @@ class AppCollectionsService extends ApiCollectionsService {
 	static Client = 'atlas';
 	static Database = 'societySidekick';
 	static CollectionChecklists = 'checklists';
+	static CollectionConfig = 'config';
 	static CollectionNews = 'news';
 	static CollectionPlans = 'plans';
 	static CollectionRockets = 'rockets';

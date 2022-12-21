@@ -3,6 +3,7 @@ import RepositoryConstants from '@thzero/library_server_repository_mongo/constan
 
 import FrontApiBootPlugin from '@thzero/library_server_fastify/boot/plugins/apiFront.js';
 
+import configRepository from '../../../repository/mongo/config.js';
 import syncRepository from '../../../repository/mongo/sync.js';
 
 import apiRoute from '../../../routes/fastify/api.js';
@@ -21,6 +22,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 	async _initRepositories() {
 		await super._initRepositories();
 
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CONFIG, new configRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
 	}
 

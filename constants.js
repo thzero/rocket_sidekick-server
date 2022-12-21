@@ -1,5 +1,6 @@
 const Constants = {
 	InjectorKeys: {
+		REPOSITORY_CONFIG: 'repositoryConfig',
 		REPOSITORY_SYNC: 'repositorySync',
 
 		SERVICE_API: 'serviceApi',

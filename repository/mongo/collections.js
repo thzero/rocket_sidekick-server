@@ -4,6 +4,20 @@ class AppCollectionsService extends ApiCollectionsService {
 	getClientName() {
 		return AppCollectionsService.Client;
 	}
+	
+	getCollectionByName(correlationId, collectionName) {
+		if (String.isNullOrEmpty(collectionName))
+			return null;
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, collectionName);
+	}
+
+	getCollectionChecklists(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionChecklists);
+	}
+
+	getCollectionConfig(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionConfig);
+	}
 
 	getCollectionNews(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionNews);
@@ -11,6 +25,10 @@ class AppCollectionsService extends ApiCollectionsService {
 
 	getCollectionPlans(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionPlans);
+	}
+
+	getCollectionRockets(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionRockets);
 	}
 
 	getCollectionUsageMetrics(correlationId) {
@@ -23,8 +41,11 @@ class AppCollectionsService extends ApiCollectionsService {
 
 	static Client = 'atlas';
 	static Database = 'societySidekick';
+	static CollectionChecklists = 'checklists';
+	static CollectionConfig = 'config';
 	static CollectionNews = 'news';
 	static CollectionPlans = 'plans';
+	static CollectionRockets = 'rockets';
 	static CollectionUsageMetrics = 'usageMetrics';
 	static CollectionUsers = 'users';
 }

@@ -1,12 +1,12 @@
 {
-  "name": "rocket_tools_server",
+  "name": "rocket_sidekick_server",
   "type": "module",
   "version": "0.0.5",
   "version_major": 0,
   "version_minor": 0,
   "version_patch": 5,
   "version_date": "11/25/2022",
-  "description": "An API layer to manage rocket tools.",
+  "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
   "license": "MIT",
   "repository": {

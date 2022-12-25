@@ -1,16 +1,17 @@
-![GitHub package.json version](https://img.shields.io/github/package-json/v/thzero/rocket_tools-server)
-![David](https://img.shields.io/david/thzero/rocket_tools-server)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/thzero/rocket_sidekick-server)
+![David](https://img.shields.io/david/thzero/rocket_sidekick-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# RocketTools
+# RocketSidekick
 
-An API layer to manage rocket tools.  The following features are available currently
+An API layer to manage RocketSidekick.  The following features are available currently
 
+* Configuration of content
 * Social login authentication via Google
 
 ## Project setup
 
-The server application is a Fastify server application.  The server application provides the API for use by the companion client application (https://github.com/thzero/rocket_tools-client).
+The server application is a Fastify server application.  The server application provides the API for use by the companion client application (https://github.com/thzero/rocket_sidekick-client).
 
 ### Requirements
 
@@ -21,8 +22,8 @@ Mongo is required as the server side data source.
 * Install the MongoDb (either locally or in the cloud) server
   * Recommendation is MongoDb Atlas (https://www.mongodb.com/cloud/atlas) for development/sandbox
 * Create a new MongoDb database in the Mongo server
-* Restore the default rocket_tools MongoDb
-  * Use the following MongoDb CLI tool to restore the default database located at (https://github.com/thzero/rocket_tools-database)
+* Restore the default rocket_sidekick MongoDb
+  * Use the following MongoDb CLI tool to restore the default database located at (https://github.com/thzero/rocket_sidekick-database)
 
 ```
 .\bin\mongorestore --host <mongodb host name> --ssl --username <mongo user name> --password <mongo user password> --authenticationDatabase admin -d production <location of default database>
@@ -96,7 +97,7 @@ npm -g i nodemon
 Install the submodule dependencies for the client.
 
 ```
-git submodule add https://github.com/thzero/rocket_tools-common "common"
+git submodule add https://github.com/thzero/rocket_sidekick-common "common"
 ```
 
 ### Routes
@@ -136,12 +137,12 @@ Enable the following APIs
 
 ### Setup Google Cloud Source Repositories
 
-This is a mirror of the GitHub repo for https://img.shields.io/github/package-json/v/thzero/rocket_tools-common.
+This is a mirror of the GitHub repo for https://img.shields.io/github/package-json/v/thzero/rocket_sidekick-common.
 
 * Add Repository
 * Connect external repository
 * Select the project setup by Firebase, then GitHub
-* Select the rocket_tools-common repo
+* Select the rocket_sidekick-common repo
 * Connect selected repositories
 
 Select repository, then permissions.  Verify that the Cloud Build Service Account is listed.

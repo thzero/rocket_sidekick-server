@@ -20,7 +20,7 @@ class AppUtilityService extends UtilityService {
 		// if (this._hasFailed(responsePlans))
 		// 	return responsePlans;
 
-		response.results.tools = await this._tools(correlationId);
+		response.results.content = await this._content(correlationId);
 		return response;
 	}
 
@@ -34,15 +34,15 @@ class AppUtilityService extends UtilityService {
 		});
 		openSource.push({
 			category: 'server',
-			name: 'rocket_tools-server',
-			url: 'https://github.com/thzero/rocket_tools-server',
+			name: 'rocket_sidekick-server',
+			url: 'https://github.com/thzero/rocket_sidekick-server',
 			licenseName: 'MIT',
-			licenseUrl: 'https://github.com/thzero/rocket_tools-server/blob/master/license.md'
+			licenseUrl: 'https://github.com/thzero/rocket_sidekick-server/blob/master/license.md'
 		});
 	}
 
-	async _tools(correlationId) {
-		const response = await this._repositoryConfig.tools(correlationId);
+	async _content(correlationId) {
+		const response = await this._repositoryConfig.content(correlationId);
 		if (this._hasFailed(response)) 
 			return [];
 

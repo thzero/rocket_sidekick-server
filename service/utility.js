@@ -1,4 +1,8 @@
+import { Mutex as asyncMutex } from 'async-mutex';
+
 import Constants from '../constants.js';
+
+import Utility from '@thzero/library_common/utility/index.js';
 
 import UtilityService from '@thzero/library_server/service/utility.js';
 
@@ -7,12 +11,22 @@ class AppUtilityService extends UtilityService {
 		super();
 
 		this._repositoryConfig = null;
+		
+		this._contentResults = null;
+		this._mutexContent = new asyncMutex();
+		this._ttlContent = null;
+		this._ttlContentDiff = 1000 * 60 * 30;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
 		this._repositoryConfig = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CONFIG);
+	}
+
+	async resetContent(correlationId) {
+		this._contentResults = null;
+		this._ttlContent = null;
 	}
 
 	async _intialize(correlationId, response) {
@@ -42,66 +56,29 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async _content(correlationId) {
-		const response = await this._repositoryConfig.content(correlationId);
-		if (this._hasFailed(response)) 
-			return [];
+		const now = Utility.getTimestamp();
+		const ttlContent = this._ttlContent ? this._ttlContent : 0;
+		const delta = now - ttlContent;
+		if (this._contentResults && (delta <= this._ttlContentDiff))
+			return this._contentResults;
 
-		return response.results;
-		// return {
-		// 	info: [
-		// 		{
-		// 			type: 'info',
-		// 			title: 'menu.info.epoxy',
-		// 			description: 'strings.info.epoxy.desc',
-		// 			link: '/tools/epoxy',
-		// 			order: 1
-		// 		},
-		// 	],
-		// 	tools: [
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.ejectionCharges',
-		// 			description: 'strings.tools.ejectionCharges.desc',
-		// 			link: '/tools/epoxy',
-		// 			order: 5
-		// 		},
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.flightInfo',
-		// 			description: 'strings.tools.flightInfo.desc',
-		// 			link: '/tools/flightInfo',
-		// 			order: 1
-		// 		},
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.flightPath',
-		// 			description: 'strings.tools.flightPath.desc',
-		// 			link: '/tools/flightPath',
-		// 			order: 2
-		// 		},
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.foam',
-		// 			description: 'strings.tools.foam.desc',
-		// 			link: '/tools/foam',
-		// 			order: 6
-		// 		},
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.staticPortHoles',
-		// 			description: 'strings.tools.staticPortHoles.desc',
-		// 			link: '/tools/staticPortHoles',
-		// 			order: 4
-		// 		},
-		// 		{
-		// 			type: 'tool',
-		// 			title: 'menu.tools.thrust2Weight',
-		// 			description: 'strings.tools.thrust2Weight.desc',
-		// 			link: '/tools/thrust2Weight',
-		// 			order: 3
-		// 		}
-		// 	]
-		// };
+		const release = await this._mutexContent.acquire();
+		try {
+			const response = await this._repositoryConfig.content(correlationId);
+			if (this._hasFailed(response)) 
+				return [];
+
+			response.results.info = response.results.info.filter(l => l.enabled);
+			response.results.links = response.results.links.filter(l => l.enabled);
+			response.results.tools = response.results.tools.filter(l => l.enabled);
+
+			this._contentResults = response.results;
+			this._ttlContent = Utility.getTimestamp();
+			return response.results;
+		}
+		finally {
+			release();
+		}
 	}
 }
 

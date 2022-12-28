@@ -11,12 +11,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thzero/rocket_tools-server.git"
+    "url": "git+https://github.com/thzero/rocket_sidekick-server.git"
   },
   "bugs": {
-    "url": "https://github.com/thzero/rocket_tools-server/issues"
+    "url": "https://github.com/thzero/rocket_sidekick-server/issues"
   },
-  "homepage": "https://github.com/thzero/rocket_tools-server#readme",
+  "homepage": "https://github.com/thzero/rocket_sidekick-server#readme",
   "engines": {
     "node": ">=18"
   },

@@ -9,13 +9,43 @@ An API layer to manage RocketSidekick.  The following features are available cur
 * Configuration of content
 * Social login authentication via Google
 
+### Requirements
+
+#### NodeJs
+
+Requires [NodeJs ](https://nodejs.org) version 18+.
+
+#### NodeMon
+
+```
+npm -g i nodemon
+```
+
+### Installation
+
+[![NPM](https://nodei.co/npm/@thzero/rocket_sidekick-server.png?compact=true)](https://npmjs.org/package/@thzero/rocket_sidekick-server)
+
+#### NPM Dependencies
+
+Install the NPM dependencies for the server.
+
+```
+npm install
+```
+
+#### Submodules
+
+Install the submodule dependencies for the client.
+
+```
+git submodule add https://github.com/thzero/rocket_sidekick-common "common"
+```
+
 ## Project setup
 
 The server application is a Fastify server application.  The server application provides the API for use by the companion client application (https://github.com/thzero/rocket_sidekick-client).
 
-### Requirements
-
-#### Mongo
+### Mongo
 
 Mongo is required as the server side data source.
 
@@ -33,7 +63,7 @@ Recommended tools for managing Mongo database
 * MongoDb Compass (https://www.mongodb.com/products/compass)
 * Robo3T (https://robomongo.org)
 
-#### Firebase
+### Firebase
 
 Google Firebase (https://firebase.google.com) provides the social based authentication; currently only Google social accounts are supported.
 
@@ -44,7 +74,11 @@ Google Firebase (https://firebase.google.com) provides the social based authenti
   * Select **Node.js** option
   * Click **Generate new private key**
 
-#### Configuration
+#### ServiceAccountKey.json
+
+* Copy the contents of the file that was downloaded when generating a new private key into the 'config\ServiceAccountKey.json' file.
+
+### Configuration
 
 * Setup the configuration found in the config\development.json
   * Note that this is ignored in the .gitignore
@@ -78,39 +112,7 @@ Google Firebase (https://firebase.google.com) provides the social based authenti
 }
 ```
 
-#### NPM Dependencies
-
-Install the NPM dependencies for the client.
-
-```
-npm install
-```
-
-Other global dependencies required
-
-```
-npm -g i nodemon
-```
-
-#### Submodules
-
-Install the submodule dependencies for the client.
-
-```
-git submodule add https://github.com/thzero/rocket_sidekick-common "common"
-```
-
-### Routes
-
-````
-async (request, reply) => {
-				const response = {};
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-````
-
-### Compiles and hot-reloads for development
+### Compile and hot-reloads for development
 
 #### NPM CLI
 
@@ -130,14 +132,16 @@ Using the Menu->Run->Start Debugging will launch the application in debug mode w
 
 Login to Google Cloud hosting, select the same account that was setup for Firebase.
 
-Enable the following APIs
+Enable the following APIs in the Enable APIs & Services section for the project.
 
 * Cloud Source Repositories API
 * Cloud Build API
 
 ### Setup Google Cloud Source Repositories
 
-This is a mirror of the GitHub repo for https://img.shields.io/github/package-json/v/thzero/rocket_sidekick-common.
+This is a mirror of the GitHub repo for the following repos:
+* https://img.shields.io/github/package-json/v/thzero/rocket_sidekick-common
+* https://img.shields.io/github/package-json/v/thzero/rocket_sidekick-server
 
 * Add Repository
 * Connect external repository
@@ -159,6 +163,12 @@ https://cloud.google.com/run/docs/deploying#service
 * Requested Timeout 300
 * Max Request per Container 80
 
+##### Ingress
+* Allow all traffic
+
+##### Authentication
+* Allow unauthenticated invocations
+
 ##### Autoscaling
 * Minimum 0
 * Maximum 1000
@@ -169,7 +179,7 @@ Add these variables:
 
 * SERVICE_ACCOUNT_KEY - <Firebase service account key JSON>
 * AUTH_API_KEY - <guid>
-* ALTAS_DB_CONNECTION -
+* ALTAS_DB_CONNECTION - <connection string>
 * ALTAS_DB_NAME - production
 * LOG_LEVEL - debug
 * IP_ADDRESS - 0.0.0.0

@@ -30,6 +30,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		acceleration: this._measurementId.allow(null).allow(''),
 		area: this._measurementId.allow(null).allow(''),
 		distance: this._measurementId.allow(null).allow(''),
+		Length: this._measurementId.allow(null).allow(''),
 		velocity: this._measurementId.allow(null).allow(''),
 		volume: this._measurementId.allow(null).allow(''),
 		weight: this._measurementId.allow(null).allow('')

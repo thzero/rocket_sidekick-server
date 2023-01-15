@@ -1,5 +1,5 @@
 import Constants from '../../constants.js';
-import LibraryConstants from '@thzero/library_server/constants.js';
+// import LibraryConstants from '@thzero/library_server/constants.js';
 
 import BaseRoute from '@thzero/library_server_fastify/routes/index.js';
 
@@ -19,28 +19,8 @@ class ApiRoute extends BaseRoute {
 		return 'app';
 	}
 
-	_initializeRoutes(router) {
-		router.post(this._join('/reset'),
-			// authentication(true),
-			// authorization('sync'),
-			{
-				preHandler: router.auth([
-					router.authenticationDefault,
-					router.authorizationDefault
-				], 
-				{ 
-					relation: 'and',
-					roles: [ 'sync' ]
-				}),
-			},
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].syncFrom(request.correlationId)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-	}
+	// _initializeRoutes(router) {
+	// }
 }
 
 export default ApiRoute;

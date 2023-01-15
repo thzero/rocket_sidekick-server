@@ -24,7 +24,11 @@ class AppUtilityService extends UtilityService {
 		this._repositoryConfig = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CONFIG);
 	}
 
-	async resetContent(correlationId) {
+	async content(correlationId) {
+		return this._successResponse(await this._content(correlationId));
+	}
+
+	async contentReset(correlationId) {
 		this._contentResults = null;
 		this._ttlContent = null;
 	}

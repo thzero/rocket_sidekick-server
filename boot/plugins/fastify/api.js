@@ -9,6 +9,7 @@ import syncRepository from '../../../repository/mongo/sync.js';
 import apiRoute from '../../../routes/fastify/api.js';
 import syncRoute from '../../../routes/fastify/sync.js';
 import usersRoute from '../../../routes/fastify/users.js';
+import utilityRoute from '../../../routes/fastify/utility.js';
 
 import apiService from '../../../service/api.js';
 import repositoryCollectionsService from '../../../repository/mongo/collections.js';
@@ -35,6 +36,10 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 	_initRoutesUsers() {
 		return new usersRoute();
+	}
+
+	_initRoutesUtility() {
+		return new utilityRoute();
 	}
 
 	async _initServices() {

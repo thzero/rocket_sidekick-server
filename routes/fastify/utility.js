@@ -8,6 +8,8 @@ class AppUtilityRoute extends UtilityRoute {
 	}
 
 	_initializeRoutes(router) {
+		super._initializeRoutes(router);
+
 		// router.post(this._join('/content'),
 		// 	// eslint-disable-next-line
 		// 	async (request, reply) => {

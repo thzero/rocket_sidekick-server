@@ -11,8 +11,8 @@ class AppMongoRepository extends MongoRepository {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionChecklists(correlationId));
 	}
 
-	async _getCollectionConfig(correlationId) {
-		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionConfig(correlationId));
+	async _getCollectionContent(correlationId) {
+		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionContent(correlationId));
 	}
 
 	async _getCollectionRockets(correlationId) {

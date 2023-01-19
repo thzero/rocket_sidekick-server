@@ -12,16 +12,21 @@ class AppUtilityService extends UtilityService {
 
 		this._repositoryContent = null;
 		
-		this._cacheContentResults = null;
-		this._cacheContentResultsLocales = {};
-		this._cacheContentLocalesTitlesDescriptions = null;
-		this._mutexContent = new asyncMutex();
-		this._mutexContentLocales = new asyncMutex();
-		this._mutexContentTitles = new asyncMutex();
-		this._ttlContent = null;
-		this._ttlContentTitlesDescriptions = null;
-		this._ttlContentDiff = 1000 * 60 * 30;
-		this._ttlContentDiffTitles = 1000 * 60 * 30;
+		this._cacheContentListing = null;
+		this._cacheContentListingLocales = {};
+		this._cacheContentListingLocalesTitlesDescriptions = null;
+		this._cacheContentMarkup = {};
+		this._mutexContentListing = new asyncMutex();
+		this._mutexContentListingLocales = new asyncMutex();
+		this._mutexContentListingTitlesDescriptions = new asyncMutex();
+		this._mutexContentMarkup = new asyncMutex();
+		this._ttlContentListing = null;
+		this._ttlContentMarkup = null;
+		this._ttlContentListingTitlesDescriptions = null;
+		this._ttlContentListingDiff = 1000 * 60 * 30;
+		this._ttlContentListingDiffTitlesDescriptions = 1000 * 60 * 30;
+		this._ttlContentMarkup = null;
+		this._ttlContentMarkupDiff = 1000 * 60 * 30;
 
 		this._defaultLocale = 'en';
 	}
@@ -32,20 +37,38 @@ class AppUtilityService extends UtilityService {
 		this._repositoryContent = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CONTENT);
 	}
 
-	async content(correlationId, body) {
-		this._enforceNotNull('AppUtilityService', 'content', 'body', body, correlationId);
+	async contentListing(correlationId, body) {
+		this._enforceNotNull('AppUtilityService', 'contentListing', 'body', body, correlationId);
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.content, body);
+		if (this._hasFailed(validationResponse))
+			return validationResponse;
 		
-		await this._contentTitles(correlationId);
+		await this._contentListingTitlesDescriptions(correlationId);
 
 		let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
-		return await this._content(correlationId, locale);
+		return await this._contentListing(correlationId, locale);
+	}
+
+	async contentMarkup(correlationId, body) {
+		this._enforceNotNull('AppUtilityService', 'contentMarkup', 'body', body, correlationId);
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentMarkup, body);
+		if (this._hasFailed(validationResponse))
+			return validationResponse;
+		
+		let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
+		return await this._contentMarkup(correlationId, body.contentId, locale);
 	}
 
 	async contentReset(correlationId) {
-		this._cacheContentResults = null;
-		this._cacheContentResultsLocales = {};
-		this._cacheContentLocalesTitlesDescriptions = null;
-		this._ttlContent = null;
+		this._cacheContentListing = null;
+		this._cacheContentListingLocales = {};
+		this._cacheContentListingLocalesTitlesDescriptions = null;
+		this._cacheContentMarkup = {};
+		this._ttlContentListing = null;
+		this._ttlContentListingTitlesDescriptions = null;
+		this._ttlContentListingDiff = 1000 * 60 * 30;
+		this._ttlContentListingDiffTitlesDescriptions = 1000 * 60 * 30;
+		this._ttlContentMarkup = null;
 	}
 
 	async _intialize(correlationId, response) {
@@ -69,39 +92,39 @@ class AppUtilityService extends UtilityService {
 		});
 	}
 
-	async _content(correlationId, locale) {
-		this._enforceNotEmpty('AppUtilityService', '_content', 'locale', locale, correlationId);
+	async _contentListing(correlationId, locale) {
+		this._enforceNotEmpty('AppUtilityService', '_contentListing', 'locale', locale, correlationId);
 
 		const now = Utility.getTimestamp();
-		const ttlContent = this._ttlContent ? this._ttlContent : 0;
+		const ttlContent = this._ttlContentListing ? this._ttlContentListing : 0;
 		const delta = now - ttlContent;
 
-		if (this._cacheContentResultsLocales[locale] && (delta <= this._ttlContentDiff))
-			return this._successResponse(this._cacheContentResultsLocales[locale], correlationId);
+		if (this._cacheContentListingLocales[locale] && (delta <= this._ttlContentListingDiff))
+			return this._successResponse(this._cacheContentListingLocales[locale], correlationId);
 
-		const response = await this._contentDetails(correlationId, delta);
+		const response = await this._contentListingDetails(correlationId, delta);
 		if (this._hasFailed(response))
 			return response;
 
-		const responseLocale = await this._contentDetailsLocale(correlationId, this._cacheContentResults.info, locale);
+		const responseLocale = await this._contentListingDetailsLocale(correlationId, this._cacheContentListing.info, locale);
 		if (this._hasFailed(responseLocale))
 			return responseLocale;
 
 		delete responseLocale.results.info;
-		response.results = Utility.cloneDeep(this._cacheContentResults);
+		response.results = Utility.cloneDeep(this._cacheContentListing);
 		response.results.info = responseLocale.results;
-		this._cacheContentResultsLocales[locale] = response.results;
+		this._cacheContentListingLocales[locale] = response.results;
 
 		return this._successResponse(response.results, correlationId);
 	}
 
-	async _contentDetails(correlationId, delta) {
-		if (this._cacheContentResults && (delta <= this._ttlContentDiff))
+	async _contentListingDetails(correlationId, delta) {
+		if (this._cacheContentListing && (delta <= this._ttlContentListingDiff))
 			return this._success(correlationId);
 
-		const release = await this._mutexContent.acquire();
+		const release = await this._mutexContentListing.acquire();
 		try {
-			const response = await this._repositoryContent.content(correlationId);
+			const response = await this._repositoryContent.contentListing(correlationId);
 			if (this._hasFailed(response)) 
 				return response;
 
@@ -109,8 +132,8 @@ class AppUtilityService extends UtilityService {
 			response.results.links = response.results.links.filter(l => l.enabled);
 			response.results.tools = response.results.tools.filter(l => l.enabled);
 
-			this._cacheContentResults = response.results;
-			this._ttlContent = Utility.getTimestamp();
+			this._cacheContentListing = response.results;
+			this._ttlContentListing = Utility.getTimestamp();
 			return this._success(correlationId);
 		}
 		finally {
@@ -118,11 +141,11 @@ class AppUtilityService extends UtilityService {
 		}
 	}
 
-	async _contentDetailsLocale(correlationId, data, locale) {
-		this._enforceNotNull('AppUtilityService', '_content', 'data', data, correlationId);
-		this._enforceNotEmpty('AppUtilityService', '_content', 'locale', locale, correlationId);
+	async _contentListingDetailsLocale(correlationId, data, locale) {
+		this._enforceNotNull('AppUtilityService', '_contentListingDetails', 'data', data, correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentListingDetails', 'locale', locale, correlationId);
 
-		const release = await this._mutexContentLocales.acquire();
+		const release = await this._mutexContentListingLocales.acquire();
 		try {
 			const results2 = [];
 			let temp;
@@ -136,7 +159,7 @@ class AppUtilityService extends UtilityService {
 				}
 
 				for (let localeI of locales) {
-					temp = this._cacheContentLocalesTitlesDescriptions[localeI];
+					temp = this._cacheContentListingLocalesTitlesDescriptions[localeI];
 					if (!temp)
 						continue;
 					
@@ -159,34 +182,60 @@ class AppUtilityService extends UtilityService {
 		}
 	}
 
-	async _contentTitles(correlationId) {
+	async _contentListingTitlesDescriptions(correlationId) {
 		const now = Utility.getTimestamp();
-		const ttlContent = this._ttlContentTitlesDescriptions ? this._ttlContentTitlesDescriptions : 0;
+		const ttlContent = this._ttlContentListingTitlesDescriptions ? this._ttlContentListingTitlesDescriptions : 0;
 		const delta = now - ttlContent;
 
-		if (this._cacheContentLocalesTitlesDescriptions && (delta <= this._ttlContentDiffTitles))
+		if (this._cacheContentListingLocalesTitlesDescriptions && (delta <= this._ttlContentListingDiffTitlesDescriptions))
 			return this._success(correlationId);
 
-		let release = await this._mutexContentTitles.acquire();
+		let release = await this._mutexContentListingTitlesDescriptions.acquire();
 		try {
-			const response = await this._repositoryContent.contentLocaleTitlesDescriptions(correlationId);
+			const response = await this._repositoryContent.contentListingLocaleTitlesDescriptions(correlationId);
 			if (this._hasFailed(response)) 
 				return response;
-			this._cacheContentLocalesTitlesDescriptions = {};
+			this._cacheContentListingLocalesTitlesDescriptions = {};
 
 			for (const item of response.results) {
 				for (let localeI of item.locales) {
 					localeI = localeI.toLowerCase();
-					if (!this._cacheContentLocalesTitlesDescriptions[localeI])
-						this._cacheContentLocalesTitlesDescriptions[localeI] = [];
+					if (!this._cacheContentListingLocalesTitlesDescriptions[localeI])
+						this._cacheContentListingLocalesTitlesDescriptions[localeI] = [];
 
-					this._cacheContentLocalesTitlesDescriptions[localeI].push(item);
+					this._cacheContentListingLocalesTitlesDescriptions[localeI].push(item);
 				}
 				delete item.locale;
 			}
-			this._ttlContentTitlesDescriptions = Utility.getTimestamp();
+			this._ttlContentListingTitlesDescriptions = Utility.getTimestamp();
 
 			return this._success(correlationId);
+		}
+		finally {
+			release();
+		}
+	}
+
+	async _contentMarkup(correlationId, contentId, locale) {
+		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'contentId', contentId, correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'locale', locale, correlationId);
+
+		const now = Utility.getTimestamp();
+		const ttlContent = this._ttlContentMarkup ? this._ttlContentMarkup : 0;
+		const delta = now - ttlContent;
+
+		if (this._cacheContentMarkup[locale] && (delta <= this._ttlContentMarkupDiff))
+			return this._successResponse(this._cacheContentMarkup[locale], correlationId);
+
+		const release = await this._mutexContentMarkup.acquire();
+		try {
+			const response = await this._repositoryContent.contentMarkup(correlationId, contentId, locale, this._defaultLocale);
+			if (this._hasFailed(response)) 
+				return response;
+
+			this._cacheContentMarkup[locale] = response.results;
+			this._ttlContentMarkup = Utility.getTimestamp();
+			return response;
 		}
 		finally {
 			release();

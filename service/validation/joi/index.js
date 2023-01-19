@@ -2,7 +2,7 @@ import Joi from 'joi';
 import JoiDate from '@joi/date';
 Joi.extend(JoiDate);
 
-// import SharedConstants from '../../../common/constants.js';
+import Constants from '../../../common/constants.js';
 
 import GamerJoiValidationService from '@thzero/library_server_validation_joi/gamer.js';
 
@@ -14,9 +14,44 @@ class JoiValidationService extends GamerJoiValidationService {
 		.alphanum()
 		.min(2)
 		.max(10);
+
+	contentLicenses() {
+		const licenseIds = [];
+		Object.entries(Constants.Licenses.Free).map(entry => {
+			licenseIds.push(entry[1].id);
+		});
+		Object.entries(Constants.Licenses.Public).map(entry => {
+			licenseIds.push(entry[1].id);
+		});
+		return licenseIds;
+	}
+
+	contentLicense = Joi.string()
+		.trim()
+		.lowercase()
+		.valid(...this.contentLicenses());
+	contentLocale = Joi.string()
+		.trim()
+		.lowercase()
+		.min(2)
+		.max(5);
+	
+	content = Joi.object({
+		locale: this.contentLocale
+	});
+	
+	contentMarkup = Joi.object({
+		locale: this.contentLocale,
+		contentId: Joi.string()
+			.trim()
+			// .alphanum()
+			.regex(/^info\.[a-zA-Z0-9-_]*$/)
+			.min(2)
+			.max(30)
+	});
 	
 	syncFrom = Joi.object({
-		collections: Joi.array().items(Joi.string()),
+		collections: Joi.array().items(Joi.string().valid('checklists', 'launches', 'parachutes', 'rockets')),
 		lastSyncTimestamp: Joi.number().allow(null),
 		objects: Joi.array().items(this._any)
 	});

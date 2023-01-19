@@ -10,10 +10,18 @@ class AppUtilityRoute extends UtilityRoute {
 	_initializeRoutes(router) {
 		super._initializeRoutes(router);
 
+		router.post(this._join('/content/markup'),
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].contentMarkup(request.correlationId, request.body)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
 		router.post(this._join('/content'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].content(request.correlationId, request.body)).check(request);
+				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].contentListing(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

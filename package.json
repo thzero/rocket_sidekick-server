@@ -1,11 +1,11 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "version_major": 0,
   "version_minor": 0,
-  "version_patch": 15,
-  "version_date": "01/18/2023",
+  "version_patch": 16,
+  "version_date": "01/19/2023",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.2",
-    "eslint": "^8.31.0",
+    "eslint": "^8.32.0",
     "eslint-plugin-node": "^11.1.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"

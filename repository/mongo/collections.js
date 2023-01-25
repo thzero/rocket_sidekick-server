@@ -40,7 +40,7 @@ class AppCollectionsService extends ApiCollectionsService {
 	}
 
 	static Client = 'atlas';
-	static Database = 'societySidekick';
+	static Database = 'rocketSidekick';
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';
 	static CollectionNews = 'news';

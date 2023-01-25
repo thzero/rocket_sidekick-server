@@ -92,6 +92,38 @@ class ContentMongoRepository extends AppMongoRepository {
 							}
 						]
 					}
+				},
+			},
+			{
+				$lookup: {
+					'from': 'content',
+					'let': { 'sid': contentId + '.supplemental' },
+					'pipeline': [ { 
+							$match: { 
+								$expr: { 
+									$and: [ { 
+											$eq: [ "$id",  "$$sid" ] 
+										},{ 
+											$eq: [ "$type",  'supplemental' ] 
+										}
+									]
+								}
+							}
+						}
+					],
+					'as': 'supplementals'
+				}
+			},
+			{
+				$addFields: {
+					supplemental: { 
+						$arrayElemAt: [ '$supplementals', 0 ]
+					}
+				}
+			},
+			{
+				$project: {
+					'supplementals': 0
 				}
 			}
 		];

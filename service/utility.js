@@ -211,8 +211,8 @@ class AppUtilityService extends UtilityService {
 			const response = await this._repositoryContent.contentListingLocaleTitlesDescriptions(correlationId);
 			if (this._hasFailed(response)) 
 				return response;
-			this._cacheContentListingLocalesTitlesDescriptions = {};
 
+			this._cacheContentListingLocalesTitlesDescriptions = {};
 			for (const item of response.results) {
 				for (let localeI of item.locales) {
 					localeI = localeI.toLowerCase();
@@ -254,6 +254,8 @@ class AppUtilityService extends UtilityService {
 		try {
 			const response = await this._repositoryContent.contentMarkup(correlationId, contentId, locale, this._defaultLocale);
 			if (this._hasFailed(response)) 
+				return response;
+			if (!response.results)
 				return response;
 
 			// this._cacheContentMarkup[key] = response.results;

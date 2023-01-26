@@ -1,4 +1,6 @@
 import { Mutex as asyncMutex } from 'async-mutex';
+import SnappyJS from 'snappyjs';
+import { decode, encode } from 'cbor-x';
 
 import Constants from '../constants.js';
 
@@ -78,6 +80,13 @@ class AppUtilityService extends UtilityService {
 	_openSource(correlationId, openSource) {
 		openSource.push({
 			category: 'server',
+			name: 'cbor-x',
+			url: 'https://github.com/kriszyp/cbor-x',
+			licenseName: 'MIT',
+			licenseUrl: 'https://github.com/kriszyp/cbor-x/blob/master/LICENSE'
+		});
+		openSource.push({
+			category: 'server',
 			name: 'pino-pretty',
 			url: 'https://github.com/pinojs/pino-pretty',
 			licenseName: 'MIT',
@@ -89,6 +98,13 @@ class AppUtilityService extends UtilityService {
 			url: 'https://github.com/thzero/rocket_sidekick-server',
 			licenseName: 'MIT',
 			licenseUrl: 'https://github.com/thzero/rocket_sidekick-server/blob/master/license.md'
+		});
+		openSource.push({
+			category: 'server',
+			name: 'snappyjs',
+			url: 'https://github.com/zhipeng-jia/snappyjs',
+			licenseName: 'MIT',
+			licenseUrl: 'https://github.com/zhipeng-jia/snappyjs/blob/master/LICENSE'
 		});
 	}
 
@@ -195,8 +211,8 @@ class AppUtilityService extends UtilityService {
 			const response = await this._repositoryContent.contentListingLocaleTitlesDescriptions(correlationId);
 			if (this._hasFailed(response)) 
 				return response;
-			this._cacheContentListingLocalesTitlesDescriptions = {};
 
+			this._cacheContentListingLocalesTitlesDescriptions = {};
 			for (const item of response.results) {
 				for (let localeI of item.locales) {
 					localeI = localeI.toLowerCase();
@@ -224,16 +240,28 @@ class AppUtilityService extends UtilityService {
 		const ttlContent = this._ttlContentMarkup ? this._ttlContentMarkup : 0;
 		const delta = now - ttlContent;
 
-		if (this._cacheContentMarkup[locale] && (delta <= this._ttlContentMarkupDiff))
-			return this._successResponse(this._cacheContentMarkup[locale], correlationId);
+		const key = contentId + locale;
+
+		if (this._cacheContentMarkup[key] && (delta <= this._ttlContentMarkupDiff)) {
+			// const data = this._cacheContentMarkup[key];
+			const compressed = this._cacheContentMarkup[key];
+			const serializedBuffer = SnappyJS.uncompress(compressed);
+			const data = decode(serializedBuffer);
+			return this._successResponse(data, correlationId);
+		}
 
 		const release = await this._mutexContentMarkup.acquire();
 		try {
 			const response = await this._repositoryContent.contentMarkup(correlationId, contentId, locale, this._defaultLocale);
 			if (this._hasFailed(response)) 
 				return response;
+			if (!response.results)
+				return response;
 
-			this._cacheContentMarkup[locale] = response.results;
+			// this._cacheContentMarkup[key] = response.results;
+			const serializedBuffer = encode(response.results);
+			const compressed = SnappyJS.compress(serializedBuffer);
+			this._cacheContentMarkup[key] = compressed;
 			this._ttlContentMarkup = Utility.getTimestamp();
 			return response;
 		}

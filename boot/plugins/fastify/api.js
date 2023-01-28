@@ -4,15 +4,18 @@ import RepositoryConstants from '@thzero/library_server_repository_mongo/constan
 import FrontApiBootPlugin from '@thzero/library_server_fastify/boot/plugins/apiFront.js';
 
 import contentRepository from '../../../repository/mongo/content.js';
+import rocketsRepository from '../../../repository/mongo/rockets.js';
 import syncRepository from '../../../repository/mongo/sync.js';
 
 import apiRoute from '../../../routes/fastify/api.js';
+import rocketsRoute from '../../../routes/fastify/rockets.js';
 import syncRoute from '../../../routes/fastify/sync.js';
 import usersRoute from '../../../routes/fastify/users.js';
 import utilityRoute from '../../../routes/fastify/utility.js';
 
 import apiService from '../../../service/api.js';
 import repositoryCollectionsService from '../../../repository/mongo/collections.js';
+import rocketsService from '../../../service/rockets.js';
 import securityService from '../../../service/security.js';
 import syncService from '../../../service/sync.js';
 import validationService from '../../../service/validation/joi/index.js';
@@ -24,6 +27,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		await super._initRepositories();
 
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CONTENT, new contentRepository());
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETS, new rocketsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
 	}
 
@@ -31,6 +35,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		await super._initRoutes();
 
 		this._initRoute(new apiRoute());
+		this._initRoute(new rocketsRoute());
 		this._initRoute(new syncRoute());
 	}
 
@@ -49,6 +54,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 		this._injectService(RepositoryConstants.InjectorKeys.SERVICE_REPOSITORY_COLLECTIONS, new repositoryCollectionsService());
 
+		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETS, new rocketsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_SYNC, new syncService());
 
 		this._injectService(Constants.InjectorKeys.SERVICE_VALIDATION, new validationService());

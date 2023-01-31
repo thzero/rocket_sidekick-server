@@ -50,7 +50,9 @@ class JoiValidationService extends GamerJoiValidationService {
 			.max(30)
 	});
 	
-	rocketParams = Joi.object({
+	rocketsParams = this._id.required();
+	
+	rocketsParams = Joi.object({
 	});
 	
 	syncFrom = Joi.object({

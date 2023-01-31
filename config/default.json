@@ -16,6 +16,7 @@
 		"logging": {
 			"level": null,
 			"prettify": true
-		}
+		},
+		"ownerId": ""
 	}
 }

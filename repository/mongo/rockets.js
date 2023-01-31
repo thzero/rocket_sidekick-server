@@ -1,16 +1,30 @@
 import AppMongoRepository from './app.js';
 
 class RocketsRepository extends AppMongoRepository {
-	static defaultOwnerId = 'BcHwSwTQnWUgTULr5sGVnN54Ckg2'; // TODO
+	constructor() {
+		super();
+		
+		this._ownerId = null;
+
+	}
+
+	async init(injector) {
+		await super.init(injector);
+
+		this._ownerId = this._config.get('ownerId');
+	}
 
 	async listing(correlationId, params) {
 		const collection = await this._getCollectionRockets(correlationId);
 
 		const response = this._initResponse(correlationId);
 
+		if (String.isNullOrEmpty(this._ownerId)) 
+			return this._error('RocketsRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
+
 		const defaultFilter = { 
 			$and: [
-				{ 'ownerId': RocketsRepository.defaultOwnerId },
+				{ 'ownerId': this._ownerId },
 				{ 'public': true },
 				{ $expr: { $ne: [ 'deleted', true ] } }
 			]
@@ -70,12 +84,15 @@ class RocketsRepository extends AppMongoRepository {
 		const collection = await this._getCollectionRockets(correlationId);
 
 		const response = this._initResponse(correlationId);
+		
+		if (String.isNullOrEmpty(this._ownerId)) 
+			return this._error('RocketsRepository', 'retrieve', 'Missing ownerId', null, null, null, correlationId);
 
 		const queryA = [ { 
 				$match: {
 					$and: [
 						{ 'id': id.toLowerCase() },
-						{ 'ownerId': RocketsRepository.defaultOwnerId },
+						{ 'ownerId': this._ownerId },
 						{ 'public': true },
 						{ $expr: { $ne: [ 'deleted', true ] } }
 					]

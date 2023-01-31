@@ -50,7 +50,11 @@ class JoiValidationService extends GamerJoiValidationService {
 			.max(30)
 	});
 	
-	rocketsParams = this._id.required();
+	// rocketsId = this._id.required();
+	rocketsId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
 	
 	rocketsParams = Joi.object({
 	});

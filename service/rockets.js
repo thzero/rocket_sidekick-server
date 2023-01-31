@@ -33,7 +33,7 @@ class RocketsService extends Service {
 	}
 
 	async retrieve(correlationId, id) {
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, id);
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsId, id);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
 
@@ -41,7 +41,7 @@ class RocketsService extends Service {
 	}
 
 	async retrieveUser(correlationId, user, id) {
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, id);
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsId, id);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
 

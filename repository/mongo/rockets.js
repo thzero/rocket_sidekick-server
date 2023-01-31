@@ -11,7 +11,8 @@ class RocketsRepository extends AppMongoRepository {
 		const defaultFilter = { 
 			$and: [
 				{ 'ownerId': RocketsRepository.defaultOwnerId },
-				{ 'public': true }
+				{ 'public': true },
+				{ $expr: { $ne: [ 'deleted', true ] } }
 			]
 		};
 
@@ -41,7 +42,8 @@ class RocketsRepository extends AppMongoRepository {
 
 		const defaultFilter = { 
 			$and: [
-				{ 'id': userId }
+				{ 'ownerId': userId },
+				{ $expr: { $ne: [ 'deleted', true ] } }
 			]
 		};
 
@@ -69,12 +71,15 @@ class RocketsRepository extends AppMongoRepository {
 
 		const response = this._initResponse(correlationId);
 
-		const queryA = [  { 
-				$and: [
-					{ 'id': id.toLowerCase() },
-					{ 'ownerId': RocketsRepository.defaultOwnerId },
-					{ 'public': true }
-				]
+		const queryA = [ { 
+				$match: {
+					$and: [
+						{ 'id': id.toLowerCase() },
+						{ 'ownerId': RocketsRepository.defaultOwnerId },
+						{ 'public': true },
+						{ $expr: { $ne: [ 'deleted', true ] } }
+					]
+				}
 			}
 		];
 		queryA.push({
@@ -84,6 +89,9 @@ class RocketsRepository extends AppMongoRepository {
 		});
 
 		response.results = await this._aggregate(correlationId, collection, queryA);
+		const results = await response.results.toArray();
+		if (results.length > 0)
+			return this._successResponse(results[0], correlationId);
 		return response;
 	}
 	
@@ -93,10 +101,13 @@ class RocketsRepository extends AppMongoRepository {
 		const response = this._initResponse(correlationId);
 
 		const queryA = [ { 
-				$and: [
-					{ 'id': id.toLowerCase() },
-					{ 'ownerId': userId }
-				]
+				$match: {
+					$and: [
+						{ 'id': id.toLowerCase() },
+						{ 'ownerId': userId },
+						{ $expr: { $ne: [ 'deleted', true ] } }
+					]
+				}
 			}
 		];
 		queryA.push({
@@ -106,6 +117,9 @@ class RocketsRepository extends AppMongoRepository {
 		});
 
 		response.results = await this._aggregate(correlationId, collection, queryA);
+		const results = await response.results.toArray();
+		if (results.length > 0)
+			return this._successResponse(results[0], correlationId);
 		return response;
 	}
 }

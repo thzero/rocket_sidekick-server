@@ -1,8 +1,8 @@
 import Constants from '../constants.js';
-import LibraryConstants from '@thzero/library_server/constants.js';
+import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import Service from '@thzero/library_server/service/index.js';
-import Utility from '@thzero/library_common/utility/index.js';
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 class SyncService extends Service {
 	constructor() {
@@ -17,7 +17,7 @@ class SyncService extends Service {
 
 		this._repositorySync = this._injector.getService(Constants.InjectorKeys.REPOSITORY_SYNC);
 
-		this._serviceUsers = this._injector.getService(LibraryConstants.InjectorKeys.SERVICE_USERS);
+		this._serviceUsers = this._injector.getService(LibraryServerConstants.InjectorKeys.SERVICE_USERS);
 	}
 
 	async syncFrom(correlationId, user, params) {
@@ -38,7 +38,7 @@ class SyncService extends Service {
 		// 	// checklists: responseSyncChecklists.results,
 		// 	rockets: responseSyncRockets.results
 		// }
-		// response.results.lastSyncTimestamp = Utility.getTimestamp();
+		// response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
 		// return response;
 
 		const collectionNames = params.collections;
@@ -66,7 +66,7 @@ class SyncService extends Service {
 			response.results[collectionName] = responseSync.results;
 		}
 
-		response.results.lastSyncTimestamp = Utility.getTimestamp();
+		response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
 		return response;
 	}
 

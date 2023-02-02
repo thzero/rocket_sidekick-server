@@ -1,4 +1,4 @@
-import Utility from '@thzero/library_common/utility/index.js';
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppMongoRepository from './app.js';
 
@@ -81,11 +81,11 @@ class SyncMongoRepository extends AppMongoRepository {
 				// delete item.id;
 				item.id = item.identifier;
 				if (!item.createdTimestamp)
-					item.createdTimestamp = Utility.getTimestamp();
+					item.createdTimestamp = LibraryCommonUtility.getTimestamp();
 				if (!String.isNullOrEmpty(item.createdUserId))
 					item.createdUserId = userId;
 					
-				item.syncTimestamp = Utility.getTimestamp();
+				item.syncTimestamp = LibraryCommonUtility.getTimestamp();
 
 				response = await this._update(correlationId, collection, userId, item.id, item); //, 'identifier');
 				if (this._hasFailed(response))

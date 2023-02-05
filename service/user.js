@@ -1,5 +1,5 @@
 import Constants from '../constants.js';
-import LibraryConstants from '@thzero/library_server/constants.js';
+import LibraryServerConstants from '@thzero/library_server/constants.js';
 import SharedConstants from '../common/constants.js';
 
 import AppUtility from '../utility/app.js'
@@ -18,7 +18,7 @@ class UserService extends BaseUserService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryUsersI = this._injector.getService(LibraryConstants.InjectorKeys.REPOSITORY_USERS);
+		this._repositoryUsersI = this._injector.getService(LibraryServerConstants.InjectorKeys.REPOSITORY_USERS);
 	}
 
 	_getDefaultPlan() {

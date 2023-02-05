@@ -1,4 +1,4 @@
-import LibraryConstants from '@thzero/library_server/constants.js';
+import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import UtilityRoute from '@thzero/library_server_fastify/routes/utility.js';
 
@@ -13,7 +13,7 @@ class AppUtilityRoute extends UtilityRoute {
 		router.post(this._join('/content/markup'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].contentMarkup(request.correlationId, request.body)).check(request);
+				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentMarkup(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -21,7 +21,7 @@ class AppUtilityRoute extends UtilityRoute {
 		router.post(this._join('/content'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].contentListing(request.correlationId, request.body)).check(request);
+				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentListing(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -39,7 +39,7 @@ class AppUtilityRoute extends UtilityRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[LibraryConstants.InjectorKeys.SERVICE_UTILITY].contentReset(request.correlationId)).check(request);
+				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentReset(request.correlationId)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

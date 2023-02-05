@@ -22,6 +22,7 @@
 			"level": "LOGGING_LEVEL",
 			"prettify": "LOGGING_PRETTIFY"
 		},
-		"port": "PORT"
+		"port": "PORT",
+		"owner": "OWNER_ID"
 	}
 }

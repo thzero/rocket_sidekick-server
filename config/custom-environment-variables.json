@@ -23,6 +23,6 @@
 			"prettify": "LOGGING_PRETTIFY"
 		},
 		"port": "PORT",
-		"owner": "OWNER_ID"
+		"ownerId": "OWNER_ID"
 	}
 }

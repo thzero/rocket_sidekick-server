@@ -144,9 +144,10 @@ class AppUtilityService extends UtilityService {
 			if (this._hasFailed(response)) 
 				return response;
 
-			response.results.info = response.results.info.filter(l => l.enabled);
-			response.results.links = response.results.links.filter(l => l.enabled);
-			response.results.tools = response.results.tools.filter(l => l.enabled);
+			const now = LibraryCommonUtility.getTimestamp();
+			response.results.info = response.results.info.filter(l => this._contentListingFilter(l, now));
+			response.results.links = response.results.links.filter(l => this._contentListingFilter(l, now));
+			response.results.tools = response.results.tools.filter(l => this._contentListingFilter(l, now));
 
 			this._cacheContentListing = response.results;
 			this._ttlContentListing = LibraryCommonUtility.getTimestamp();
@@ -196,6 +197,16 @@ class AppUtilityService extends UtilityService {
 		finally {
 			release();
 		}
+	}
+
+	_contentListingFilter(item, timestamp) {
+		if (!item.enabled)
+			return false;
+		if (item.publishedEffDt && (timestamp < item.publishedEffDt))
+			return false;
+		if (item.publishedEndDt && (timestamp <= item.publishedEndDt))
+			return false;
+		return true;
 	}
 
 	async _contentListingTitlesDescriptions(correlationId) {

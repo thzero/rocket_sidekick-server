@@ -11,7 +11,7 @@
 			"restart": true,
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
-			"env": { "OWNER_ID" : "BcHwSwTQnWUgTULr5sGVnN54Ckg2", "LOG_LEVEL" : "debug" }
+			"env": { "LOG_LEVEL" : "debug" }
 		},
 		{
 			"type": "node",

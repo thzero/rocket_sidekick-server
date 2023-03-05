@@ -4,6 +4,7 @@ import RepositoryConstants from '@thzero/library_server_repository_mongo/constan
 import FrontApiBootPlugin from '@thzero/library_server_fastify/boot/plugins/apiFront.js';
 
 import contentRepository from '../../../repository/mongo/content.js';
+import manufacturersRepository from '../../../repository/mongo/manufacturers.js';
 import rocketsRepository from '../../../repository/mongo/rockets.js';
 import syncRepository from '../../../repository/mongo/sync.js';
 
@@ -15,6 +16,7 @@ import utilityRoute from '../../../routes/fastify/utility.js';
 
 import apiService from '../../../service/api.js';
 import repositoryCollectionsService from '../../../repository/mongo/collections.js';
+import manufacturersService from '../../../service/manufacturers.js';
 import rocketsService from '../../../service/rockets.js';
 import securityService from '../../../service/security.js';
 import syncService from '../../../service/sync.js';
@@ -27,6 +29,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		await super._initRepositories();
 
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CONTENT, new contentRepository());
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS, new manufacturersRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETS, new rocketsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
 	}
@@ -54,6 +57,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 		this._injectService(RepositoryConstants.InjectorKeys.SERVICE_REPOSITORY_COLLECTIONS, new repositoryCollectionsService());
 
+		this._injectService(Constants.InjectorKeys.SERVICE_MANUFACTURERS, new manufacturersService());
 		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETS, new rocketsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_SYNC, new syncService());
 

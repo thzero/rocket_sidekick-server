@@ -40,16 +40,16 @@
     "@thzero/library_server_validation_joi": "^0.17.1",
     "cbor-x": "^1.5.1",
     "decimal.js-light": "^2.5.1",
-    "pino-pretty": "^9.1.1",
+    "pino-pretty": "^9.4.0",
     "rocket_sidekick_common": "^0.0.3",
     "snappyjs": "^0.7.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.12",
+    "@babel/core": "^7.21.0",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.2",
-    "eslint": "^8.33.0",
+    "eslint": "^8.35.0",
     "eslint-plugin-node": "^11.1.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"

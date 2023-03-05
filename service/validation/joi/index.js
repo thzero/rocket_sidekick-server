@@ -2,7 +2,7 @@ import Joi from 'joi';
 import JoiDate from '@joi/date';
 Joi.extend(JoiDate);
 
-import Constants from '../../../common/constants.js';
+import Constants from 'rocket_sidekick_common/constants.js';
 
 import GamerJoiValidationService from '@thzero/library_server_validation_joi/gamer.js';
 

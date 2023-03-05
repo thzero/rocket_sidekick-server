@@ -1,4 +1,4 @@
-import SharedConstants from '../common/constants.js';
+import SharedConstants from 'rocket_sidekick_common/constants.js';
 
 import FirebaseAuthAdminService from '@thzero/library_server_firebase/auth/index.js';
 

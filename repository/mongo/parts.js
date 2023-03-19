@@ -1,6 +1,6 @@
 import AppMongoRepository from './app.js';
 
-class ManufacturersRepository extends AppMongoRepository {
+class PartsRepository extends AppMongoRepository {
 	constructor() {
 		super();
 		
@@ -14,12 +14,12 @@ class ManufacturersRepository extends AppMongoRepository {
 	}
 
 	async listing(correlationId, params) {
-		const collection = await this._getCollectionManufacturers(correlationId);
+		const collection = await this._getCollectionParts(correlationId);
 
 		const response = this._initResponse(correlationId);
 
 		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ManufacturersRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
+			return this._error('PartsRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
 
 		// const defaultFilter = { 
 		// 	$and: [
@@ -61,12 +61,12 @@ class ManufacturersRepository extends AppMongoRepository {
 	}
 
 	async retrieve(correlationId, id) {
-		const collection = await this._getCollectionManufacturers(correlationId);
+		const collection = await this._getCollectionParts(correlationId);
 
 		const response = this._initResponse(correlationId);
 		
 		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ManufacturersRepository', 'retrieve', 'Missing ownerId', null, null, null, correlationId);
+			return this._error('PartsRepository', 'retrieve', 'Missing ownerId', null, null, null, correlationId);
 
 		const queryA = [ { 
 				$match: {
@@ -93,4 +93,4 @@ class ManufacturersRepository extends AppMongoRepository {
 	}
 }
 
-export default ManufacturersRepository;
+export default PartsRepository;

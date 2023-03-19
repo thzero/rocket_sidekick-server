@@ -47,7 +47,7 @@ class AppCollectionsService extends ApiCollectionsService {
 	static Database = 'rocketSidekick';
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';
-	static CollectionManufacturers = 'mManufacturers';
+	static CollectionManufacturers = 'manufacturers';
 	static CollectionNews = 'news';
 	static CollectionPlans = 'plans';
 	static CollectionRockets = 'rockets';

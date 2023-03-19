@@ -9,6 +9,7 @@ import rocketsRepository from '../../../repository/mongo/rockets.js';
 import syncRepository from '../../../repository/mongo/sync.js';
 
 import apiRoute from '../../../routes/fastify/api.js';
+import manufacturersRoute from '../../../routes/fastify/manufacturers.js';
 import rocketsRoute from '../../../routes/fastify/rockets.js';
 import syncRoute from '../../../routes/fastify/sync.js';
 import usersRoute from '../../../routes/fastify/users.js';
@@ -38,6 +39,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		await super._initRoutes();
 
 		this._initRoute(new apiRoute());
+		this._initRoute(new manufacturersRoute());
 		this._initRoute(new rocketsRoute());
 		this._initRoute(new syncRoute());
 	}

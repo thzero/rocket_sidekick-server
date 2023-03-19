@@ -22,10 +22,21 @@ class ManufacturersRepository extends AppMongoRepository {
 		if (String.isNullOrEmpty(this._ownerId)) 
 			return this._error('ManufacturersRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
 
+		// const defaultFilter = { 
+		// 	$and: [
+		// 		{ 'ownerId': this._ownerId },
+		// 		{ 'public': true },
+		// 		{ $expr: { $ne: [ 'deleted', true ] } }
+		// 	]
+		// };
 		const defaultFilter = { 
 			$and: [
-				{ 'ownerId': this._ownerId },
-				{ 'public': true },
+				{ 
+					$or: [
+						{ 'ownerId': this._ownerId },
+						{ 'public': true }
+					]
+				},
 				{ $expr: { $ne: [ 'deleted', true ] } }
 			]
 		};
@@ -40,8 +51,9 @@ class ManufacturersRepository extends AppMongoRepository {
 				'_id': 0,
 				'id': 1,
 				'name': 1,
-				'coverUrl': 1,
-				'typeId': 1
+				'ownerId': 1,
+				'public': 1,
+				'types': 1
 			}
 		});
 

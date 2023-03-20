@@ -1,3 +1,5 @@
+import IdGenerator from '@thzero/library_id_nanoid';
+
 import Constants from './constants.js';
 
 import AdminPlugin from './boot/plugins/admin/admin.js';
@@ -15,6 +17,18 @@ import usageMetricsRepository from '@thzero/library_server_repository_mongo/usag
 import pinoLoggerService from '@thzero/library_server_logger_pino';
 
 class AppBootMain extends BootMain {
+	_initIdGenerator() {
+		return IdGenerator;
+	}
+
+	_initIdGeneratorLengthLong() {
+		return 16;
+	}
+
+	_initIdGeneratorLengthShort() {
+		return 16;
+	}
+
 	_initRepositoriesUsageMetrics() {
 		return new usageMetricsRepository();
 	}

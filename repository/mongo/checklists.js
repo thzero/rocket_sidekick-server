@@ -13,27 +13,17 @@ class ChecklistsRepository extends AppMongoRepository {
 		this._ownerId = this._config.get('ownerId');
 	}
 
-	async listing(correlationId, params) {
+	async listing(correlationId, userId, params) {
 		const collection = await this._getCollectionChecklists(correlationId);
 
 		const response = this._initResponse(correlationId);
 
-		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ChecklistsRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
-
-		// const defaultFilter = { 
-		// 	$and: [
-		// 		{ 'ownerId': this._ownerId },
-		// 		{ 'public': true },
-		// 		{ $expr: { $ne: [ 'deleted', true ] } }
-		// 	]
-		// };
 		const defaultFilter = { 
 			$and: [
 				{ 
 					$or: [
-						{ 'ownerId': this._ownerId },
-						{ 'public': true }
+						{ 'createdByUserId': userId },
+						{ 'isDefault': true }
 					]
 				},
 				{ $expr: { $ne: [ 'deleted', true ] } }
@@ -47,12 +37,7 @@ class ChecklistsRepository extends AppMongoRepository {
 		];
 		queryA.push({
 			$project: { 
-				'_id': 0,
-				'id': 1,
-				'name': 1,
-				'ownerId': 1,
-				'public': 1,
-				'types': 1
+				'_id': 0
 			}
 		});
 
@@ -60,7 +45,7 @@ class ChecklistsRepository extends AppMongoRepository {
 		return response;
 	}
 
-	async retrieve(correlationId, id) {
+	async retrieve(correlationId, userId, id) {
 		const collection = await this._getCollectionChecklists(correlationId);
 
 		const response = this._initResponse(correlationId);

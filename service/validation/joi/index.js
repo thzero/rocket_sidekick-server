@@ -14,6 +14,19 @@ class JoiValidationService extends GamerJoiValidationService {
 		.alphanum()
 		.min(2)
 		.max(10);
+	
+	// checklistsId = this._id.required();
+	checklistsId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	checklistsParams = Joi.object({
+		isCompleted: Joi.boolean(),
+		isDefault: Joi.boolean(),
+		isInProgress: Joi.boolean(),
+		isUser: Joi.boolean()
+	});
 
 	contentLicenses() {
 		const licenseIds = [];
@@ -48,6 +61,15 @@ class JoiValidationService extends GamerJoiValidationService {
 			.regex(/^info\.[a-zA-Z0-9-_]*$/)
 			.min(2)
 			.max(30)
+	});
+	
+	// manufacturersId = this._id.required();
+	manufacturersId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	manufacturersParams = Joi.object({
 	});
 	
 	// rocketsId = this._id.required();

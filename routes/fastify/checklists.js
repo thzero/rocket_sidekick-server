@@ -19,7 +19,7 @@ class ChecklistsRoute extends BaseRoute {
 		router.get(this._join('/checklists/:id'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].retrieve(request.correlationId, request.params.id)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].retrieve(request.correlationId, request.user, request.params.id)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -27,7 +27,7 @@ class ChecklistsRoute extends BaseRoute {
 		router.post(this._join('/checklists/listing'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].listing(request.correlationId, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].listing(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

@@ -16,20 +16,24 @@ class ChecklistsService extends Service {
 		this._repositoryChecklists = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CHECKLISTS);
 	}
 
-	async listing(correlationId, params) {
+	async listing(correlationId, user, params) {
+		this._enforceNotNull('ChecklistsService', 'retrieveUser', 'user', user, correlationId);
+
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsParams, params);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
 
-		return await this._repositoryChecklists.listing(correlationId, params);
+		return await this._repositoryChecklists.listing(correlationId, user.id, params);
 	}
 
-	async retrieve(correlationId, id) {
+	async retrieve(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'retrieveUser', 'user', user, correlationId);
+
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsId, id);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
 
-		return await this._repositoryChecklists.retrieve(correlationId, id);
+		return await this._repositoryChecklists.retrieve(correlationId, user.id, id);
 	}
 }
 

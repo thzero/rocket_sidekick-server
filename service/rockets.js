@@ -25,6 +25,8 @@ class RocketsService extends Service {
 	}
 
 	async listingUser(correlationId, user, params) {
+		this._enforceNotNull('RocketsService', 'retrieveUser', 'user', user, correlationId);
+		
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
@@ -41,6 +43,8 @@ class RocketsService extends Service {
 	}
 
 	async retrieveUser(correlationId, user, id) {
+		this._enforceNotNull('RocketsService', 'retrieveUser', 'user', user, correlationId);
+
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsId, id);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;

@@ -14,12 +14,70 @@ class JoiValidationService extends GamerJoiValidationService {
 		.alphanum()
 		.min(2)
 		.max(10);
+	_type = Joi.string()
+		.trim()
+		.alphanum()
+		.min(2)
+		.max(10);
 	
-	// checklistsId = this._id.required();
-	checklistsId = Joi.string()
+	// checklistId = this._id.required();
+	checklistId = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
+
+	// ownerId = this._id.required();
+	ownerId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	// rocketId = this._id.required();
+	rocketId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+
+	checklistStep = Joi.object({
+		id: this.checklistId,
+		checklistId: this.checklistId,
+		parentId: this.checklistId,
+		typeId: this._type,
+		description: this._description.allow(null),
+		altimeterRecoveryTypeId: Joi.string().allow(null),
+		altimeterTypeId: this._type,
+		chuteRelease: Joi.boolean().allow(null),
+		completedDateTime: this._timestamp.allow(null),
+		description: this._description,
+		motorLocationTypeId: this._type,
+		order: this._number.allow(null),
+		trail: Joi.array().items(Joi.string()).allow(null),
+		rootName: this._extendedName.allow(null),
+		stage: Joi.object().allow(null),
+		statusId: this._type,
+		steps: Joi.array().items(Joi.any()).allow(null)
+	});
+	
+	checklist = Joi.object({
+		id: this.checklistId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type,
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description,
+		launchTypeId: this._type,
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		rocketId: this.rocketId.allow(null),
+		rocketSetupId: this.rocketId.allow(null),
+		statusId: this._type,
+		steps: Joi.array().items(Joi.any()).allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
 	
 	checklistsParams = Joi.object({
 		isCompleted: Joi.boolean(),
@@ -71,12 +129,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	manufacturersParams = Joi.object({
 	});
-	
-	// rocketsId = this._id.required();
-	rocketsId = Joi.string()
-		.trim()
-		// .alphanum()
-		.regex(/^[a-zA-Z0-9-_]*$/);
 	
 	rocketsParams = Joi.object({
 	});

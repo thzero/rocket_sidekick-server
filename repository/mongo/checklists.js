@@ -13,7 +13,7 @@ class ChecklistsRepository extends AppMongoRepository {
 		this._ownerId = this._config.get('ownerId');
 	}
 
-	async listing(correlationId, userId, params) {
+	async listingShared(correlationId, userId, params) {
 		const collection = await this._getCollectionChecklists(correlationId);
 
 		const response = this._initResponse(correlationId);
@@ -37,7 +37,15 @@ class ChecklistsRepository extends AppMongoRepository {
 		];
 		queryA.push({
 			$project: { 
-				'_id': 0
+				'_id': 0,
+				'id': 1,
+				'name': 1,
+				'description': 1,
+				'typeId': 1,
+				'isDefault': 1,
+				'launchTypeId': 1,
+				'statusId': 1,
+				'createdUserId': 1
 			}
 		});
 
@@ -45,7 +53,52 @@ class ChecklistsRepository extends AppMongoRepository {
 		return response;
 	}
 
-	async retrieve(correlationId, userId, id) {
+	async listingUser(correlationId, userId, params) {
+		const collection = await this._getCollectionChecklists(correlationId);
+
+		const response = this._initResponse(correlationId);
+
+		const defaultFilter = { 
+			$and: [
+				{ 
+					$or: [
+						{ 'ownerId': userId },
+						{ 'isDefault': true }
+					]
+				},
+				{ $expr: { $ne: [ 'deleted', true ] } }
+			]
+		};
+
+		const queryF = defaultFilter;
+		const queryA = [ {
+				$match: defaultFilter
+			}
+		];
+		queryA.push({
+			$project: { 
+				'_id': 0,
+				'id': 1,
+				'name': 1,
+				'description': 1,
+				'typeId': 1,
+				'isDefault': 1,
+				'launchTypeId': 1,
+				'statusId': 1,
+				'ownerId': 1
+			}
+		});
+		queryA.push({
+			$sort: {
+				'ownerId': -1
+			}
+		});
+
+		response.results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+		return response;
+	}
+
+	async retrieveShared(correlationId, id) {
 		const collection = await this._getCollectionChecklists(correlationId);
 
 		const response = this._initResponse(correlationId);
@@ -75,6 +128,63 @@ class ChecklistsRepository extends AppMongoRepository {
 		if (results.length > 0)
 			return this._successResponse(results[0], correlationId);
 		return response;
+	}
+
+	async retrieveUser(correlationId, userId, id) {
+		const collection = await this._getCollectionChecklists(correlationId);
+
+		const response = this._initResponse(correlationId);
+		
+		if (String.isNullOrEmpty(this._ownerId)) 
+			return this._error('ChecklistsRepository', 'retrieve', 'Missing ownerId', null, null, null, correlationId);
+
+		const queryA = [ { 
+				$match: {
+					$and: [
+						{ 'id': id.toLowerCase() },
+						{ 'ownerId': userId },
+						{ 'isDefault': false },
+						{ $expr: { $ne: [ 'deleted', true ] } }
+					]
+				}
+			}
+		];
+		queryA.push({
+			$project: { 
+				'_id': 0
+			}
+		});
+
+		response.results = await this._aggregate(correlationId, collection, queryA);
+		const results = await response.results.toArray();
+		if (results.length > 0)
+			return this._successResponse(results[0], correlationId);
+		return response;
+	}
+
+	async updateUser(correlationId, userId, checklist) {
+		const client = await this._getClient(correlationId);
+		const session = await this._transactionInit(correlationId, client);
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionChecklists(correlationId);
+			const response = this._initResponse(correlationId);
+
+			checklist.ownerId = userId;
+			await this._update(correlationId, collection, userId, checklist.id, checklist);
+			response.results = checklist;
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			await this._transactionAbort(correlationId, session, null, err);
+			return this._error('ChecklistsRepository', 'updateUser', null, err, null, null, correlationId);
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
+		}
 	}
 }
 

@@ -8,10 +8,10 @@ const Constants = {
 		REPOSITORY_SYNC: 'repositorySync',
 
 		SERVICE_API: 'serviceApi',
-		SERVICE_CHECKLISTS: 'repositoryChecklists',
+		SERVICE_CHECKLISTS: 'serviceChecklists',
 		SERVICE_LOGGER_PINO: 'serviceLoggerPino',
-		SERVICE_MANUFACTURERS: 'repositoryManufacturers',
-		SERVICE_PARTS: 'repositoryParts',
+		SERVICE_MANUFACTURERS: 'serviceManufacturers',
+		SERVICE_PARTS: 'serviceParts',
 		SERVICE_ROCKETS: 'serviceRockets',
 		SERVICE_SITE: 'serviceSite',
 		SERVICE_SYNC: 'serviceSync',

@@ -19,6 +19,14 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionContent);
 	}
 
+	getCollectionManufacturers(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionManufacturers);
+	}
+
+	getCollectionParts(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionParts);
+	}
+
 	getCollectionNews(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionNews);
 	}
@@ -43,6 +51,8 @@ class AppCollectionsService extends ApiCollectionsService {
 	static Database = 'rocketSidekick';
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';
+	static CollectionManufacturers = 'manufacturers';
+	static CollectionParts = 'parts';
 	static CollectionNews = 'news';
 	static CollectionPlans = 'plans';
 	static CollectionRockets = 'rockets';

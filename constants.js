@@ -1,11 +1,17 @@
 const Constants = {
 	InjectorKeys: {
 		REPOSITORY_CONTENT: 'repositoryContent',
+		REPOSITORY_CHECKLISTS: 'repositoryChecklists',
+		REPOSITORY_MANUFACTURERS: 'repositoryManufacturers',
+		REPOSITORY_PARTS: 'repositoryParts',
 		REPOSITORY_ROCKETS: 'repositoryRockets',
 		REPOSITORY_SYNC: 'repositorySync',
 
 		SERVICE_API: 'serviceApi',
+		SERVICE_CHECKLISTS: 'serviceChecklists',
 		SERVICE_LOGGER_PINO: 'serviceLoggerPino',
+		SERVICE_MANUFACTURERS: 'serviceManufacturers',
+		SERVICE_PARTS: 'serviceParts',
 		SERVICE_ROCKETS: 'serviceRockets',
 		SERVICE_SITE: 'serviceSite',
 		SERVICE_SYNC: 'serviceSync',

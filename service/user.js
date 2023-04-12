@@ -1,12 +1,12 @@
 import Constants from '../constants.js';
 import LibraryServerConstants from '@thzero/library_server/constants.js';
-import SharedConstants from '../common/constants.js';
+import SharedConstants from 'rocket_sidekick_common/constants.js';
 
 import AppUtility from '../utility/app.js'
 
 import BaseUserService from '@thzero/library_server/service/baseUser.js';
 
-import UserData from '../common/data/user.js';
+import UserData from 'rocket_sidekick_common/data/user.js';
 
 class UserService extends BaseUserService {
 	constructor() {

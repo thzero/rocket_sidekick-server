@@ -121,6 +121,17 @@ class JoiValidationService extends GamerJoiValidationService {
 			.max(30)
 	});
 	
+	contentReset = Joi.object({
+		contentId: Joi.string()
+			.trim()
+			// .alphanum()
+			.regex(/^info\.[a-zA-Z0-9-_]*$/)
+			.min(2)
+			.max(30)
+			.allow(null)
+			.allow('')
+	});
+	
 	// manufacturersId = this._id.required();
 	manufacturersId = Joi.string()
 		.trim()

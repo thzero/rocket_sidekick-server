@@ -39,7 +39,7 @@ class AppUtilityRoute extends UtilityRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentReset(request.correlationId)).check(request);
+				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentReset(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

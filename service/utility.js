@@ -53,6 +53,7 @@ class AppUtilityService extends UtilityService {
 
 	async contentMarkup(correlationId, body) {
 		this._enforceNotNull('AppUtilityService', 'contentMarkup', 'body', body, correlationId);
+
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentMarkup, body);
 		if (this._hasFailed(validationResponse))
 			return validationResponse;
@@ -61,16 +62,31 @@ class AppUtilityService extends UtilityService {
 		return await this._contentMarkup(correlationId, body.contentId, locale);
 	}
 
-	async contentReset(correlationId) {
-		this._cacheContentListing = null;
-		this._cacheContentListingLocales = {};
-		this._cacheContentListingLocalesTitlesDescriptions = null;
-		this._cacheContentMarkup = {};
-		this._ttlContentListing = null;
-		this._ttlContentListingTitlesDescriptions = null;
-		this._ttlContentListingDiff = 1000 * 60 * 30;
-		this._ttlContentListingDiffTitlesDescriptions = 1000 * 60 * 30;
-		this._ttlContentMarkup = null;
+	async contentReset(correlationId, body) {
+		this._enforceNotNull('AppUtilityService', 'contentReset', 'body', body, correlationId);
+		
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentReset, body, null, 'sdfsdf');
+		if (this._hasFailed(validationResponse))
+			return validationResponse;
+
+		try {
+			// TODO: ContentId based resetting..
+			
+			this._cacheContentListing = null;
+			this._cacheContentListingLocales = {};
+			this._cacheContentListingLocalesTitlesDescriptions = null;
+			this._cacheContentMarkup = {};
+			this._ttlContentListing = null;
+			this._ttlContentListingTitlesDescriptions = null;
+			this._ttlContentListingDiff = 1000 * 60 * 30;
+			this._ttlContentListingDiffTitlesDescriptions = 1000 * 60 * 30;
+			this._ttlContentMarkup = null;
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('AppUtilityService', 'contentReset', null, err, null, null, correlationId);
+		}
 	}
 
 	async _intialize(correlationId, response) {

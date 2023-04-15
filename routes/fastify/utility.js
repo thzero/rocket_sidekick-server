@@ -33,7 +33,7 @@ class AppUtilityRoute extends UtilityRoute {
 					router.authorizationDefault
 				], 
 				{ 
-					relation: 'and',
+					// relation: 'and',
 					roles: [ 'content.reset' ]
 				}),
 			},

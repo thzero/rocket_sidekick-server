@@ -30,11 +30,11 @@ class ChecklistsService extends Service {
 
 		const results = response.results;
 		results.id = Utility.generateId();
-		delete results.isDefault;
 		delete results.createdTimestamp;
 		delete results.createdUserId;
 		delete results.updatedTimestamp;
 		delete results.updatedUserId;
+		results.isDefault = false;
 		this._clearChecklist(correlationId, results);
 		results.name = params.name;
 

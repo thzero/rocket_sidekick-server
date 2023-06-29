@@ -167,15 +167,15 @@ class ChecklistsRepository extends AppMongoRepository {
 					$or: [
 						{
 							$and: [
-								{ 'id': id.toLowerCase() },
+								{ 'id': id },
 								{ 'ownerId': userId },
-								{ 'isDefault': false },
+								{ $expr: { $ne: [ 'isDefault', true ] } },
 								{ $expr: { $ne: [ 'deleted', true ] } }
 							]
 						},
 						{
 							$and: [
-								{ 'id': id.toLowerCase() },
+								{ 'id': id },
 								{ 'isDefault': true },
 								{ $expr: { $ne: [ 'deleted', true ] } }
 							]

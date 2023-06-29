@@ -1,3 +1,4 @@
+import Utility from '@thzero/library_common/utility/index.js';
 import Constants from '../constants.js';
 
 import Service from '@thzero/library_server/service/index.js';
@@ -16,8 +17,44 @@ class ChecklistsService extends Service {
 		this._repositoryChecklists = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CHECKLISTS);
 	}
 
+	async copy(correlationId, user, params) {
+		this._enforceNotNull('ChecklistsService', 'copy', 'user', user, correlationId);
+
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistCopyParams, params);
+		if (this._hasFailed(validationResponse))
+			return validationResponse;
+
+		const response = await this._repositoryChecklists.retrieveUser(correlationId, user.id, params.id);
+		if (this._hasFailed(validationResponse))
+			return response;
+
+		const results = response.results;
+		results.id = Utility.generateId();
+		delete results.isDefault;
+		delete results.createdTimestamp;
+		delete results.createdUserId;
+		delete results.updatedTimestamp;
+		delete results.updatedUserId;
+		this._clearChecklist(correlationId, results);
+		results.name = params.name;
+
+		const respositoryResponse = await this._repositoryChecklists.updateUser(correlationId, user.id, results);
+		return respositoryResponse;
+	}
+
+	async deleteUser(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'deleteUser', 'user', user, correlationId);
+
+		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistId, id);
+		if (this._hasFailed(validationResponse))
+			return validationResponse;
+
+		const response = await this._repositoryChecklists.deleteUser(correlationId, user.id, id);
+		return response;
+	}
+
 	async listingShared(correlationId, user, params) {
-		this._enforceNotNull('ChecklistsService', 'retrieveUser', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'listingShared', 'user', user, correlationId);
 
 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsParams, params);
 		if (this._hasFailed(validationResponse))
@@ -79,6 +116,16 @@ class ChecklistsService extends Service {
 		
 		const respositoryResponse = await this._repositoryChecklists.updateUser(correlationId, user.id, checklistUpdate);
 		return respositoryResponse;
+	}
+
+	_clearChecklist(correlationId, value) {
+		for(let item in value.steps) {
+			delete item.completed;
+			delete item.completedTimestamp;
+			delete item.completedUserId;
+
+			this._clearChecklist(correlationId, item);
+		}
 	}
 }
 

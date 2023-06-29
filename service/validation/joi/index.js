@@ -79,6 +79,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		updatedUserId: this._id.allow(null)
 	});
 	
+	checklistCopyParams = Joi.object({
+		id: this.checklistId,
+		name: this._extendedName
+	});
+	
 	checklistsParams = Joi.object({
 		isCompleted: Joi.boolean(),
 		isDefault: Joi.boolean(),

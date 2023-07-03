@@ -63,42 +63,6 @@ class RocketsRepository extends AppMongoRepository {
 
 	async listing(correlationId, userId, params) {
 		try {
-			if (String.isNullOrEmpty(this._ownerId)) 
-				return this._error('RocketsRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
-	
-			const defaultFilter = { 
-				$and: [
-					{ 'public': true },
-					{ $expr: { $ne: [ 'deleted', true ] } }
-				]
-			};
-	
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'coverUrl': 1,
-					'typeId': 1
-				}
-			});
-	
-			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('PartsRepository', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
-	async listingUser(correlationId, userId, params) {
-		try {
 			const defaultFilter = { 
 				$and: [
 					{ 
@@ -131,11 +95,75 @@ class RocketsRepository extends AppMongoRepository {
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
-			return this._error('PartsRepository', 'listingUser', null, err, null, null, correlationId);
+			return this._error('RocketsRepository', 'listing', null, err, null, null, correlationId);
 		}
 	}
 
-	async retrieve(correlationId, id) {
+	async listingGallery(correlationId, params) {
+		try {
+			const defaultFilter = { 
+				$and: [
+					{ 'public': true },
+					{ $expr: { $ne: [ 'deleted', true ] } }
+				]
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'name': 1,
+					'coverUrl': 1,
+					'typeId': 1
+				}
+			});
+	
+			const collection = await this._getCollectionRockets(correlationId);
+			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketsRepository', 'listingGallery', null, err, null, null, correlationId);
+		}
+	}
+	
+	async retrieve(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id.toLowerCase() },
+							{ 'ownerId': userId },
+							{ $expr: { $ne: [ 'deleted', true ] } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+
+			const collection = await this._getCollectionRockets(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length > 0)
+				return this._successResponse(results[0], correlationId);
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('RocketsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async retrieveGallery(correlationId, id) {
 		try {
 			const queryA = [ { 
 					$match: {
@@ -162,39 +190,7 @@ class RocketsRepository extends AppMongoRepository {
 			return this._success(correlationId);
 		}
 		catch (err) {
-			return this._error('PartsRepository', 'retrieve', null, err, null, null, correlationId);
-		}
-	}
-	
-	async retrieveUser(correlationId, userId, id) {
-		try {
-
-			const queryA = [ { 
-					$match: {
-						$and: [
-							{ 'id': id.toLowerCase() },
-							{ 'ownerId': userId },
-							{ $expr: { $ne: [ 'deleted', true ] } }
-						]
-					}
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0
-				}
-			});
-
-			const collection = await this._getCollectionRockets(correlationId);
-			let results = await this._aggregate(correlationId, collection, queryA);
-			results = await results.toArray();
-			if (results.length > 0)
-				return this._successResponse(results[0], correlationId);
-
-			return this._success(correlationId);
-		}
-		catch (err) {
-			return this._error('PartsRepository', 'retrieveUser', null, err, null, null, correlationId);
+			return this._error('RocketsRepository', 'retrieveGallery', null, err, null, null, correlationId);
 		}
 	}
 

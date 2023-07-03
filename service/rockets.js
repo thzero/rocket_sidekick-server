@@ -27,7 +27,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			const response = await this._repositoryRockets.retrieveUser(correlationId, user.id, params.id);
+			const response = await this._repositoryRockets.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
 				return response;
 	
@@ -58,6 +58,8 @@ class RocketsService extends Service {
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
+
+			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			return await this._repositoryRockets.delete(correlationId, user.id, id);
 		}
@@ -66,49 +68,36 @@ class RocketsService extends Service {
 		}
 	}
 
-	async listing(correlationId, params) {
-		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryRockets.listing(correlationId, params);
-		}
-		catch (err) {
-			return this._error('RocketsService', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
-	async listingUser(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'listingUser', 'user', user, correlationId);
+	async listing(correlationId, user, params) {
+		this._enforceNotNull('RocketsService', 'listing', 'user', user, correlationId);
 		
 		try {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.listingUser(correlationId, user.id, params);
+			return await this._repositoryRockets.listing(correlationId, user.id, params);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'listingUser', null, err, null, null, correlationId);
+			return this._error('RocketsService', 'listing', null, err, null, null, correlationId);
 		}
 	}
 
-	async retrieve(correlationId, id) {
+	async listingGallery(correlationId, params) {
 		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.retrieve(correlationId, id);
+			return await this._repositoryRockets.listingGallery(correlationId, params);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'delretrieveeteUser', null, err, null, null, correlationId);
+			return this._error('RocketsService', 'listingGallery', null, err, null, null, correlationId);
 		}
 	}
 
-	async retrieveUser(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'retrieveUser', 'user', user, correlationId);
+	async retrieve(correlationId, user, id) {
+		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
 
 		try {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
@@ -118,7 +107,20 @@ class RocketsService extends Service {
 			return await this._repositoryRockets.retrieveUser(correlationId, user.id, id);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'retrieveUser', null, err, null, null, correlationId);
+			return this._error('RocketsService', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async retrieveGallery(correlationId, id) {
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryRockets.retrieveGallery(correlationId, id);
+		}
+		catch (err) {
+			return this._error('RocketsService', 'retrieveGallery', null, err, null, null, correlationId);
 		}
 	}
 
@@ -135,6 +137,8 @@ class RocketsService extends Service {
 			const fetchRespositoryResponse = await this._repositoryRockets.retrieve(correlationId, user.id, rocketsUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
+
+			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const rocket = fetchRespositoryResponse.results;
 			if (!rocket) {

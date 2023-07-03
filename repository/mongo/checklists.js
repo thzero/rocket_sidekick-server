@@ -15,7 +15,7 @@ class ChecklistsRepository extends AppMongoRepository {
 		this._ownerId = this._config.get('ownerId');
 	}
 
-	async deleteUser(correlationId, userId, id) {
+	async delete(correlationId, userId, id) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			await this._transactionStart(correlationId, session);
@@ -38,52 +38,14 @@ class ChecklistsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'deleteUser');
+			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'delete');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
 		}
 	}
 
-	async listingShared(correlationId, userId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 'ownerId': this._ownerId },
-					{ 'isDefault': true },
-					{ $expr: { $ne: [ 'deleted', true ] } }
-				]
-			};
-
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'description': 1,
-					'typeId': 1,
-					'isDefault': 1,
-					'launchTypeId': 1,
-					'statusId': 1,
-					'createdUserId': 1
-				}
-			});
-
-			const collection = await this._getCollectionChecklists(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('ChecklistsRepository', 'listingShared', null, err, null, null, correlationId);
-		}
-	}
-
-	async listingUser(correlationId, userId, params) {
+	async listing(correlationId, userId, params) {
 		try {
 			const defaultFilter = { 
 				$and: [
@@ -126,45 +88,11 @@ class ChecklistsRepository extends AppMongoRepository {
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
-			return this._error('ChecklistsRepository', 'listingUser', null, err, null, null, correlationId);
+			return this._error('ChecklistsRepository', 'listing', null, err, null, null, correlationId);
 		}
 	}
 
-	async retrieveShared(correlationId, id) {
-		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
-
-		try {
-			const queryA = [ { 
-					$match: {
-						$and: [
-							{ 'id': id.toLowerCase() },
-							{ 'ownerId': this._ownerId },
-							{ 'public': true },
-							{ $expr: { $ne: [ 'deleted', true ] } }
-						]
-					}
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0
-				}
-			});
-	
-			const collection = await this._getCollectionChecklists(correlationId);
-			let results = await this._aggregate(correlationId, collection, queryA);
-			results = await results.toArray();
-			if (results.length > 0)
-				return this._successResponse(results[0], correlationId);
-
-			return this._success(correlationId);
-		}
-		catch (err) {
-			return this._error('ChecklistsRepository', 'retrieveShared', null, err, null, null, correlationId);
-		}
-	}
-
-	async retrieveUser(correlationId, userId, id) {
+	async retrieve(correlationId, userId, id) {
 		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
 
 		try {
@@ -175,7 +103,6 @@ class ChecklistsRepository extends AppMongoRepository {
 								$and: [
 									{ 'id': id },
 									{ 'ownerId': userId },
-									{ $expr: { $ne: [ 'isDefault', true ] } },
 									{ $expr: { $ne: [ 'deleted', true ] } }
 								]
 							},
@@ -205,11 +132,11 @@ class ChecklistsRepository extends AppMongoRepository {
 			return this._success(correlationId);
 		}
 		catch (err) {
-			return this._error('ChecklistsRepository', 'retrieveUser', null, err, null, null, correlationId);
+			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
 
-	async updateUser(correlationId, userId, checklist) {
+	async update(correlationId, userId, checklist) {
 		const client = await this._getClient(correlationId);
 		const session = await this._transactionInit(correlationId, client);
 		try {
@@ -226,7 +153,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'updateUser');
+			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'update');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);

@@ -55,7 +55,7 @@ class ChecklistsRepository extends AppMongoRepository {
 							{ 'isDefault': true }
 						]
 					},
-					{ $expr: { $ne: [ 'deleted', true ] } }
+					{ 'deleted': { $ne: true } }
 				]
 			};
 
@@ -103,14 +103,14 @@ class ChecklistsRepository extends AppMongoRepository {
 								$and: [
 									{ 'id': id },
 									{ 'ownerId': userId },
-									{ $expr: { $ne: [ 'deleted', true ] } }
+									{ 'deleted': { $ne: true } }
 								]
 							},
 							{
 								$and: [
 									{ 'id': id },
 									{ 'isDefault': true },
-									{ $expr: { $ne: [ 'deleted', true ] } }
+									{ 'deleted': { $ne: true } }
 								]
 							}
 						]

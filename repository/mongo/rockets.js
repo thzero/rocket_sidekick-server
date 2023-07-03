@@ -68,10 +68,10 @@ class RocketsRepository extends AppMongoRepository {
 					{ 
 						$or: [
 							{ 'ownerId': userId },
-							{ 'isDefault': true }
+							{ 'isDefault': true },
 						]
 					},
-					{ $expr: { $ne: [ 'deleted', true ] } }
+					{ 'deleted': { $ne: true } }
 				]
 			};
 	
@@ -104,7 +104,7 @@ class RocketsRepository extends AppMongoRepository {
 			const defaultFilter = { 
 				$and: [
 					{ 'public': true },
-					{ $expr: { $ne: [ 'deleted', true ] } }
+					{ 'deleted': { $ne: true } }
 				]
 			};
 	
@@ -139,7 +139,7 @@ class RocketsRepository extends AppMongoRepository {
 						$and: [
 							{ 'id': id.toLowerCase() },
 							{ 'ownerId': userId },
-							{ $expr: { $ne: [ 'deleted', true ] } }
+							{ 'deleted': { $ne: true } }
 						]
 					}
 				}
@@ -169,8 +169,8 @@ class RocketsRepository extends AppMongoRepository {
 					$match: {
 						$and: [
 							{ 'id': id.toLowerCase() },
-							{ $expr: { $eq: [ 'public', true ] } },
-							{ $expr: { $ne: [ 'deleted', true ] } }
+							{ 'public': true },
+							{ 'deleted': { $ne: true } }
 						]
 					}
 				}

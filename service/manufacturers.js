@@ -16,20 +16,30 @@ class ManufacturersService extends Service {
 		this._repositoryManufacturers = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS);
 	}
 
-	async listing(correlationId, params) {
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersParams, params);
-		if (this._hasFailed(validationResponse))
-			return validationResponse;
-
-		return await this._repositoryManufacturers.listing(correlationId, params);
+	async listing(correlationId, user, params) {
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryManufacturers.listing(correlationId, params);
+		}
+		catch (err) {
+			return this._error('ManufacturersService', 'listing', null, err, null, null, correlationId);
+		}
 	}
 
-	async retrieve(correlationId, id) {
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersId, id);
-		if (this._hasFailed(validationResponse))
-			return validationResponse;
-
-		return await this._repositoryManufacturers.retrieve(correlationId, id);
+	async retrieve(correlationId, user, id) {
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryManufacturers.retrieve(correlationId, id);
+		}
+		catch (err) {
+			return this._error('ManufacturersService', 'retrieve', null, err, null, null, correlationId);
+		}
 	}
 }
 

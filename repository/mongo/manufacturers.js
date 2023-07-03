@@ -14,76 +14,80 @@ class ManufacturersRepository extends AppMongoRepository {
 	}
 
 	async listing(correlationId, params) {
-		const collection = await this._getCollectionManufacturers(correlationId);
-
-		const response = this._initResponse(correlationId);
-
-		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ManufacturersRepository', 'listing', 'Missing ownerId', null, null, null, correlationId);
-
-		const defaultFilter = { 
-			$and: [
-				{ 
-					$or: [
-						{ 'ownerId': this._ownerId },
-						{ 'public': true }
-					]
-				},
-				{ $expr: { $ne: [ 'deleted', true ] } }
-			]
-		};
-
-		const queryF = defaultFilter;
-		const queryA = [ {
-				$match: defaultFilter
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0,
-				'id': 1,
-				'tcId': 1,
-				'name': 1,
-				'ownerId': 1,
-				'public': 1,
-				'types': 1
-			}
-		});
-
-		response.results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-		return response;
+		try {
+			const defaultFilter = { 
+				$and: [
+					{ 
+						$or: [
+							{ 'ownerId': this._ownerId },
+							{ 'public': true }
+						]
+					},
+					{ $expr: { $ne: [ 'deleted', true ] } }
+				]
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'tcId': 1,
+					'name': 1,
+					'ownerId': 1,
+					'public': 1,
+					'types': 1
+				}
+			});
+	
+			const collection = await this._getCollectionManufacturers(correlationId);
+			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('ManufacturersRepository', 'listing', null, err, null, null, correlationId);
+		}
 	}
 
-	async retrieve(correlationId, id) {
-		const collection = await this._getCollectionManufacturers(correlationId);
+	async retrieve(correlationId, userId, id) {
 
-		const response = this._initResponse(correlationId);
-		
-		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ManufacturersRepository', 'retrieve', 'Missing ownerId', null, null, null, correlationId);
-
-		const queryA = [ { 
-				$match: {
-					$and: [
-						{ 'id': id.toLowerCase() },
-						{ 'ownerId': this._ownerId },
-						{ 'public': true },
-						{ $expr: { $ne: [ 'deleted', true ] } }
-					]
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id.toLowerCase() },
+							{ 
+								$or: [
+									{ 'ownerId': this._ownerId },
+									{ 'public': true }
+								]
+							},
+							{ $expr: { $ne: [ 'deleted', true ] } }
+						]
+					}
 				}
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0
-			}
-		});
-
-		response.results = await this._aggregate(correlationId, collection, queryA);
-		const results = await response.results.toArray();
-		if (results.length > 0)
-			return this._successResponse(results[0], correlationId);
-		return response;
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const collection = await this._getCollectionManufacturers(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length > 0)
+				return this._successResponse(results[0], correlationId);
+			
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ManufacturersRepository', 'retrieve', null, err, null, null, correlationId);
+		}
 	}
 }
 

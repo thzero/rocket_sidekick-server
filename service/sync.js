@@ -21,53 +21,58 @@ class SyncService extends Service {
 	}
 
 	async syncFrom(correlationId, user, params) {
-		const validationSyncResponse = this._serviceValidation.check(correlationId, this._serviceValidation.syncFrom, params);
-		if (this._hasFailed(validationSyncResponse))
-			return validationSyncResponse;
-
-		// const responseSyncChecklists = await this._syncChecklists(correlationId, user, params.rockets, params.lastSyncTimestamp);
-		// if (this._hasFailed(responseSyncChecklists))
-		// 	return responseSyncChecklists;
-
-		// const responseSyncRockets = await this._syncRockets(correlationId, user, params.rockets, params.lastSyncTimestamp);
-		// if (this._hasFailed(responseSyncRockets))
-		// 	return responseSyncRockets;
-
-		// const response = this._initResponse(correlationId);
-		// response.results = {
-		// 	// checklists: responseSyncChecklists.results,
-		// 	rockets: responseSyncRockets.results
-		// }
-		// response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
-		// return response;
-
-		const collectionNames = params.collections;
-		const response = this._initResponse(correlationId);
-		response.results = {};
-
-		let responseSync;
-		let objects;
-		for(const collectionName of collectionNames) {
-			objects = params.objects.find(l => l.id.toLowerCase() === collectionName.toLowerCase());
-			if (!objects) {
-				this._logger.warn('SyncService', 'syncFrom', `Item for collection '${collectionName}' not found.`, null, correlationId);
-				continue;
+		try {
+			const validationSyncResponse = this._serviceValidation.check(correlationId, this._serviceValidation.syncFrom, params);
+			if (this._hasFailed(validationSyncResponse))
+				return validationSyncResponse;
+	
+			// const responseSyncChecklists = await this._syncChecklists(correlationId, user, params.rockets, params.lastSyncTimestamp);
+			// if (this._hasFailed(responseSyncChecklists))
+			// 	return responseSyncChecklists;
+	
+			// const responseSyncRockets = await this._syncRockets(correlationId, user, params.rockets, params.lastSyncTimestamp);
+			// if (this._hasFailed(responseSyncRockets))
+			// 	return responseSyncRockets;
+	
+			// const response = this._initResponse(correlationId);
+			// response.results = {
+			// 	// checklists: responseSyncChecklists.results,
+			// 	rockets: responseSyncRockets.results
+			// }
+			// response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
+			// return response;
+	
+			const collectionNames = params.collections;
+			const response = this._initResponse(correlationId);
+			response.results = {};
+	
+			let responseSync;
+			let objects;
+			for(const collectionName of collectionNames) {
+				objects = params.objects.find(l => l.id.toLowerCase() === collectionName.toLowerCase());
+				if (!objects) {
+					this._logger.warn('SyncService', 'syncFrom', `Item for collection '${collectionName}' not found.`, null, correlationId);
+					continue;
+				}
+				objects = objects.objects;
+				if (!objects) {
+					this._logger.warn('SyncService', 'syncFrom', `Objects for collection '${collectionName}' not found.`, null, correlationId);
+					continue;
+				}
+	
+				responseSync = await this._syncUpdates(correlationId, collectionName, user, objects, params.lastSyncTimestamp);
+				if (this._hasFailed(responseSync))
+					return responseSync;
+	
+				response.results[collectionName] = responseSync.results;
 			}
-			objects = objects.objects;
-			if (!objects) {
-				this._logger.warn('SyncService', 'syncFrom', `Objects for collection '${collectionName}' not found.`, null, correlationId);
-				continue;
-			}
-
-			responseSync = await this._syncUpdates(correlationId, collectionName, user, objects, params.lastSyncTimestamp);
-			if (this._hasFailed(responseSync))
-				return responseSync;
-
-			response.results[collectionName] = responseSync.results;
+	
+			response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
+			return response;
 		}
-
-		response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
-		return response;
+		catch (err) {
+			return this._error('SyncService', 'syncFrom', null, err, null, null, correlationId);
+		}
 	}
 
 	async _sync(correlationId, clientObjects, serverObjects) {

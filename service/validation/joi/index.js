@@ -32,6 +32,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
+	// checklistId = this._id.required();
+	partId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	
 	// rocketId = this._id.required();
 	rocketId = Joi.string()
 		.trim()
@@ -144,6 +151,48 @@ class JoiValidationService extends GamerJoiValidationService {
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
 	manufacturersParams = Joi.object({
+	});
+	
+	parts = Joi.object({
+		id: this.partId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type,
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description,
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	partsCopyParams = Joi.object({
+		id: this.checklistId,
+		name: this._extendedName
+	});
+	
+	rocket = Joi.object({
+		id: this.rocketId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type,
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description,
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	rocketsCopyParams = Joi.object({
+		id: this.checklistId,
+		name: this._extendedName
 	});
 	
 	rocketsParams = Joi.object({

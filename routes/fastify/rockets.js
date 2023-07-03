@@ -16,6 +16,24 @@ class RocketsRoute extends BaseRoute {
 	_initializeRoutes(router) {
 		super._initializeRoutes(router);
 
+		router.delete(this._join('/rockets/:id'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].delete(request.correlationId, request.user, request.params.id)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
 		router.get(this._join('/rockets/:id'),
 			// eslint-disable-next-line
 			async (request, reply) => {
@@ -27,7 +45,7 @@ class RocketsRoute extends BaseRoute {
 		router.post(this._join('/rockets/listing'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].listing(request.correlationId, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].listing(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -64,6 +82,24 @@ class RocketsRoute extends BaseRoute {
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].retrieveUser(request.correlationId, request.user, request.params.id)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
+		router.post(this._join('/rockets'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].update(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

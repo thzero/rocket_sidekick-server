@@ -1,3 +1,5 @@
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+
 import AppMongoRepository from './app.js';
 
 class ChecklistsRepository extends AppMongoRepository {
@@ -13,15 +15,22 @@ class ChecklistsRepository extends AppMongoRepository {
 		this._ownerId = this._config.get('ownerId');
 	}
 
-	async deleteUser(correlationId, userId, id) {
-		const client = await this._getClient(correlationId);
-		const session = await this._transactionInit(correlationId, client);
+	async delete(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			await this._transactionStart(correlationId, session);
 
 			const collection = await this._getCollectionChecklists(correlationId);
 
-			const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			// const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			const checklist = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			if (!checklist)
+				return await this._transactionAbort(correlationId, session, 'Unable to delete the checklist - not found.');
+
+			checklist.deleted = true;
+			checklist.deletedUserId = userId;
+			checklist.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			const response = await this._update(correlationId, collection, userId, checklist.id, checklist);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the checklist.');
 
@@ -29,175 +38,105 @@ class ChecklistsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			await this._transactionAbort(correlationId, session, null, err);
-			return this._error('ChecklistsRepository', 'deleteUser', null, err, null, null, correlationId);
+			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'delete');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
 		}
 	}
 
-	async listingShared(correlationId, userId, params) {
-		const collection = await this._getCollectionChecklists(correlationId);
+	async listing(correlationId, userId, params) {
+		try {
+			const defaultFilter = { 
+				$and: [
+					{ 
+						$or: [
+							{ 'ownerId': userId },
+							{ 'isDefault': true }
+						]
+					},
+					{ $expr: { $ne: [ 'deleted', true ] } }
+				]
+			};
 
-		const response = this._initResponse(correlationId);
-
-		const defaultFilter = { 
-			$and: [
-				{ 
-					$or: [
-						{ 'createdByUserId': userId },
-						{ 'isDefault': true }
-					]
-				},
-				{ $expr: { $ne: [ 'deleted', true ] } }
-			]
-		};
-
-		const queryF = defaultFilter;
-		const queryA = [ {
-				$match: defaultFilter
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0,
-				'id': 1,
-				'name': 1,
-				'description': 1,
-				'typeId': 1,
-				'isDefault': 1,
-				'launchTypeId': 1,
-				'statusId': 1,
-				'createdUserId': 1
-			}
-		});
-
-		response.results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-		return response;
-	}
-
-	async listingUser(correlationId, userId, params) {
-		const collection = await this._getCollectionChecklists(correlationId);
-
-		const response = this._initResponse(correlationId);
-
-		const defaultFilter = { 
-			$and: [
-				{ 
-					$or: [
-						{ 'ownerId': userId },
-						{ 'isDefault': true }
-					]
-				},
-				{ $expr: { $ne: [ 'deleted', true ] } }
-			]
-		};
-
-		const queryF = defaultFilter;
-		const queryA = [ {
-				$match: defaultFilter
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0,
-				'id': 1,
-				'name': 1,
-				'description': 1,
-				'typeId': 1,
-				'isDefault': 1,
-				'launchTypeId': 1,
-				'statusId': 1,
-				'ownerId': 1
-			}
-		});
-		queryA.push({
-			$sort: {
-				'ownerId': -1
-			}
-		});
-
-		response.results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-		return response;
-	}
-
-	async retrieveShared(correlationId, id) {
-		const collection = await this._getCollectionChecklists(correlationId);
-
-		const response = this._initResponse(correlationId);
-		
-		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ChecklistsRepository', 'retrieveShared', 'Missing ownerId', null, null, null, correlationId);
-
-		const queryA = [ { 
-				$match: {
-					$and: [
-						{ 'id': id.toLowerCase() },
-						{ 'ownerId': this._ownerId },
-						{ 'public': true },
-						{ $expr: { $ne: [ 'deleted', true ] } }
-					]
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
 				}
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0
-			}
-		});
-
-		let results = await this._aggregate(correlationId, collection, queryA);
-		results = await results.toArray();
-		if (results.length > 0)
-			return this._successResponse(results[0], correlationId);
-		return response;
-	}
-
-	async retrieveUser(correlationId, userId, id) {
-		const collection = await this._getCollectionChecklists(correlationId);
-
-		const response = this._initResponse(correlationId);
-		
-		if (String.isNullOrEmpty(this._ownerId)) 
-			return this._error('ChecklistsRepository', 'retrieveUser', 'Missing ownerId', null, null, null, correlationId);
-
-		const queryA = [ { 
-				$match: {
-					$or: [
-						{
-							$and: [
-								{ 'id': id.toLowerCase() },
-								{ 'ownerId': userId },
-								{ 'isDefault': false },
-								{ $expr: { $ne: [ 'deleted', true ] } }
-							]
-						},
-						{
-							$and: [
-								{ 'id': id.toLowerCase() },
-								{ 'isDefault': true },
-								{ $expr: { $ne: [ 'deleted', true ] } }
-							]
-						}
-					]
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'name': 1,
+					'description': 1,
+					'typeId': 1,
+					'isDefault': 1,
+					'launchTypeId': 1,
+					'statusId': 1,
+					'ownerId': 1
 				}
-			}
-		];
-		queryA.push({
-			$project: { 
-				'_id': 0
-			}
-		});
+			});
+			queryA.push({
+				$sort: {
+					'ownerId': -1
+				}
+			});
 
-		let results = await this._aggregate(correlationId, collection, queryA);
-		results = await results.toArray();
-		if (results.length > 0)
-			return this._successResponse(results[0], correlationId);
-		return response;
+			const collection = await this._getCollectionChecklists(correlationId);
+			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'listing', null, err, null, null, correlationId);
+		}
 	}
 
-	async updateUser(correlationId, userId, checklist) {
+	async retrieve(correlationId, userId, id) {
+		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
+
+		try {
+			const queryA = [ { 
+					$match: {
+						$or: [
+							{
+								$and: [
+									{ 'id': id },
+									{ 'ownerId': userId },
+									{ $expr: { $ne: [ 'deleted', true ] } }
+								]
+							},
+							{
+								$and: [
+									{ 'id': id },
+									{ 'isDefault': true },
+									{ $expr: { $ne: [ 'deleted', true ] } }
+								]
+							}
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const collection = await this._getCollectionChecklists(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length > 0)
+				return this._successResponse(results[0], correlationId);
+				
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async update(correlationId, userId, checklist) {
 		const client = await this._getClient(correlationId);
 		const session = await this._transactionInit(correlationId, client);
 		try {
@@ -214,8 +153,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			await this._transactionAbort(correlationId, session, null, err);
-			return this._error('ChecklistsRepository', 'updateUser', null, err, null, null, correlationId);
+			return await this._transactionAbort(correlationId, session, null, err, 'ChecklistsRepository', 'update');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);

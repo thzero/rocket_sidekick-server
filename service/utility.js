@@ -41,35 +41,45 @@ class AppUtilityService extends UtilityService {
 
 	async contentListing(correlationId, body) {
 		this._enforceNotNull('AppUtilityService', 'contentListing', 'body', body, correlationId);
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.content, body);
-		if (this._hasFailed(validationResponse))
-			return validationResponse;
-		
-		await this._contentListingTitlesDescriptions(correlationId);
 
-		let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
-		return await this._contentListing(correlationId, locale);
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.content, body);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+			
+			await this._contentListingTitlesDescriptions(correlationId);
+	
+			let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
+			return await this._contentListing(correlationId, locale);
+		}
+		catch (err) {
+			return this._error('AppUtilityService', 'contentListing', null, err, null, null, correlationId);
+		}
 	}
 
 	async contentMarkup(correlationId, body) {
 		this._enforceNotNull('AppUtilityService', 'contentMarkup', 'body', body, correlationId);
 
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentMarkup, body);
-		if (this._hasFailed(validationResponse))
-			return validationResponse;
-		
-		let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
-		return await this._contentMarkup(correlationId, body.contentId, locale);
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentMarkup, body);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+			
+			let locale = !String.isNullOrEmpty(body.locale) ? body.locale : this._defaultLocale;
+			return await this._contentMarkup(correlationId, body.contentId, locale);
+		}
+		catch (err) {
+			return this._error('AppUtilityService', 'contentMarkup', null, err, null, null, correlationId);
+		}
 	}
 
 	async contentReset(correlationId, body) {
 		this._enforceNotNull('AppUtilityService', 'contentReset', 'body', body, correlationId);
-		
-		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentReset, body, null, 'sdfsdf');
-		if (this._hasFailed(validationResponse))
-			return validationResponse;
 
 		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentReset, body, null, 'sdfsdf');
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
 			// TODO: ContentId based resetting..
 			
 			this._cacheContentListing = null;

@@ -16,7 +16,7 @@ class ChecklistsRoute extends BaseRoute {
 	_initializeRoutes(router) {
 		super._initializeRoutes(router);
 
-		router.delete(this._join('/checklists/user/:id'),
+		router.delete(this._join('/checklists/:id'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -29,7 +29,7 @@ class ChecklistsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].deleteUser(request.correlationId, request.user, request.params.id)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].delete(request.correlationId, request.user, request.params.id)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -52,15 +52,7 @@ class ChecklistsRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.post(this._join('/checklists/shared'),
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].saveUser(request.correlationId, request.user, request.body)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.post(this._join('/checklists/user'),
+		router.post(this._join('/checklists'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -73,20 +65,12 @@ class ChecklistsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].updateUser(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].update(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.post(this._join('/checklists/listing/shared'),
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].listingShared(request.correlationId, request.user, request.body)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.post(this._join('/checklists/listing/user'),
+		router.post(this._join('/checklists/listing'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -99,20 +83,12 @@ class ChecklistsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].listingUser(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].listing(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.get(this._join('/checklists/shared/:id'),
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].retrieveShared(request.correlationId, request.params.id)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.get(this._join('/checklists/user/:id'),
+		router.get(this._join('/checklists/:id'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -125,7 +101,7 @@ class ChecklistsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].retrieveUser(request.correlationId, request.user, request.params.id)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_CHECKLISTS].retrieve(request.correlationId, request.user, request.params.id)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

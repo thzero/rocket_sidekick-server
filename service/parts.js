@@ -58,6 +58,8 @@ class PartsService extends Service {
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
+
+			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const part = fetchRespositoryResponse.results;
 			if (!part) {
@@ -112,6 +114,8 @@ class PartsService extends Service {
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, partsUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
+
+			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const part = fetchRespositoryResponse.results;
 			if (!part) {

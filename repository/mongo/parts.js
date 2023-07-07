@@ -74,22 +74,15 @@ class PartsRepository extends AppMongoRepository {
 
 	async listing(correlationId, userId, params) {
 		try {
-			// const defaultFilter = { 
-			// 	$and: [
-			// 		{ 'ownerId': this._ownerId },
-			// 		{ 'public': true },
-			// 		{ $expr: { $ne: [ 'deleted', true ] } }
-			// 	]
-			// };
 			const defaultFilter = { 
 				$and: [
 					{ 
 						$or: [
 							{ 'ownerId': userId },
-							{ $expr: { $eq: [ 'public', true ] } }
+							{ 'public': { $eq: true } }
 						]
 					},
-					{ $expr: { $ne: [ 'deleted', true ] } }
+					{ 'deleted': { $ne: true } }
 				]
 			};
 	
@@ -100,12 +93,7 @@ class PartsRepository extends AppMongoRepository {
 			];
 			queryA.push({
 				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'ownerId': 1,
-					'public': 1,
-					'types': 1
+					'_id': 0
 				}
 			});
 	
@@ -127,10 +115,10 @@ class PartsRepository extends AppMongoRepository {
 							{ 
 								$or: [
 									{ 'ownerId': userId },
-									{ $expr: { $eq: [ 'public', true ] } }
+									{ 'public': { $eq: true } }
 								]
 							},
-							{ $expr: { $ne: [ 'deleted', true ] } }
+							{ 'deleted': { $ne: true } }
 						]
 					}
 				}

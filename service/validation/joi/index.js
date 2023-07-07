@@ -73,7 +73,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		description: this._description,
+		description: this._description.allow(null).allow(''),
 		launchTypeId: this._type,
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
@@ -157,16 +157,41 @@ class JoiValidationService extends GamerJoiValidationService {
 		id: this.partId,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
-		typeId: this._type,
+		typeId: this._type.required(),
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		description: this._description,
+		description: this._description.allow(null).allow(''),
+		manufacturerId: this.manufacturersId.required(),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
+	}).unknown();
+	
+	partsParachute = this.parts.concat(Joi.object({
+		id: this.partId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type.required(),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description.allow(null).allow(''),
+		diameter: Joi.number().required(),
+		manufacturerId: this.manufacturersId.required(),
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	}));
+	
+	partsParams = Joi.object({
+		isPublic: Joi.boolean(),
+		isUser: Joi.boolean(),
+		type: this._type,
 	});
 	
 	partsCopyParams = Joi.object({
@@ -182,7 +207,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		description: this._description,
+		description: this._description.allow(null).allow(''),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		syncTimestamp: Joi.number().allow(null),

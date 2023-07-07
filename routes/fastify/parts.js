@@ -35,6 +35,16 @@ class PartsRoute extends BaseRoute {
 			}
 		);
 		router.get(this._join('/parts/:id'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].retrieve(request.correlationId, request.user, request.params.id)).check(request);
@@ -43,6 +53,16 @@ class PartsRoute extends BaseRoute {
 			}
 		);
 		router.post(this._join('/parts/listing'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].listing(request.correlationId, request.user, request.body)).check(request);

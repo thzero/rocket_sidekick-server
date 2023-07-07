@@ -22,6 +22,10 @@ class ChecklistsService extends Service {
 		this._enforceNotNull('ChecklistsService', 'copy', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -51,6 +55,10 @@ class ChecklistsService extends Service {
 		this._enforceNotNull('ChecklistsService', 'delete', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -68,6 +76,10 @@ class ChecklistsService extends Service {
 		this._enforceNotNull('ChecklistsService', 'listing', 'user', user, correlationId);
 		
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -83,6 +95,10 @@ class ChecklistsService extends Service {
 		this._enforceNotNull('ChecklistsService', 'retrieve', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -96,10 +112,10 @@ class ChecklistsService extends Service {
 
 	async update(correlationId, user, checklistUpdate) {
 		try {
-			const validationResponse = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-				
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklist, checklistUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;

@@ -93,12 +93,7 @@ class PartsRepository extends AppMongoRepository {
 			];
 			queryA.push({
 				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'ownerId': 1,
-					'public': 1,
-					'types': 1
+					'_id': 0
 				}
 			});
 	

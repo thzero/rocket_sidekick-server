@@ -23,6 +23,10 @@ class PartsService extends Service {
 		this._enforceNotNull('PartsService', 'copy', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -51,6 +55,10 @@ class PartsService extends Service {
 		this._enforceNotNull('PartsService', 'delete', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -75,26 +83,34 @@ class PartsService extends Service {
 		}
 	}
 
-	async listing(correlationId, params) {
+	async listing(correlationId, user, params) {
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+				
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryParts.listing(correlationId, params);
+			return await this._repositoryParts.listing(correlationId, user.id, params);
 		}
 		catch (err) {
 			return this._error('PartsService', 'listing', null, err, null, null, correlationId);
 		}
 	}
 
-	async retrieve(correlationId, id) {
+	async retrieve(correlationId, user, id) {
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryParts.retrieve(correlationId, id);
+			return await this._repositoryParts.retrieve(correlationId, user.id, id);
 		}
 		catch (err) {
 			return this._error('PartsService', 'retrieve', null, err, null, null, correlationId);
@@ -103,13 +119,17 @@ class PartsService extends Service {
 
 	async update(correlationId, user, partsUpdate) {
 		try {
-			const validationResponse = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-				
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.parts, partsUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
+			
+			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidation(partsUpdate.typeId), partsUpdate);
+			if (this._hasFailed(validationChecklistResponse2))
+				return validationChecklistResponse2;
 	
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, partsUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
@@ -118,7 +138,7 @@ class PartsService extends Service {
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const part = fetchRespositoryResponse.results;
-			if (!part) {
+			if (part) {
 				// TODO: Check admin security...
 				if (part.public)
 					return this._error('PartsService', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
@@ -133,6 +153,13 @@ class PartsService extends Service {
 		catch (err) {
 			return this._error('PartsService', 'update', null, err, null, null, correlationId);
 		}
+	}
+
+	_determinePartValidation(typeId) {
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.parachute)
+			return this._serviceValidation.partsParachute;
+
+		return null;
 	}
 }
 

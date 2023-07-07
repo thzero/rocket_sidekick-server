@@ -23,6 +23,10 @@ class RocketsService extends Service {
 		this._enforceNotNull('RocketsService', 'copy', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -51,6 +55,10 @@ class RocketsService extends Service {
 		this._enforceNotNull('PartsService', 'delete', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -72,6 +80,10 @@ class RocketsService extends Service {
 		this._enforceNotNull('RocketsService', 'listing', 'user', user, correlationId);
 		
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -100,6 +112,10 @@ class RocketsService extends Service {
 		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
 
 		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
@@ -126,10 +142,10 @@ class RocketsService extends Service {
 
 	async update(correlationId, user, rocketsUpdate) {
 		try {
-			const validationResponse = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-				
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
 			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.parts, rocketsUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;

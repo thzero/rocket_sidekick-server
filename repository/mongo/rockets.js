@@ -137,7 +137,7 @@ class RocketsRepository extends AppMongoRepository {
 			const queryA = [ { 
 					$match: {
 						$and: [
-							{ 'id': id.toLowerCase() },
+							{ 'id': id },
 							{ 'ownerId': userId },
 							{ 'deleted': { $ne: true } }
 						]
@@ -168,7 +168,7 @@ class RocketsRepository extends AppMongoRepository {
 			const queryA = [ { 
 					$match: {
 						$and: [
-							{ 'id': id.toLowerCase() },
+							{ 'id': id },
 							{ 'public': true },
 							{ 'deleted': { $ne: true } }
 						]

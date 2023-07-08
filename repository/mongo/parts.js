@@ -111,14 +111,14 @@ class PartsRepository extends AppMongoRepository {
 			const queryA = [ { 
 					$match: {
 						$and: [
-							{ 'id': id.toLowerCase() },
+							{ 'id': id },
 							{ 
 								$or: [
 									{ 'ownerId': userId },
 									{ 'public': { $eq: true } }
 								]
 							},
-							{ 'deleted': { $ne: true } }
+							// { 'deleted': { $ne: true } }
 						]
 					}
 				}

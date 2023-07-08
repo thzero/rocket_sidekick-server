@@ -195,7 +195,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	partsCopyParams = Joi.object({
-		id: this.checklistId,
+		id: this.partId,
 		name: this._extendedName
 	});
 	

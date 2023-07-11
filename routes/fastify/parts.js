@@ -34,6 +34,24 @@ class PartsRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
+		router.post(this._join('/parts/copy'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].copy(request.correlationId, request.user, request.body)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
 		router.get(this._join('/parts/:id'),
 			{
 				preHandler: router.auth([

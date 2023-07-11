@@ -44,7 +44,7 @@ class PartsService extends Service {
 			results.public = false;
 			results.name = params.name;
 	
-			return await this._repositoryParts.updateUser(correlationId, user.id, results);
+			return await this._repositoryParts.update(correlationId, user.id, results);
 		}
 		catch (err) {
 			return this._error('PartsService', 'copy', null, err, null, null, correlationId);
@@ -71,9 +71,9 @@ class PartsService extends Service {
 	
 			const part = fetchRespositoryResponse.results;
 			if (!part) {
-				// TODO: Check admin security...
-				if (part.public)
-					return this._error('PartsService', 'delete', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
+				// TODO: SECURITY: Check admin security...
+				// if (part.public)
+				// 	return this._error('PartsService', 'delete', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
 			}
 	
 			return await this._repositoryParts.delete(correlationId, user.id, id);
@@ -106,7 +106,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
@@ -139,9 +139,9 @@ class PartsService extends Service {
 	
 			const part = fetchRespositoryResponse.results;
 			if (part) {
-				// TODO: Check admin security...
-				if (part.public)
-					return this._error('PartsService', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
+				// TODO: SECURITY: Check admin security...
+				// if (part.public)
+				// 	return this._error('PartsService', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
 	
 				const validResponse = this._checkUpdatedTimestamp(correlationId, partsUpdate, part, 'part');
 				if (this._hasFailed(validResponse))
@@ -156,8 +156,24 @@ class PartsService extends Service {
 	}
 
 	_determinePartValidation(typeId) {
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.altimeter)
+			return this._serviceValidation.partsAltimeter;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteProtector)
+			return this._serviceValidation.partsChuteProtector;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteRelease)
+			return this._serviceValidation.partsChuteRelease;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.deploymentBag)
+			return this._serviceValidation.partsDeploymentBag;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motor)
+			return this._serviceValidation.partsMotor;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motorCase)
+			return this._serviceValidation.partsMotorCase;
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.parachute)
 			return this._serviceValidation.partsParachute;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.streamer)
+			return this._serviceValidation.partsStreamer;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.tracker)
+			return this._serviceValidation.partsTrackere;
 
 		return null;
 	}

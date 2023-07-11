@@ -18,7 +18,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		.trim()
 		.alphanum()
 		.min(2)
-		.max(10);
+		.max(16);
 	
 	// checklistId = this._id.required();
 	checklistId = Joi.string()
@@ -163,30 +163,40 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
 		manufacturerId: this.manufacturersId.required(),
+		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
-		updatedUserId: this._id.allow(null)
+		updatedUserId: this._id.allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null),
 	}).unknown();
 	
-	partsParachute = this.parts.concat(Joi.object({
-		id: this.partId,
-		createdTimestamp: Joi.number(),
-		createdUserId: this._id.allow(null),
-		typeId: this._type.required(),
-		deleted: Joi.boolean().allow(null),
-		deletedTimestamp: Joi.number().allow(null),
-		deletedUserId: this._id.allow(null),
-		description: this._description.allow(null).allow(''),
+	partsAltimeter = this.parts.concat(Joi.object({
+	})).unknown();
+	
+	partsChuteProtector = this.parts.concat(Joi.object({
 		diameter: Joi.number().required(),
-		manufacturerId: this.manufacturersId.required(),
-		name: this._extendedName,
-		ownerId: this.ownerId.allow(null),
-		syncTimestamp: Joi.number().allow(null),
-		updatedTimestamp: Joi.number(),
-		updatedUserId: this._id.allow(null)
-	}));
+	})).unknown();
+	
+	partsChuteRelease = this.parts.concat(Joi.object({
+	})).unknown();
+	
+	partsCopyParams = Joi.object({
+		id: this.partId,
+		name: this._extendedName
+	});
+	
+	partsDeploymentBag = this.parts.concat(Joi.object({
+	})).unknown();
+	
+	partsMotor = this.parts.concat(Joi.object({
+	})).unknown();
+	
+	partsMotorCase = this.parts.concat(Joi.object({
+	})).unknown();
 	
 	partsParams = Joi.object({
 		isPublic: Joi.boolean(),
@@ -194,10 +204,24 @@ class JoiValidationService extends GamerJoiValidationService {
 		type: this._type,
 	});
 	
-	partsCopyParams = Joi.object({
-		id: this.partId,
-		name: this._extendedName
-	});
+	partsParachute = this.parts.concat(Joi.object({
+		diameter: Joi.number().required(),
+		loadMax: Joi.number().allow(null),
+		loadMin: Joi.number().allow(null),
+		thinMill: Joi.boolean().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		loadMaxWeightMeasurementUnitId: this._measurementId.allow(null),
+		loadMaxWeightMeasurementUnitsId: this._measurementId.allow(null),
+		loadMinWeightMeasurementUnitId: this._measurementId.allow(null),
+		loadMinWeightMeasurementUnitsId: this._measurementId.allow(null)
+	}));
+	
+	partsStreamer = this.parts.concat(Joi.object({
+	})).unknown();
+	
+	partsTrackere = this.parts.concat(Joi.object({
+	})).unknown();
 	
 	rocket = Joi.object({
 		id: this.rocketId,

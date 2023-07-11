@@ -156,8 +156,24 @@ class PartsService extends Service {
 	}
 
 	_determinePartValidation(typeId) {
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.altimeter)
+			return this._serviceValidation.partsAltimeter;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteProtector)
+			return this._serviceValidation.partsChuteProtector;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteRelease)
+			return this._serviceValidation.partsChuteRelease;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.deploymentBag)
+			return this._serviceValidation.partsDeploymentBag;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motor)
+			return this._serviceValidation.partsMotor;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motorCase)
+			return this._serviceValidation.partsMotorCase;
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.parachute)
 			return this._serviceValidation.partsParachute;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.streamer)
+			return this._serviceValidation.partsStreamer;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.tracker)
+			return this._serviceValidation.partsTrackere;
 
 		return null;
 	}

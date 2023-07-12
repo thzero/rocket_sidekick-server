@@ -166,6 +166,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
+		public: Joi.boolean().required(),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null),
@@ -178,11 +179,17 @@ class JoiValidationService extends GamerJoiValidationService {
 	})).unknown();
 	
 	partsChuteProtector = this.parts.concat(Joi.object({
-		diameter: Joi.number().required(),
-	})).unknown();
+		diameter: Joi.number().allow(null),
+		dimension: Joi.number().required(),
+		cd: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		dimensionMeasurementUnitId: this._measurementId.allow(null),
+		dimensionMeasurementUnitsId: this._measurementId.allow(null)
+	}));
 	
 	partsChuteRelease = this.parts.concat(Joi.object({
-	})).unknown();
+	}));
 	
 	partsCopyParams = Joi.object({
 		id: this.partId,
@@ -190,7 +197,18 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	partsDeploymentBag = this.parts.concat(Joi.object({
-	})).unknown();
+		diameter: Joi.number().allow(null),
+		length: Joi.number().required(),
+		pilotChute: Joi.boolean().required(),
+		pilotChuteCd: Joi.number().allow(null),
+		pilotChuteDiameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		lengthnMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		pilotChuteDiameterMeasurementUnitId: this._measurementId.allow(null),
+		pilotChuteDiameterMeasurementUnitsId: this._measurementId.allow(null)
+	}));
 	
 	partsMotor = this.parts.concat(Joi.object({
 	})).unknown();

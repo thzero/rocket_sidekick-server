@@ -83,23 +83,6 @@ class PartsService extends Service {
 		}
 	}
 
-	async listing(correlationId, user, params) {
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryParts.listing(correlationId, user.id, params);
-		}
-		catch (err) {
-			return this._error('PartsService', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
 	async retrieve(correlationId, user, id) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -117,6 +100,35 @@ class PartsService extends Service {
 		}
 	}
 
+	async search(correlationId, user, params) {
+		this._enforceNotNull('PartsService', 'search', params, 'params', correlationId);
+		this._enforceNotEmpty('PartsService', 'search', params.typeId, 'params.typeId', correlationId);
+		
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+				
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+			
+			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidationParams(correlationId, params.typeId), params);
+			if (this._hasFailed(validationChecklistResponse2))
+				return validationChecklistResponse2;
+	
+			const response = await this._repositoryParts.search(correlationId, user.id, params);
+
+			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
+			// from the stored measurement unit (which could vary by part) to the user provided search...
+
+			return response;
+		}
+		catch (err) {
+			return this._error('PartsService', 'search', null, err, null, null, correlationId);
+		}
+	}
+
 	async update(correlationId, user, partsUpdate) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -127,7 +139,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 			
-			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidation(partsUpdate.typeId), partsUpdate);
+			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidation(correlationId, partsUpdate.typeId), partsUpdate);
 			if (this._hasFailed(validationChecklistResponse2))
 				return validationChecklistResponse2;
 	
@@ -155,7 +167,7 @@ class PartsService extends Service {
 		}
 	}
 
-	_determinePartValidation(typeId) {
+	_determinePartValidation(correlationId, typeId) {
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.altimeter)
 			return this._serviceValidation.partsAltimeter;
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteProtector)
@@ -174,6 +186,29 @@ class PartsService extends Service {
 			return this._serviceValidation.partsStreamer;
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.tracker)
 			return this._serviceValidation.partsTrackere;
+
+		return null;
+	}
+
+	_determinePartValidationParams(correlationId, typeId) {
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.altimeter)
+			return this._serviceValidation.partsParamsAltimeter;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteProtector)
+			return this._serviceValidation.partsParamsChuteProtector;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.chuteRelease)
+			return this._serviceValidation.partsParamsChuteRelease;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.deploymentBag)
+			return this._serviceValidation.partsParamsDeploymentBag;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motor)
+			return this._serviceValidation.partsParamsMotor;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.motorCase)
+			return this._serviceValidation.partsParamsMotorCase;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.parachute)
+			return this._serviceValidation.partsParamsParachute;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.streamer)
+			return this._serviceValidation.partsParamsStreamer;
+		if (typeId === AppSharedConstants.Rocketry.PartTypes.tracker)
+			return this._serviceValidation.partsParamsTrackere;
 
 		return null;
 	}

@@ -216,12 +216,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsMotorCase = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	partsParams = Joi.object({
-		isPublic: Joi.boolean(),
-		isUser: Joi.boolean(),
-		type: this._type,
-	});
-	
 	partsParachute = this.parts.concat(Joi.object({
 		diameter: Joi.number().required(),
 		loadMax: Joi.number().allow(null),
@@ -233,6 +227,73 @@ class JoiValidationService extends GamerJoiValidationService {
 		loadMaxWeightMeasurementUnitsId: this._measurementId.allow(null),
 		loadMinWeightMeasurementUnitId: this._measurementId.allow(null),
 		loadMinWeightMeasurementUnitsId: this._measurementId.allow(null)
+	}));
+	
+	partsParams = Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		dimension: Joi.number().allow(null),
+		dimensionMeasurementUnitId: this._measurementId.allow(null),
+		dimensionMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		length: Joi.number().allow(null),
+		name: this._extendedName.allow('').allow(null),
+		pilotChute: Joi.boolean().allow(null),
+		public: Joi.boolean().allow(null),
+		thinMill: Joi.boolean().allow(null),
+		typeId: this._type,
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
+	
+	partsParamsAltimeter = this.partsParams.concat(Joi.object({
+	}));
+	
+	partsParamsChuteProtector = this.partsParams.concat(Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		dimension: Joi.number().allow(null),
+		dimensionMeasurementUnitId: this._measurementId.allow(null),
+		dimensionMeasurementUnitsId: this._measurementId.allow(null)
+	}));
+	
+	partsParamsChuteRelease = this.partsParams.concat(Joi.object({
+	}));
+	
+	partsParamsDeploymentBag = this.partsParams.concat(Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null)
+	}));
+	
+	partsParamsMotor = this.partsParams.concat(Joi.object({
+	}));
+	
+	partsParamsMotorCase = this.partsParams.concat(Joi.object({
+	}));
+	
+	partsParamsParachute = this.partsParams.concat(Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		thinMill: Joi.boolean().allow(null)
+	}));
+	
+	partsParamsStreamer = this.partsParams.concat(Joi.object({
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null)
+	}));
+	
+	partsParamsTracker = this.partsParams.concat(Joi.object({
 	}));
 	
 	partsStreamer = this.parts.concat(Joi.object({

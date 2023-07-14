@@ -72,38 +72,13 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
-	async listing(correlationId, userId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 
-						$or: [
-							{ 'ownerId': userId },
-							{ 'public': { $eq: true } }
-						]
-					},
-					{ 'deleted': { $ne: true } }
-				]
-			};
-	
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0
-				}
-			});
-	
-			const collection = await this._getCollectionParts(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('PartsRepository', 'listing', null, err, null, null, correlationId);
-		}
+	async isPublic(correlationId, part) {
+		const collection = await this._getCollectionParts(correlationId);
+
+		const results = await this._findOne(correlationId, collection, { $and: [ { 'id': part.id }, { $expr: { $ne: [ 'public', true ] } }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+		if (results)
+			return this._error('PartsRepository', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
+		return this._success(correlationId);
 	}
 
 	async retrieve(correlationId, userId, id) {
@@ -142,13 +117,57 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
-	async isPublic(correlationId, part) {
-		const collection = await this._getCollectionParts(correlationId);
+	async search(correlationId, userId, params) {
+		try {
+			const where = [];
+			
+			if (params.public !== null)
+				where.push({ 'public': params.public });
+			
+			if (!String.isNullOrEmpty(params.name))
+				where.push({ 'name': params.name });
+			
+			if (params.manufacturers && params.manufacturers.length > 0) {
+				const arr = [];
+				params.manufacturers.forEach(element => {
+					arr.push({ 'manufacturerId': element });
+				});
+				where.push({ $or: arr});
+			}
 
-		const results = await this._findOne(correlationId, collection, { $and: [ { 'id': part.id }, { $expr: { $ne: [ 'public', true ] } }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-		if (results)
-			return this._error('PartsRepository', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
-		return this._success(correlationId);
+			this._partsFiltering(correlationId, params, where);
+
+			const defaultFilter = { 
+				$and: [
+					{ 
+						$or: [
+							{ 'ownerId': userId },
+							{ 'public': { $eq: true } }
+						]
+					},
+					{ 'deleted': { $ne: true } },
+					...where
+				],
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const collection = await this._getCollectionParts(correlationId);
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'search', null, err, null, null, correlationId);
+		}
 	}
 
 	async update(correlationId, userId, part) {
@@ -172,6 +191,42 @@ class PartsRepository extends AppMongoRepository {
 		finally {
 			await this._transactionEnd(correlationId, session);
 		}
+	}
+
+	_partsFiltering(correlationId, params, where) {
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.altimeter) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.chuteProtector) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.chuteRelease) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.deploymentBag) {
+			if (params.pilotChute)
+				where.push({ 'pilotChute': params.pilotChute });
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.motor) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.motorCase) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.parachute) {
+			if (params.thinMill)
+				where.push({ 'thinMill': params.thinMill });
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.streamer) {
+			return;
+		}
+		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.tracker) {
+			return;
+		}
+
+		return null;
 	}
 }
 

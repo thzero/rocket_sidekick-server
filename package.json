@@ -37,7 +37,7 @@
     "@thzero/library_server_firebase": "^0.17.4",
     "@thzero/library_server_logger_pino": "^0.17.3",
     "@thzero/library_server_repository_mongo": "^0.17.6",
-    "@thzero/library_server_validation_joi": "^0.17.4",
+    "@thzero/library_server_validation_joi": "^0.17.5",
     "cbor-x": "^1.5.3",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.0.1",

@@ -41,7 +41,7 @@
     "cbor-x": "^1.5.3",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.0.1",
-    "rocket_sidekick_common": "^0.0.20",
+    "rocket_sidekick_common": "^0.0.21",
     "snappyjs": "^0.7.0"
   },
   "devDependencies": {

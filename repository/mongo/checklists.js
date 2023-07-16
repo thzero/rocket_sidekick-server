@@ -84,7 +84,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			});
 
 			const collection = await this._getCollectionChecklists(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {

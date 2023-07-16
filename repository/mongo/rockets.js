@@ -91,7 +91,7 @@ class RocketsRepository extends AppMongoRepository {
 			});
 	
 			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
@@ -124,7 +124,7 @@ class RocketsRepository extends AppMongoRepository {
 			});
 	
 			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {

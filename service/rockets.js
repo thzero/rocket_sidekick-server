@@ -120,7 +120,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.retrieveUser(correlationId, user.id, id);
+			return await this._repositoryRockets.retrieve(correlationId, user.id, id);
 		}
 		catch (err) {
 			return this._error('RocketsService', 'retrieve', null, err, null, null, correlationId);

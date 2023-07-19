@@ -45,7 +45,51 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 	}
 
-	async listing(correlationId, userId, params) {
+	async retrieve(correlationId, userId, id) {
+		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
+
+		try {
+			const queryA = [ { 
+					$match: {
+						$or: [
+							{
+								$and: [
+									{ 'id': id },
+									{ 'ownerId': userId },
+									{ 'deleted': { $ne: true } }
+								]
+							},
+							{
+								$and: [
+									{ 'id': id },
+									{ 'isDefault': true },
+									{ 'deleted': { $ne: true } }
+								]
+							}
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const collection = await this._getCollectionChecklists(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length > 0)
+				return this._successResponse(results[0], correlationId);
+				
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async search(correlationId, userId, params) {
 		try {
 			const defaultFilter = { 
 				$and: [
@@ -88,51 +132,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
-			return this._error('ChecklistsRepository', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
-	async retrieve(correlationId, userId, id) {
-		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
-
-		try {
-			const queryA = [ { 
-					$match: {
-						$or: [
-							{
-								$and: [
-									{ 'id': id },
-									{ 'ownerId': userId },
-									{ 'deleted': { $ne: true } }
-								]
-							},
-							{
-								$and: [
-									{ 'id': id },
-									{ 'isDefault': true },
-									{ 'deleted': { $ne: true } }
-								]
-							}
-						]
-					}
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0
-				}
-			});
-	
-			const collection = await this._getCollectionChecklists(correlationId);
-			let results = await this._aggregate(correlationId, collection, queryA);
-			results = await results.toArray();
-			if (results.length > 0)
-				return this._successResponse(results[0], correlationId);
-				
-			return this._success(correlationId);
-		}
-		catch (err) {
-			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
+			return this._error('ChecklistsRepository', 'search', null, err, null, null, correlationId);
 		}
 	}
 

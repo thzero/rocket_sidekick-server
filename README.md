@@ -98,7 +98,7 @@ Google Firebase (https://firebase.google.com) provides the social based authenti
             "origin": "*"
         },
         "db": {
-            "atlas": {
+            "mongo": {
                 "connection": "<mongo connection string>",
                 "name": "<environment name>"
             }

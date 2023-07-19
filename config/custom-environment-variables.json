@@ -11,7 +11,7 @@
 			"origin": "ORIGIN"
 		},
 		"db": {
-			"atlas" : {
+			"mongo" : {
 				"connection": "ALTAS_DB_CONNECTION",
 				"name": "ALTAS_DB_NAME"
 			}

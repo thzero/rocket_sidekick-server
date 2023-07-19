@@ -30,6 +30,28 @@ class AppMongoRepository extends MongoRepository {
 	async _getCollectionUsers(correlationId) {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionUsers(correlationId));
 	}
+
+	_searchFilterText(correlationId, query, name, index) {
+		const filterText = super._searchFilterText(correlationId, query, name, index);
+		if (filterText)
+			return filterText;
+
+		index = index ?? 'default';
+
+		if ('atlas' !== (this._searchFilterTextType ?? '').toLowerCase())
+			return null;
+
+		return {
+			$search: {
+				index: index,
+				wildcard: {
+					query: (!String.isNullOrEmpty(query) ? query : '') + '*' , 
+					path: name, 
+					allowAnalyzedField: true
+				}
+			}
+		};
+	}
 }
 
 export default AppMongoRepository;

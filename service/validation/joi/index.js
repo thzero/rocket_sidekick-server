@@ -310,10 +310,32 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
+		cg: Joi.number().allow(null),
+		cgFrom: this.partId.allow(null),
+		cgMeasurementUnitId: this._measurementId.allow(null),
+		cgMeasurementUnitsId: this._measurementId.allow(null),
+		cp: Joi.number().allow(null),
+		cpFrom: this.partId.allow(null),
+		cpMeasurementUnitId: this._measurementId.allow(null),
+		cpMeasurementUnitsId: this._measurementId.allow(null),
 		description: this._description.allow(null).allow(''),
+		diameterMajor: Joi.number().allow(null),
+		diameterMajorMeasurementUnitId: this._measurementId.allow(null),
+		diameterMajorMeasurementUnitsId: this._measurementId.allow(null),
+		diameterMinor: Joi.number().allow(null),
+		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
+		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.required(),
+		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -324,6 +346,16 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	rocketsParams = Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		length: Joi.number().allow(null),
+		name: this._extendedName.allow('').allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
 	
 	syncFrom = Joi.object({

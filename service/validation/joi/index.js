@@ -299,8 +299,30 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsStreamer = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	partsTrackere = this.parts.concat(Joi.object({
+	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
+
+	rocketStage = Joi.object({
+		id: this.rocketId,
+		cg: Joi.number().allow(null),
+		cgFrom: this.partId.allow(null),
+		cgMeasurementUnitId: this._measurementId.allow(null),
+		cgMeasurementUnitsId: this._measurementId.allow(null),
+		cp: Joi.number().allow(null),
+		cpFrom: this.partId.allow(null),
+		cpMeasurementUnitId: this._measurementId.allow(null),
+		cpMeasurementUnitsId: this._measurementId.allow(null),
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterrMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		notes: this._description.allow(null).allow(''),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
 	
 	rocket = Joi.object({
 		id: this.rocketId,
@@ -331,7 +353,9 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerId: this.manufacturersId.required(),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
+		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
+		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),

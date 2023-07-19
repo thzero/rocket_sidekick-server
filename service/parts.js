@@ -185,7 +185,7 @@ class PartsService extends Service {
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.streamer)
 			return this._serviceValidation.partsStreamer;
 		if (typeId === AppSharedConstants.Rocketry.PartTypes.tracker)
-			return this._serviceValidation.partsTrackere;
+			return this._serviceValidation.partsTracker;
 
 		return null;
 	}

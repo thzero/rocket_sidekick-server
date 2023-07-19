@@ -37,6 +37,7 @@ class ManufacturersRepository extends AppMongoRepository {
 					'_id': 0,
 					'id': 1,
 					'tcId': 1,
+					'isDefault': 1,
 					'name': 1,
 					'ownerId': 1,
 					'public': 1,

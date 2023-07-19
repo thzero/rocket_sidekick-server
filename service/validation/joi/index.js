@@ -244,14 +244,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
-		pilotChute: Joi.boolean().allow(null),
-		public: Joi.boolean().allow(null),
-		thinMill: Joi.boolean().allow(null),
+		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
-	});
+	}).unknown();
 	
 	partsParamsAltimeter = this.partsParams.concat(Joi.object({
 	}));

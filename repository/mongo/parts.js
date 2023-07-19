@@ -121,8 +121,8 @@ class PartsRepository extends AppMongoRepository {
 		try {
 			const where = [];
 			
-			if (params.public !== null)
-				where.push({ 'public': params.public });
+			if (params.public !== null && params.public === 3)
+				where.push({ 'public': true });
 			
 			if (!String.isNullOrEmpty(params.name))
 				where.push({ 'name': params.name });
@@ -153,7 +153,6 @@ class PartsRepository extends AppMongoRepository {
 				],
 			};
 	
-			const queryF = defaultFilter;
 			const queryA = [ {
 					$match: defaultFilter
 				}

@@ -124,10 +124,26 @@ class RocketsRepository extends AppMongoRepository {
 
 	async search(correlationId, userId, params) {
 		try {
+			const queryA = [
+				// {
+					// $search: {
+					// 	index: "default",
+					// 	wildcard: {
+					// 		query: params.name + '*', 
+					// 		path: "name", 
+					// 		allowAnalyzedField: true
+					// 	}
+					// }
+				//}, {
+			];
+
+			if (!String.isNullOrEmpty(params.name)) {
+				queryA.push(
+					this._searchFilterText(correlationId, params.name, 'name'),
+				);
+			}
+
 			const where = [];
-			
-			// if (!String.isNullOrEmpty(params.name))
-			// 	where.push({ 'name': params.name });
 			
 			if (params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
@@ -140,25 +156,6 @@ class RocketsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 
-				/*
-				text index search
-{
-  "$search: {
-      "text": {
-        "path": "name",
-        "query": "Polaris"
-      }
-    }
-}*/
-				/*
-				atlas search
-{
-   $search: {
-      index: "default",
-      wildcard: {query: "pol*", path: "name", 
-                        allowAnalyzedField: true,},
-    }
-}*/
 			const defaultFilter = { 
 				$and: [
 					{ 'ownerId': userId },
@@ -166,22 +163,10 @@ class RocketsRepository extends AppMongoRepository {
 					...where
 				]
 			};
-	
-			const queryA = [
-				// {
-					// $search: {
-					// 	index: "default",
-					// 	wildcard: {
-					// 		query: params.name + '*', 
-					// 		path: "name", 
-					// 		allowAnalyzedField: true
-					// 	}
-					// }
-				//}, {
-				this._searchFilterText(correlationId, params.name, 'name'), {
-					$match: defaultFilter
-				}
-			];
+			
+			queryA.push({
+				$match: defaultFilter
+			});
 			queryA.push({
 				$project: { 
 					'_id': 0,

@@ -145,7 +145,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.parts, rocketsUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rockets, rocketsUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	

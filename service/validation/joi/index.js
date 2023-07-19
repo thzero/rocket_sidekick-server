@@ -92,10 +92,13 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	checklistsParams = Joi.object({
-		isCompleted: Joi.boolean(),
-		isDefault: Joi.boolean(),
-		isInProgress: Joi.boolean(),
-		isUser: Joi.boolean()
+		isCompleted: Joi.boolean().allow(null),
+		isDefault: Joi.boolean().allow(null),
+		isInProgress: Joi.boolean().allow(null),
+		name: this._extendedName.allow(null).allow(''),
+		shared: Joi.boolean().allow(null),
+		yours: Joi.boolean().allow(null),
+		isUser: Joi.boolean().allow(null)
 	});
 
 	contentLicenses() {

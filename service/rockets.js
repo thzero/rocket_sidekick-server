@@ -1,5 +1,4 @@
 import Constants from '../constants.js';
-// import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import Utility from '@thzero/library_common/utility/index.js';
 
@@ -76,38 +75,6 @@ class RocketsService extends Service {
 		}
 	}
 
-	async listing(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'listing', 'user', user, correlationId);
-		
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryRockets.listing(correlationId, user.id, params);
-		}
-		catch (err) {
-			return this._error('RocketsService', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
-	async listingGallery(correlationId, params) {
-		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryRockets.listingGallery(correlationId, params);
-		}
-		catch (err) {
-			return this._error('RocketsService', 'listingGallery', null, err, null, null, correlationId);
-		}
-	}
-
 	async retrieve(correlationId, user, id) {
 		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
 
@@ -140,13 +107,45 @@ class RocketsService extends Service {
 		}
 	}
 
+	async search(correlationId, user, params) {
+		this._enforceNotNull('RocketsService', 'search', 'user', user, correlationId);
+		
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryRockets.search(correlationId, user.id, params);
+		}
+		catch (err) {
+			return this._error('RocketsService', 'search', null, err, null, null, correlationId);
+		}
+	}
+
+	async searchGallery(correlationId, params) {
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryRockets.searchGallery(correlationId, params);
+		}
+		catch (err) {
+			return this._error('RocketsService', 'searchGallery', null, err, null, null, correlationId);
+		}
+	}
+
 	async update(correlationId, user, rocketsUpdate) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.parts, rocketsUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rockets, rocketsUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	

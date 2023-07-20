@@ -1,11 +1,11 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.1.12",
+  "version": "0.1.14",
   "version_major": 0,
   "version_minor": 1,
-  "version_patch": 12,
-  "version_date": "07/07/2023",
+  "version_patch": 14,
+  "version_date": "07/19/2023",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
   "license": "MIT",
@@ -26,8 +26,7 @@
     "start": "node -nolazy --trace-uncaught index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "./node_modules/.bin/eslint .",
-    "cli-id": "library-cli --generate",
-    "cli-update": "library-cli --updateversion --pi"
+    "id": "library-cli --nano"
   },
   "dependencies": {
     "@thzero/library_common": "^0.17.8",
@@ -36,12 +35,12 @@
     "@thzero/library_server_fastify": "^0.17.12",
     "@thzero/library_server_firebase": "^0.17.4",
     "@thzero/library_server_logger_pino": "^0.17.3",
-    "@thzero/library_server_repository_mongo": "^0.17.6",
+    "@thzero/library_server_repository_mongo": "^0.17.8",
     "@thzero/library_server_validation_joi": "^0.17.5",
     "cbor-x": "^1.5.3",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.0.1",
-    "rocket_sidekick_common": "^0.0.21",
+    "rocket_sidekick_common": "^0.0.27",
     "snappyjs": "^0.7.0"
   },
   "devDependencies": {

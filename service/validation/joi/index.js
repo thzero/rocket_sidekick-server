@@ -92,10 +92,13 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	checklistsParams = Joi.object({
-		isCompleted: Joi.boolean(),
-		isDefault: Joi.boolean(),
-		isInProgress: Joi.boolean(),
-		isUser: Joi.boolean()
+		isCompleted: Joi.boolean().allow(null),
+		isDefault: Joi.boolean().allow(null),
+		isInProgress: Joi.boolean().allow(null),
+		name: this._extendedName.allow(null).allow(''),
+		shared: Joi.boolean().allow(null),
+		yours: Joi.boolean().allow(null),
+		isUser: Joi.boolean().allow(null)
 	});
 
 	contentLicenses() {
@@ -241,14 +244,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
-		pilotChute: Joi.boolean().allow(null),
-		public: Joi.boolean().allow(null),
-		thinMill: Joi.boolean().allow(null),
+		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
-	});
+	}).unknown();
 	
 	partsParamsAltimeter = this.partsParams.concat(Joi.object({
 	}));
@@ -299,8 +300,30 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsStreamer = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	partsTrackere = this.parts.concat(Joi.object({
+	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
+
+	rocketStage = Joi.object({
+		id: this.rocketId,
+		cg: Joi.number().allow(null),
+		cgFrom: this.partId.allow(null),
+		cgMeasurementUnitId: this._measurementId.allow(null),
+		cgMeasurementUnitsId: this._measurementId.allow(null),
+		cp: Joi.number().allow(null),
+		cpFrom: this.partId.allow(null),
+		cpMeasurementUnitId: this._measurementId.allow(null),
+		cpMeasurementUnitsId: this._measurementId.allow(null),
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterrMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		notes: this._description.allow(null).allow(''),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
 	
 	rocket = Joi.object({
 		id: this.rocketId,
@@ -310,10 +333,34 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
+		cg: Joi.number().allow(null),
+		cgFrom: this.partId.allow(null),
+		cgMeasurementUnitId: this._measurementId.allow(null),
+		cgMeasurementUnitsId: this._measurementId.allow(null),
+		cp: Joi.number().allow(null),
+		cpFrom: this.partId.allow(null),
+		cpMeasurementUnitId: this._measurementId.allow(null),
+		cpMeasurementUnitsId: this._measurementId.allow(null),
 		description: this._description.allow(null).allow(''),
+		diameterMajor: Joi.number().allow(null),
+		diameterMajorMeasurementUnitId: this._measurementId.allow(null),
+		diameterMajorMeasurementUnitsId: this._measurementId.allow(null),
+		diameterMinor: Joi.number().allow(null),
+		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
+		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.required(),
+		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
+		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
+		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -324,6 +371,16 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	rocketsParams = Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		length: Joi.number().allow(null),
+		name: this._extendedName.allow('').allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
 	
 	syncFrom = Joi.object({

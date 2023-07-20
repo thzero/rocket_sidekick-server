@@ -60,7 +60,7 @@ class RocketsRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.post(this._join('/rockets/listing'),
+		router.post(this._join('/rockets/search'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -73,15 +73,15 @@ class RocketsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].listing(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].search(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.post(this._join('/rockets/listing/gallery'),
+		router.post(this._join('/rockets/search/gallery'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].listingGallery(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[Constants.InjectorKeys.SERVICE_ROCKETS].searchGallery(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

@@ -45,53 +45,6 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 	}
 
-	async listing(correlationId, userId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 
-						$or: [
-							{ 'ownerId': userId },
-							{ 'isDefault': true }
-						]
-					},
-					{ 'deleted': { $ne: true } }
-				]
-			};
-
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'description': 1,
-					'typeId': 1,
-					'isDefault': 1,
-					'launchTypeId': 1,
-					'statusId': 1,
-					'ownerId': 1
-				}
-			});
-			queryA.push({
-				$sort: {
-					'ownerId': -1
-				}
-			});
-
-			const collection = await this._getCollectionChecklists(correlationId);
-			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('ChecklistsRepository', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
 	async retrieve(correlationId, userId, id) {
 		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
 
@@ -133,6 +86,63 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async search(correlationId, userId, params) {
+		try {
+			const queryA = [];
+
+			if (!String.isNullOrEmpty(params.name)) {
+				queryA.push(
+					this._searchFilterText(correlationId, params.name, 'name'),
+				);
+			}
+
+			const defaultFilterOwner = [];
+
+			if (params.yours)
+				defaultFilterOwner.push({ 'ownerId': userId });
+			if (params.isDefault)
+				defaultFilterOwner.push({ 'isDefault': true });
+			if (params.shared)
+				defaultFilterOwner.push({ 'shared': true });
+				
+			const defaultFilterAnd = [
+				{ 
+					$or: defaultFilterOwner
+				},
+				{ 'deleted': { $ne: true } }
+			];
+
+			const defaultFilter = { 
+				$and: defaultFilterAnd
+			};
+			
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'name': 1,
+					'description': 1,
+					'typeId': 1,
+					'isDefault': 1,
+					'launchTypeId': 1,
+					'statusId': 1,
+					'ownerId': 1
+				}
+			});
+
+			const collection = await this._getCollectionChecklists(correlationId);
+			// const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'search', null, err, null, null, correlationId);
 		}
 	}
 

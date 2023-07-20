@@ -2,7 +2,9 @@ import ApiCollectionsService from '@thzero/library_server_repository_mongo/colle
 
 class AppCollectionsService extends ApiCollectionsService {
 	getClientName() {
-		return AppCollectionsService.Client;
+		// return AppCollectionsService.Client;
+		const clientName = this._config.get('db.default');
+		return clientName;
 	}
 	
 	getCollectionByName(correlationId, collectionName) {
@@ -47,7 +49,7 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionUsers);
 	}
 
-	static Client = 'atlas';
+	static Client = 'mongo';
 	static Database = 'rocketSidekick';
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';

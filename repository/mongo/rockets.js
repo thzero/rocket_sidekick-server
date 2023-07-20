@@ -9,7 +9,6 @@ class RocketsRepository extends AppMongoRepository {
 		super();
 		
 		this._ownerId = null;
-
 	}
 
 	async init(injector) {
@@ -58,77 +57,6 @@ class RocketsRepository extends AppMongoRepository {
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
-		}
-	}
-
-	async listing(correlationId, userId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 
-						$or: [
-							{ 'ownerId': userId },
-							{ 'isDefault': true },
-						]
-					},
-					{ 'deleted': { $ne: true } }
-				]
-			};
-	
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'coverUrl': 1,
-					'typeId': 1
-				}
-			});
-	
-			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('RocketsRepository', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
-	async listingGallery(correlationId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 'public': true },
-					{ 'deleted': { $ne: true } }
-				]
-			};
-	
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'coverUrl': 1,
-					'typeId': 1
-				}
-			});
-	
-			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('RocketsRepository', 'listingGallery', null, err, null, null, correlationId);
 		}
 	}
 	
@@ -191,6 +119,113 @@ class RocketsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('RocketsRepository', 'retrieveGallery', null, err, null, null, correlationId);
+		}
+	}
+
+	async search(correlationId, userId, params) {
+		try {
+			const queryA = [
+				// {
+					// $search: {
+					// 	index: "default",
+					// 	wildcard: {
+					// 		query: params.name + '*', 
+					// 		path: "name", 
+					// 		allowAnalyzedField: true
+					// 	}
+					// }
+				//}, {
+			];
+
+			if (!String.isNullOrEmpty(params.name)) {
+				queryA.push(
+					this._searchFilterText(correlationId, params.name, 'name'),
+				);
+			}
+
+			const where = [];
+			
+			if (params.manufacturers && params.manufacturers.length > 0) {
+				const arr = [];
+				params.manufacturers.forEach(element => {
+					arr.push({ 'manufacturerId': element });
+				});
+				where.push({ $or: arr});
+			}
+			
+			if (!String.isNullOrEmpty(params.manufacturerStockId))
+				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+
+			const defaultFilter = { 
+				$and: [
+					{ 'ownerId': userId },
+					{ 'deleted': { $ne: true } },
+					...where
+				]
+			};
+			
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'name': 1,
+					'description': 1,
+					'coverUrl': 1,
+					'diameterMajor': 1,
+					'length': 1,
+					'ownerId': 1,
+					'typeId': 1,
+					'weight': 1
+				}
+			});
+	
+			const collection = await this._getCollectionRockets(correlationId);
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketsRepository', 'search', null, err, null, null, correlationId);
+		}
+	}
+
+	async searchGallery(correlationId, params) {
+		try {
+			const defaultFilter = { 
+				$and: [
+					{ 'public': true },
+					{ 'deleted': { $ne: true } }
+				]
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'name': 1,
+					'description': 1,
+					'coverUrl': 1,
+					'diameterMajor': 1,
+					'length': 1,
+					'ownerId': 1,
+					'typeId': 1,
+					'weight': 1
+				}
+			});
+	
+			const collection = await this._getCollectionRockets(correlationId);
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketsRepository', 'searchGallery', null, err, null, null, correlationId);
 		}
 	}
 

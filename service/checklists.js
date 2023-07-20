@@ -72,25 +72,6 @@ class ChecklistsService extends Service {
 		}
 	}
 
-	async listing(correlationId, user, params) {
-		this._enforceNotNull('ChecklistsService', 'listing', 'user', user, correlationId);
-		
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryChecklists.listing(correlationId, user.id, params);
-		}
-		catch (err) {
-			return this._error('ChecklistsService', 'listing', null, err, null, null, correlationId);
-		}
-	}
-
 	async retrieve(correlationId, user, id) {
 		this._enforceNotNull('ChecklistsService', 'retrieve', 'user', user, correlationId);
 
@@ -107,6 +88,25 @@ class ChecklistsService extends Service {
 		}
 		catch (err) {
 			return this._error('ChecklistsService', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async search(correlationId, user, params) {
+		this._enforceNotNull('ChecklistsService', 'search', 'user', user, correlationId);
+		
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistsParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+	
+			return await this._repositoryChecklists.search(correlationId, user.id, params);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'search', null, err, null, null, correlationId);
 		}
 	}
 

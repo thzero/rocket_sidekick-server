@@ -61,7 +61,8 @@ class SyncMongoRepository extends AppMongoRepository {
 			$project: { '_id': 0 }
 		});
 
-		response.results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+		// response.results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+		response.results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
 		return response;
 	}
 

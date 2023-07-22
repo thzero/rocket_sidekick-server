@@ -83,6 +83,10 @@ class PartsService extends Service {
 		}
 	}
 
+	async refreshSearchName(correlationId) {
+		return await this._repositoryParts.refreshSearchName(correlationId);
+	}
+
 	async retrieve(correlationId, user, id) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

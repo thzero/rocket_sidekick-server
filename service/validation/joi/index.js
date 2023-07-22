@@ -79,6 +79,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ownerId: this.ownerId.allow(null),
 		rocketId: this.rocketId.allow(null),
 		rocketSetupId: this.rocketId.allow(null),
+		searchName: this._extendedName.allow(null).allow(''),
 		statusId: this._type,
 		steps: Joi.array().items(Joi.any()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
@@ -170,6 +171,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
+		searchName: this._extendedName.allow(null).allow(''),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null),
@@ -305,6 +307,7 @@ class JoiValidationService extends GamerJoiValidationService {
 
 	rocketStage = Joi.object({
 		id: this.rocketId,
+		rocketId: this.rocketId,
 		cg: Joi.number().allow(null),
 		cgFrom: this.partId.allow(null),
 		cgMeasurementUnitId: this._measurementId.allow(null),
@@ -325,6 +328,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
 	
+	rocketAlbum = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
+	
 	rocket = Joi.object({
 		id: this.rocketId,
 		createdTimestamp: Joi.number(),
@@ -333,10 +342,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
+		albums: Joi.array().items(this.rocketAlbum).allow(null),
+		buildLogUrl: this._url.allow(null),
 		cg: Joi.number().allow(null),
 		cgFrom: this.partId.allow(null),
 		cgMeasurementUnitId: this._measurementId.allow(null),
 		cgMeasurementUnitsId: this._measurementId.allow(null),
+		coverUrl: this._url.allow(null),
 		cp: Joi.number().allow(null),
 		cpFrom: this.partId.allow(null),
 		cpMeasurementUnitId: this._measurementId.allow(null),
@@ -356,8 +368,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName,
 		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
+		public: Joi.boolean().allow(null),
+		searchName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		videos: Joi.array().items(this.rocketAlbum).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null),

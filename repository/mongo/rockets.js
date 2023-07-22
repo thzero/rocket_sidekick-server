@@ -59,6 +59,10 @@ class RocketsRepository extends AppMongoRepository {
 			await this._transactionEnd(correlationId, session);
 		}
 	}
+
+	async refreshSearchName(correlationId) {
+		return await this._refreshSearchName(correlationId, await this._getCollectionRockets(correlationId));
+	}
 	
 	async retrieve(correlationId, userId, id) {
 		try {
@@ -124,22 +128,11 @@ class RocketsRepository extends AppMongoRepository {
 
 	async search(correlationId, userId, params) {
 		try {
-			const queryA = [
-				// {
-					// $search: {
-					// 	index: "default",
-					// 	wildcard: {
-					// 		query: params.name + '*', 
-					// 		path: "name", 
-					// 		allowAnalyzedField: true
-					// 	}
-					// }
-				//}, {
-			];
+			const queryA = [];
 
 			if (!String.isNullOrEmpty(params.name)) {
 				queryA.push(
-					this._searchFilterText(correlationId, params.name, 'name'),
+					this._searchFilterText(correlationId, params.name),
 				);
 			}
 
@@ -238,6 +231,7 @@ class RocketsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			rocket.ownerId = userId;
+			rocket.searchName = this._createEdgeNGrams(correlationId, rocket.name);
 			await this._update(correlationId, collection, userId, rocket.id, rocket);
 			response.results = rocket;
 

@@ -72,6 +72,10 @@ class ChecklistsService extends Service {
 		}
 	}
 
+	async refreshSearchName(correlationId) {
+		return await this._repositoryChecklists.refreshSearchName(correlationId);
+	}
+
 	async retrieve(correlationId, user, id) {
 		this._enforceNotNull('ChecklistsService', 'retrieve', 'user', user, correlationId);
 

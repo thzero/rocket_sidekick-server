@@ -318,7 +318,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		cpMeasurementUnitsId: this._measurementId.allow(null),
 		diameter: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
-		diameterrMeasurementUnitsId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		length: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),

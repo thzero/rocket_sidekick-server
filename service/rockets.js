@@ -75,6 +75,10 @@ class RocketsService extends Service {
 		}
 	}
 
+	async refreshSearchName(correlationId) {
+		return await this._repositoryRockets.refreshSearchName(correlationId);
+	}
+
 	async retrieve(correlationId, user, id) {
 		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
 
@@ -145,7 +149,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rockets, rocketsUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocket, rocketsUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	

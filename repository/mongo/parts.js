@@ -81,6 +81,10 @@ class PartsRepository extends AppMongoRepository {
 		return this._success(correlationId);
 	}
 
+	async refreshSearchName(correlationId) {
+		return await this._refreshSearchName(correlationId, await this._getCollectionParts(correlationId));
+	}
+
 	async retrieve(correlationId, userId, id) {
 		try {
 			const queryA = [ { 
@@ -119,13 +123,20 @@ class PartsRepository extends AppMongoRepository {
 
 	async search(correlationId, userId, params) {
 		try {
+			const queryA = [];
+
+			if (!String.isNullOrEmpty(params.name)) {
+				queryA.push(
+					this._searchFilterText(correlationId, params.name),
+				);
+			}
+
 			const where = [];
+			
+			where.push({ 'typeId': params.typeId });
 			
 			if (params.public !== null && params.public === 3)
 				where.push({ 'public': true });
-			
-			if (!String.isNullOrEmpty(params.name))
-				where.push({ 'name': params.name });
 			
 			if (params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
@@ -153,10 +164,9 @@ class PartsRepository extends AppMongoRepository {
 				],
 			};
 	
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
+			queryA.push({
+				$match: defaultFilter
+			});
 			queryA.push({
 				$project: { 
 					'_id': 0
@@ -164,7 +174,6 @@ class PartsRepository extends AppMongoRepository {
 			});
 	
 			const collection = await this._getCollectionParts(correlationId);
-			// const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
@@ -182,6 +191,7 @@ class PartsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			part.ownerId = userId;
+			part.searchName = this._createEdgeNGrams(correlationId, part.name);
 			await this._update(correlationId, collection, userId, part.id, part);
 			response.results = part;
 

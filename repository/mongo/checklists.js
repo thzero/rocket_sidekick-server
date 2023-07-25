@@ -45,6 +45,10 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 	}
 
+	async refreshSearchName(correlationId) {
+		return await this._refreshSearchName(correlationId, await this._getCollectionChecklists(correlationId));
+	}
+
 	async retrieve(correlationId, userId, id) {
 		this._enforceNotEmpty('ChecklistsRepository', 'retrieveShared', id, 'ownerId', correlationId);
 
@@ -95,7 +99,7 @@ class ChecklistsRepository extends AppMongoRepository {
 
 			if (!String.isNullOrEmpty(params.name)) {
 				queryA.push(
-					this._searchFilterText(correlationId, params.name, 'name'),
+					this._searchFilterText(correlationId, params.name),
 				);
 			}
 
@@ -156,6 +160,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			checklist.ownerId = userId;
+			checklist.searchName = this._createEdgeNGrams(correlationId, checklist.name);
 			await this._update(correlationId, collection, userId, checklist.id, checklist);
 			response.results = checklist;
 

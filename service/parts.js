@@ -120,16 +120,38 @@ class PartsService extends Service {
 			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidationParams(correlationId, params.typeId), params);
 			if (this._hasFailed(validationChecklistResponse2))
 				return validationChecklistResponse2;
-	
-			const response = await this._repositoryParts.search(correlationId, user.id, params);
 
 			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
 			// from the stored measurement unit (which could vary by part) to the user provided search...
-
+	
+			const response = await this._repositoryParts.search(correlationId, user.id, params);
 			return response;
 		}
 		catch (err) {
 			return this._error('PartsService', 'search', null, err, null, null, correlationId);
+		}
+	}
+
+	async searchRecovery(correlationId, user, params) {
+		this._enforceNotNull('PartsService', 'searchRecovery', params, 'params', correlationId);
+		
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+				
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsRecoveryParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
+			// from the stored measurement unit (which could vary by part) to the user provided search...
+			
+			const response = await this._repositoryParts.searchSetsRecovery(correlationId, user.id, params);
+			return response;
+		}
+		catch (err) {
+			return this._error('PartsService', 'searchRecovery', null, err, null, null, correlationId);
 		}
 	}
 

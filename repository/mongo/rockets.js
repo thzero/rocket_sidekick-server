@@ -85,10 +85,56 @@ class RocketsRepository extends AppMongoRepository {
 			const collection = await this._getCollectionRockets(correlationId);
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
-			if (results.length > 0)
-				return this._successResponse(results[0], correlationId);
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+			
+			const parts = [];
+			parts.push(results.altimeters ?? []);
+			parts.push(results.recovery ?? []);
+			parts.push(results.tracking ?? []);
 
-			return this._success(correlationId);
+			const partIds = [];
+			parts.map(l => { 
+				partIds.push(...l.map(j => { return { 'id': j.id }; }));
+			});
+			
+			if (partIds.length === 0)
+				return this._successResponse(results, correlationId);
+
+			const queryB = [ { 
+					$match: {
+						$or: partIds
+					}
+				}
+			];
+			queryB.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+
+			const collection2 = await this._getCollectionParts(correlationId);
+			let results2 = await this._aggregate(collection2, collection2, queryB);
+			results2 = await results2.toArray();
+			if (results2.length === 0)
+				return this._successResponse(results, correlationId);
+
+			let item;
+			let temp;
+			for (const set of parts) {
+				for (let i = 0; i < set.length; i++) {
+					item = set[i];
+					temp = results2.find(l => l.id === item.id);
+					if (!temp)
+						continue;
+
+					set[i] = temp;
+				}
+			}
+
+			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
 			return this._error('RocketsRepository', 'retrieve', null, err, null, null, correlationId);

@@ -182,6 +182,24 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
+	async searchSetsRecovery(correlationId, userId, params) {
+		try {
+			const types = [
+				AppSharedConstants.Rocketry.PartTypes.chuteProtector,
+				AppSharedConstants.Rocketry.PartTypes.deploymentBag,
+				AppSharedConstants.Rocketry.PartTypes.parachute,
+				AppSharedConstants.Rocketry.PartTypes.streamer
+			];
+
+			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
+
+			});
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
+		}
+	}
+
 	async update(correlationId, userId, part) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
@@ -240,6 +258,68 @@ class PartsRepository extends AppMongoRepository {
 		}
 
 		return null;
+	}
+
+	async _searchSets(correlationId, userId, params, types, additional) {
+		try {
+			const queryA = [];
+
+			if (!String.isNullOrEmpty(params.name)) {
+				queryA.push(
+					this._searchFilterText(correlationId, params.name),
+				);
+			}
+
+			const where = [];
+			
+			if (params.public !== null && params.public === 3)
+				where.push({ 'public': true });
+			
+			if (types && types.length > 0) {
+				const arr = [];
+				types.forEach(element => {
+					arr.push({ 'typeId': element });
+				});
+				where.push({ $or: arr});
+			}
+			
+			if (!String.isNullOrEmpty(params.manufacturerId))
+				where.push({ 'manufacturerId': params.manufacturerId });
+			
+			if (!String.isNullOrEmpty(params.manufacturerStockId))
+				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+
+			additional(correlationId, params, where);
+
+			const defaultFilter = { 
+				$and: [
+					{ 
+						$or: [
+							{ 'ownerId': userId },
+							{ 'public': { $eq: true } }
+						]
+					},
+					{ 'deleted': { $ne: true } },
+					...where
+				],
+			};
+	
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const collection = await this._getCollectionParts(correlationId);
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', '_searchSets', null, err, null, null, correlationId);
+		}
 	}
 }
 

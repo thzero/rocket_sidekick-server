@@ -241,10 +241,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		dimension: Joi.number().allow(null),
 		dimensionMeasurementUnitId: this._measurementId.allow(null),
 		dimensionMeasurementUnitsId: this._measurementId.allow(null),
+		length: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
-		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
 		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
@@ -252,6 +254,21 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
+	
+	partsRecoveryParams = Joi.object({
+		diameterMax: Joi.number().allow(null),
+		diameterMin: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		lengthMax: Joi.number().allow(null),
+		lengthMin: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null),
+		thinMill: Joi.boolean().allow(null)
+	});
 	
 	partsParamsAltimeter = this.partsParams.concat(Joi.object({
 	}));
@@ -304,10 +321,23 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
+	
+	rocketAlbum = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
+	
+	rocketRocvery = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
 
 	rocketStage = Joi.object({
 		id: this.rocketId,
 		rocketId: this.rocketId,
+		altimeters: Joi.array().items(this.partId).allow(null),
 		cg: Joi.number().allow(null),
 		cgFrom: this.partId.allow(null),
 		cgMeasurementUnitId: this._measurementId.allow(null),
@@ -325,15 +355,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		notes: this._description.allow(null).allow(''),
+		recovery: Joi.array().items(this.partId).allow(null),
+		tracking: Joi.array().items(this.partId).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
-	
-	rocketAlbum = Joi.object({
-		name: this._extendedName,
-		type: Joi.string(),
-		link: this._url
+
+	rocketPart = Joi.object({
+		id: this.partId,
+		typeId: this._type
 	});
 	
 	rocket = Joi.object({
@@ -345,6 +376,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		albums: Joi.array().items(this.rocketAlbum).allow(null),
+		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		buildLogUrl: this._url.allow(null),
 		cg: Joi.number().allow(null),
 		cgFrom: this.partId.allow(null),
@@ -371,8 +403,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().allow(null),
+		recovery: Joi.array().items(this.rocketPart).allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
+		tracking: Joi.array().items(this.rocketPart).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		videos: Joi.array().items(this.rocketAlbum).allow(null),
 		weight: Joi.number().allow(null),

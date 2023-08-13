@@ -182,6 +182,21 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
+	async searchSetsAltimeters(correlationId, userId, params) {
+		try {
+			const types = [
+				AppSharedConstants.Rocketry.PartTypes.altimeter,
+				AppSharedConstants.Rocketry.PartTypes.chuteRelease
+			];
+
+			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
+			});
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'searchSetsAltimeters', null, err, null, null, correlationId);
+		}
+	}
+
 	async searchSetsRecovery(correlationId, userId, params) {
 		try {
 			const types = [
@@ -192,11 +207,24 @@ class PartsRepository extends AppMongoRepository {
 			];
 
 			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
-
 			});
 		}
 		catch (err) {
 			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
+		}
+	}
+
+	async searchSetsTrackers(correlationId, userId, params) {
+		try {
+			const types = [
+				AppSharedConstants.Rocketry.PartTypes.tracker
+			];
+
+			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
+			});
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'searchSetsTrackers', null, err, null, null, correlationId);
 		}
 	}
 

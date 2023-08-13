@@ -97,7 +97,7 @@ class RocketsRepository extends AppMongoRepository {
 
 			const partIds = [];
 			parts.map(l => { 
-				partIds.push(...l.map(j => { return { 'id': j.id }; }));
+				partIds.push(...l.map(j => { return { 'id': j.itemId }; }));
 			});
 			
 			if (partIds.length === 0)
@@ -126,11 +126,11 @@ class RocketsRepository extends AppMongoRepository {
 			for (const set of parts) {
 				for (let i = 0; i < set.length; i++) {
 					item = set[i];
-					temp = results2.find(l => l.id === item.id);
+					temp = results2.find(l => l.id === item.itemId);
 					if (!temp)
 						continue;
 
-					set[i] = temp;
+					set[i] = Object.assign(LibraryCommonUtility.cloneDeep(temp), item);
 				}
 			}
 
@@ -279,7 +279,12 @@ class RocketsRepository extends AppMongoRepository {
 			rocket.ownerId = userId;
 			rocket.searchName = this._createEdgeNGrams(correlationId, rocket.name);
 			await this._update(correlationId, collection, userId, rocket.id, rocket);
-			response.results = rocket;
+			// response.results = rocket;
+
+			const responseRetrieve = await this.retrieve(correlationId, userId, rocket.id);
+			if (this._hasFailed(responseRetrieve))
+				return response;
+			response.results = responseRetrieve.results;
 
 			await this._transactionCommit(correlationId, session);
 			return response;

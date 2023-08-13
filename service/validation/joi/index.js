@@ -255,21 +255,6 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
 	
-	partsRecoveryParams = Joi.object({
-		diameterMax: Joi.number().allow(null),
-		diameterMin: Joi.number().allow(null),
-		diameterMeasurementUnitId: this._measurementId.allow(null),
-		diameterMeasurementUnitsId: this._measurementId.allow(null),
-		lengthMax: Joi.number().allow(null),
-		lengthMin: Joi.number().allow(null),
-		lengthMeasurementUnitId: this._measurementId.allow(null),
-		lengthMeasurementUnitsId: this._measurementId.allow(null),
-		manufacturerId: this.manufacturersId.allow('').allow(null),
-		manufacturerStockId: this.partId.allow(null).allow(''),
-		name: this._extendedName.allow('').allow(null),
-		thinMill: Joi.boolean().allow(null)
-	});
-	
 	partsParamsAltimeter = this.partsParams.concat(Joi.object({
 	}));
 	
@@ -313,6 +298,33 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null)
 	}));
 	
+	partsParamsSearchAltimeters = Joi.object({
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null)
+	});
+	
+	partsParamsSearchRecovery = Joi.object({
+		diameterMax: Joi.number().allow(null),
+		diameterMin: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		lengthMax: Joi.number().allow(null),
+		lengthMin: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null),
+		thinMill: Joi.boolean().allow(null)
+	});
+	
+	partsParamsSearchTrackers = Joi.object({
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null)
+	});
+	
 	partsParamsTracker = this.partsParams.concat(Joi.object({
 	}));
 	
@@ -334,10 +346,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		link: this._url
 	});
 
+	rocketPart = Joi.object({
+		id: this.partId.required(),
+		itemId: this.partId.required(),
+		typeId: this._type.required()
+	});
+
 	rocketStage = Joi.object({
 		id: this.rocketId,
 		rocketId: this.rocketId,
-		altimeters: Joi.array().items(this.partId).allow(null),
+		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		cg: Joi.number().allow(null),
 		cgFrom: this.partId.allow(null),
 		cgMeasurementUnitId: this._measurementId.allow(null),
@@ -355,16 +373,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		notes: this._description.allow(null).allow(''),
-		recovery: Joi.array().items(this.partId).allow(null),
-		tracking: Joi.array().items(this.partId).allow(null),
+		recovery: Joi.array().items(this.rocketPart).allow(null),
+		trackers: Joi.array().items(this.rocketPart).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
-	});
-
-	rocketPart = Joi.object({
-		id: this.partId,
-		typeId: this._type
 	});
 	
 	rocket = Joi.object({
@@ -406,7 +419,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		recovery: Joi.array().items(this.rocketPart).allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
-		tracking: Joi.array().items(this.rocketPart).allow(null),
+		trackers: Joi.array().items(this.rocketPart).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		videos: Joi.array().items(this.rocketAlbum).allow(null),
 		weight: Joi.number().allow(null),

@@ -95,10 +95,17 @@ class RocketsRepository extends AppMongoRepository {
 			parts.push(results.recovery ?? []);
 			parts.push(results.tracking ?? []);
 
-			const partIds = [];
+			for (const item of results.stages) {
+				parts.push(item.altimeters ?? []);
+				parts.push(item.recovery ?? []);
+				parts.push(item.tracking ?? []);
+			}
+
+			let partIds = [];
 			parts.map(l => { 
 				partIds.push(...l.map(j => { return { 'id': j.itemId }; }));
 			});
+			partIds = [...new Set(partIds)];
 			
 			if (partIds.length === 0)
 				return this._successResponse(results, correlationId);

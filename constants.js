@@ -5,6 +5,7 @@ const Constants = {
 		REPOSITORY_MANUFACTURERS: 'repositoryManufacturers',
 		REPOSITORY_PARTS: 'repositoryParts',
 		REPOSITORY_ROCKETS: 'repositoryRockets',
+		REPOSITORY_ROCKETSETUPS: 'repositoryRocketSetups',
 		REPOSITORY_SYNC: 'repositorySync',
 
 		SERVICE_API: 'serviceApi',
@@ -13,6 +14,7 @@ const Constants = {
 		SERVICE_MANUFACTURERS: 'serviceManufacturers',
 		SERVICE_PARTS: 'serviceParts',
 		SERVICE_ROCKETS: 'serviceRockets',
+		SERVICE_ROCKETSETUPS: 'serviceRocketSetups',
 		SERVICE_SITE: 'serviceSite',
 		SERVICE_SYNC: 'serviceSync',
 		SERVICE_VALIDATION: 'serviceValidation'

@@ -4,18 +4,18 @@ import Utility from '@thzero/library_common/utility/index.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
-class RocketsService extends Service {
+class RocketSetupsService extends Service {
 	constructor() {
 		super();
 
-		this._repositoryRockets = null;
+		this._repositoryRocketSetups = null;
 		this._serviceUsers = null;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryRockets = this._injector.getService(Constants.InjectorKeys.REPOSITORY_ROCKETS);
+		this._repositoryRocketSetups = this._injector.getService(Constants.InjectorKeys.REPOSITORY_ROCKETSETUPS);
 	}
 
 	async copy(correlationId, user, params) {
@@ -30,7 +30,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			const response = await this._repositoryRockets.retrieve(correlationId, user.id, params.id);
+			const response = await this._repositoryRocketSetups.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
 				return response;
 	
@@ -43,15 +43,15 @@ class RocketsService extends Service {
 			results.public = false;
 			results.name = params.name;
 	
-			return await this._repositoryRockets.update(correlationId, user.id, results);
+			return await this._repositoryRocketSetups.update(correlationId, user.id, results);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'copy', null, err, null, null, correlationId);
+			return this._error('RocketSetupsService', 'copy', null, err, null, null, correlationId);
 		}
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'delete', 'user', user, correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -68,19 +68,19 @@ class RocketsService extends Service {
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
-			return await this._repositoryRockets.delete(correlationId, user.id, id);
+			return await this._repositoryRocketSetups.delete(correlationId, user.id, id);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'delete', null, err, null, null, correlationId);
+			return this._error('RocketSetupsService', 'delete', null, err, null, null, correlationId);
 		}
 	}
 
 	async refreshSearchName(correlationId) {
-		return await this._repositoryRockets.refreshSearchName(correlationId);
+		return await this._repositoryRocketSetups.refreshSearchName(correlationId);
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'retrieve', 'user', user, correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -91,28 +91,15 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.retrieve(correlationId, user.id, id);
+			return await this._repositoryRocketSetups.retrieve(correlationId, user.id, id);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'retrieve', null, err, null, null, correlationId);
-		}
-	}
-
-	async retrieveGallery(correlationId, id) {
-		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryRockets.retrieveGallery(correlationId, id);
-		}
-		catch (err) {
-			return this._error('RocketsService', 'retrieveGallery', null, err, null, null, correlationId);
+			return this._error('RocketSetupsService', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'search', 'user', user, correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -123,23 +110,10 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.search(correlationId, user.id, params);
+			return await this._repositoryRocketSetups.search(correlationId, user.id, params);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'search', null, err, null, null, correlationId);
-		}
-	}
-
-	async searchGallery(correlationId, params) {
-		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryRockets.searchGallery(correlationId, params);
-		}
-		catch (err) {
-			return this._error('RocketsService', 'searchGallery', null, err, null, null, correlationId);
+			return this._error('RocketSetupsService', 'search', null, err, null, null, correlationId);
 		}
 	}
 
@@ -153,7 +127,7 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	
-			const fetchRespositoryResponse = await this._repositoryRockets.retrieve(correlationId, user.id, rocketsUpdate.id);
+			const fetchRespositoryResponse = await this._repositoryRocketSetups.retrieve(correlationId, user.id, rocketsUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
@@ -166,12 +140,12 @@ class RocketsService extends Service {
 					return validResponse;
 			}
 			
-			return await this._repositoryRockets.update(correlationId, user.id, rocketsUpdate);
+			return await this._repositoryRocketSetups.update(correlationId, user.id, rocketsUpdate);
 		}
 		catch (err) {
-			return this._error('RocketsService', 'update', null, err, null, null, correlationId);
+			return this._error('RocketSetupsService', 'update', null, err, null, null, correlationId);
 		}
 	}
 }
 
-export default RocketsService;
+export default RocketSetupsService;

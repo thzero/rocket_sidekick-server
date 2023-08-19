@@ -45,6 +45,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 
+	rocketSetupId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+
 	checklistStep = Joi.object({
 		id: this.checklistId,
 		checklistId: this.checklistId,
@@ -356,10 +361,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		id: this.rocketId,
 		rocketId: this.rocketId,
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
-		cg: Joi.number().allow(null),
-		cgFrom: this.partId.allow(null),
-		cgMeasurementUnitId: this._measurementId.allow(null),
-		cgMeasurementUnitsId: this._measurementId.allow(null),
+		// cg: Joi.number().allow(null),
+		// cgFrom: this.partId.allow(null),
+		// cgMeasurementUnitId: this._measurementId.allow(null),
+		// cgMeasurementUnitsId: this._measurementId.allow(null),
 		cp: Joi.number().allow(null),
 		cpFrom: this.partId.allow(null),
 		cpMeasurementUnitId: this._measurementId.allow(null),
@@ -417,6 +422,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName
 	});
 	
+	rocketSetupsCopyParams = Joi.object({
+		id: this.rocketSetupId,
+		name: this._extendedName
+	});
+	
 	rocketsParams = Joi.object({
 		diameter: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
@@ -425,6 +435,20 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
+	
+	rocketSetupsParams = Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		length: Joi.number().allow(null),
+		name: this._extendedName.allow('').allow(null),
+		rocketId: this.rocketId.allow('').allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)

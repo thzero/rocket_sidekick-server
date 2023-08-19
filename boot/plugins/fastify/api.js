@@ -8,6 +8,7 @@ import contentRepository from '../../../repository/mongo/content.js';
 import manufacturersRepository from '../../../repository/mongo/manufacturers.js';
 import partsRepository from '../../../repository/mongo/parts.js';
 import rocketsRepository from '../../../repository/mongo/rockets.js';
+import rocketSetupsRepository from '../../../repository/mongo/rocketSetups.js';
 import syncRepository from '../../../repository/mongo/sync.js';
 
 import checklistsRoute from '../../../routes/fastify/checklists.js';
@@ -15,6 +16,7 @@ import apiRoute from '../../../routes/fastify/api.js';
 import manufacturersRoute from '../../../routes/fastify/manufacturers.js';
 import partsRoute from '../../../routes/fastify/parts.js';
 import rocketsRoute from '../../../routes/fastify/rockets.js';
+import rocketSetupsRoute from '../../../routes/fastify/rocketSetups.js';
 import syncRoute from '../../../routes/fastify/sync.js';
 import usersRoute from '../../../routes/fastify/users.js';
 import utilityRoute from '../../../routes/fastify/utility.js';
@@ -25,6 +27,7 @@ import repositoryCollectionsService from '../../../repository/mongo/collections.
 import manufacturersService from '../../../service/manufacturers.js';
 import partsService from '../../../service/parts.js';
 import rocketsService from '../../../service/rockets.js';
+import rocketSetupsService from '../../../service/rocketSetups.js';
 import securityService from '../../../service/security.js';
 import syncService from '../../../service/sync.js';
 import validationService from '../../../service/validation/joi/index.js';
@@ -40,6 +43,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS, new manufacturersRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_PARTS, new partsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETS, new rocketsRepository());
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETSETUPS, new rocketSetupsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
 	}
 
@@ -51,6 +55,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		this._initRoute(new manufacturersRoute());
 		this._initRoute(new partsRoute());
 		this._initRoute(new rocketsRoute());
+		this._initRoute(new rocketSetupsRoute());
 		this._initRoute(new syncRoute());
 	}
 
@@ -74,6 +79,7 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		this._injectService(Constants.InjectorKeys.SERVICE_MANUFACTURERS, new manufacturersService());
 		this._injectService(Constants.InjectorKeys.SERVICE_PARTS, new partsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETS, new rocketsService());
+		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETSETUPS, new rocketSetupsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_SYNC, new syncService());
 
 		this._injectService(Constants.InjectorKeys.SERVICE_VALIDATION, new validationService());

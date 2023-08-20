@@ -321,6 +321,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerId: this.manufacturersId.allow('').allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName.allow('').allow(null),
+		partTypes: Joi.array().items(this.partId).allow(null),
 		thinMill: Joi.boolean().allow(null)
 	});
 	

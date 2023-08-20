@@ -199,15 +199,25 @@ class PartsRepository extends AppMongoRepository {
 
 	async searchSetsRecovery(correlationId, userId, params) {
 		try {
-			const types = [
-				AppSharedConstants.Rocketry.PartTypes.chuteProtector,
-				AppSharedConstants.Rocketry.PartTypes.deploymentBag,
-				AppSharedConstants.Rocketry.PartTypes.parachute,
-				AppSharedConstants.Rocketry.PartTypes.streamer
-			];
+			const types = [];
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.altimeter) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.altimeter);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteRelease) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteProtector) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteRelease) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.deploymentBag) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.parachute) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.streamer) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.tracker) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.tracker);
 
-			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
-			});
+			return this._searchSets(correlationId, userId, params, types);
 		}
 		catch (err) {
 			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
@@ -317,7 +327,8 @@ class PartsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 
-			additional(correlationId, params, where);
+			if (additional)
+				additional(correlationId, params, where);
 
 			const defaultFilter = { 
 				$and: [

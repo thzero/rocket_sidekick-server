@@ -132,29 +132,6 @@ class PartsService extends Service {
 		}
 	}
 
-	async searchAltimeters(correlationId, user, params) {
-		this._enforceNotNull('PartsService', 'searchAltimeters', params, 'params', correlationId);
-		
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchAltimeters, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-
-			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
-			// from the stored measurement unit (which could vary by part) to the user provided search...
-			
-			const response = await this._repositoryParts.searchSetsAltimeters(correlationId, user.id, params);
-			return response;
-		}
-		catch (err) {
-			return this._error('PartsService', 'searchAltimeters', null, err, null, null, correlationId);
-		}
-	}
-
 	async searchRecovery(correlationId, user, params) {
 		this._enforceNotNull('PartsService', 'searchRecovery', params, 'params', correlationId);
 		
@@ -175,29 +152,6 @@ class PartsService extends Service {
 		}
 		catch (err) {
 			return this._error('PartsService', 'searchRecovery', null, err, null, null, correlationId);
-		}
-	}
-
-	async searchTrackers(correlationId, user, params) {
-		this._enforceNotNull('PartsService', 'searchTrackers', params, 'params', correlationId);
-		
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchTrackers, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-
-			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
-			// from the stored measurement unit (which could vary by part) to the user provided search...
-			
-			const response = await this._repositoryParts.searchSetsTrackers(correlationId, user.id, params);
-			return response;
-		}
-		catch (err) {
-			return this._error('PartsService', 'searchTrackers', null, err, null, null, correlationId);
 		}
 	}
 

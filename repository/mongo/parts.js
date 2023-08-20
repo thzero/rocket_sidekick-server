@@ -182,38 +182,21 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
-	async searchSetsAltimeters(correlationId, userId, params) {
-		try {
-			const types = [
-				AppSharedConstants.Rocketry.PartTypes.altimeter,
-				AppSharedConstants.Rocketry.PartTypes.chuteRelease
-			];
-
-			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
-			});
-		}
-		catch (err) {
-			return this._error('PartsRepository', 'searchSetsAltimeters', null, err, null, null, correlationId);
-		}
-	}
-
 	async searchSetsRecovery(correlationId, userId, params) {
 		try {
 			const types = [];
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.altimeter) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.altimeter);
-			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteRelease) > -1)
-				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteProtector) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.chuteRelease) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.deploymentBag) > -1)
-				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+				types.push(AppSharedConstants.Rocketry.PartTypes.deploymentBag);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.parachute) > -1)
-				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+				types.push(AppSharedConstants.Rocketry.PartTypes.parachute);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.streamer) > -1)
-				types.push(AppSharedConstants.Rocketry.PartTypes.chuteProtector);
+				types.push(AppSharedConstants.Rocketry.PartTypes.streamer);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.tracker) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.tracker);
 
@@ -221,20 +204,6 @@ class PartsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
-		}
-	}
-
-	async searchSetsTrackers(correlationId, userId, params) {
-		try {
-			const types = [
-				AppSharedConstants.Rocketry.PartTypes.tracker
-			];
-
-			return this._searchSets(correlationId, userId, params, types, (correlationId, params, where) => {
-			});
-		}
-		catch (err) {
-			return this._error('PartsRepository', 'searchSetsTrackers', null, err, null, null, correlationId);
 		}
 	}
 

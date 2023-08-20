@@ -91,14 +91,24 @@ class RocketsRepository extends AppMongoRepository {
 			results = results[0];
 			
 			const parts = [];
-			parts.push(results.altimeters ?? []);
-			parts.push(results.recovery ?? []);
-			parts.push(results.tracking ?? []);
+			// parts.push(results.altimeters ?? []);
+			// parts.push(results.chuteProtectors ?? []);
+			// parts.push(results.chuteReleases ?? []);
+			// parts.push(results.deploymentBags ?? []);
+			// parts.push(results.parachutes ?? []);
+			// parts.push(results.recovery ?? []);
+			// parts.push(results.streamers ?? []);
+			// parts.push(results.trackers ?? []);
 
 			for (const item of results.stages) {
 				parts.push(item.altimeters ?? []);
+				parts.push(item.chuteProtectors ?? []);
+				parts.push(item.chuteReleases ?? []);
+				parts.push(item.deploymentBags ?? []);
+				parts.push(item.parachutes ?? []);
 				parts.push(item.recovery ?? []);
-				parts.push(item.tracking ?? []);
+				parts.push(item.streamers ?? []);
+				parts.push(item.trackers ?? []);
 			}
 
 			let partIds = [];

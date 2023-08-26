@@ -140,7 +140,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsRecoveryParams, params);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchRecovery, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 

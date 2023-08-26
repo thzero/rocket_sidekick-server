@@ -4,7 +4,7 @@ import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppMongoRepository from './app.js';
 
-class RocketsRepository extends AppMongoRepository {
+class RocketSetupsRepository extends AppMongoRepository {
 	constructor() {
 		super();
 		
@@ -22,26 +22,13 @@ class RocketsRepository extends AppMongoRepository {
 		try {
 			await this._transactionStart(correlationId, session);
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 
 			const collectionChecklists = await this._getCollectionChecklists(correlationId);
 			
 			const results = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
 				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-				return this._errorResponse('RocketsRepository', 'delete', {
-						found: results.length,
-						results: results
-					},
-					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
-					correlationId);
-			}
-
-			const collectionRocketSetups = await this._getCollectionRocketSetups(correlationId);
-			
-			const results2 = await this._find(correlationId, collectionRocketSetups, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (results2 && results2.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a rocket setup');
 				return this._errorResponse('RocketsRepository', 'delete', {
 						found: results.length,
 						results: results
@@ -66,7 +53,7 @@ class RocketsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'RocketsRepository', 'delete');
+			return await this._transactionAbort(correlationId, session, null, err, 'RocketSetupsRepository', 'delete');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
@@ -74,7 +61,7 @@ class RocketsRepository extends AppMongoRepository {
 	}
 
 	async refreshSearchName(correlationId) {
-		return await this._refreshSearchName(correlationId, await this._getCollectionRockets(correlationId));
+		return await this._refreshSearchName(correlationId, await this._getCollectionRocketSetups(correlationId));
 	}
 	
 	async retrieve(correlationId, userId, id) {
@@ -90,12 +77,36 @@ class RocketsRepository extends AppMongoRepository {
 				}
 			];
 			queryA.push({
+				'$lookup': {
+					'from': 'rockets', 
+					'localField': 'rocketId', 
+					'foreignField': 'id', 
+					'as': 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'temp': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketName': '$temp.name'
+				}
+			});
+			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					rockets: 0,
+					temp: 0
 				}
 			});
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
 			if (results.length === 0)
@@ -167,38 +178,7 @@ class RocketsRepository extends AppMongoRepository {
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
-			return this._error('RocketsRepository', 'retrieve', null, err, null, null, correlationId);
-		}
-	}
-
-	async retrieveGallery(correlationId, id) {
-		try {
-			const queryA = [ { 
-					$match: {
-						$and: [
-							{ 'id': id },
-							{ 'public': true },
-							{ 'deleted': { $ne: true } }
-						]
-					}
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0
-				}
-			});
-	
-			const collection = await this._getCollectionRockets(correlationId);
-			let results = await this._aggregate(correlationId, collection, queryA);
-			results = await results.toArray();
-			if (results.length > 0)
-				return this._successResponse(results[0], correlationId);
-			
-			return this._success(correlationId);
-		}
-		catch (err) {
-			return this._error('RocketsRepository', 'retrieveGallery', null, err, null, null, correlationId);
+			return this._error('RocketSetupsRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
 
@@ -214,24 +194,30 @@ class RocketsRepository extends AppMongoRepository {
 
 			const where = [];
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
-				const arr = [];
-				params.manufacturers.forEach(element => {
-					arr.push({ 'manufacturerId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// TODO: against rocket..
+			// if (params.manufacturers && params.manufacturers.length > 0) {
+			// 	const arr = [];
+			// 	params.manufacturers.forEach(element => {
+			// 		arr.push({ 'manufacturerId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
 			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
-				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			// TODO: against rocket..
+			// if (!String.isNullOrEmpty(params.manufacturerStockId))
+			// 	where.push({ 'manufacturerStockId': params.manufacturerStockId });
 			
-			if (params.rocketTypes && params.rocketTypes.length > 0) {
-				const arr = [];
-				params.rocketTypes.forEach(element => {
-					arr.push({ 'typeId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// TODO: against rocket..
+			// if (params.rocketTypes && params.rocketTypes.length > 0) {
+			// 	const arr = [];
+			// 	params.rocketTypes.forEach(element => {
+			// 		arr.push({ 'typeId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
+			
+			if (!String.isNullOrEmpty(params.rocketId))
+				where.push({ 'rocketId': params.rocketId });
 
 			const defaultFilter = { 
 				$and: [
@@ -254,55 +240,17 @@ class RocketsRepository extends AppMongoRepository {
 					'diameterMajor': 1,
 					'length': 1,
 					'ownerId': 1,
-					'rocketTypes': 1,
-					'weight': 1
-				}
-			});
-	
-			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('RocketsRepository', 'search', null, err, null, null, correlationId);
-		}
-	}
-
-	async searchGallery(correlationId, params) {
-		try {
-			const defaultFilter = { 
-				$and: [
-					{ 'public': true },
-					{ 'deleted': { $ne: true } }
-				]
-			};
-	
-			const queryF = defaultFilter;
-			const queryA = [ {
-					$match: defaultFilter
-				}
-			];
-			queryA.push({
-				$project: { 
-					'_id': 0,
-					'id': 1,
-					'name': 1,
-					'description': 1,
-					'coverUrl': 1,
-					'diameterMajor': 1,
-					'length': 1,
-					'ownerId': 1,
 					'typeId': 1,
 					'weight': 1
 				}
 			});
 	
-			const collection = await this._getCollectionRockets(correlationId);
-			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const collection = await this._getCollectionRocketSetups(correlationId);
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
-			return this._error('RocketsRepository', 'searchGallery', null, err, null, null, correlationId);
+			return this._error('RocketSetupsRepository', 'search', null, err, null, null, correlationId);
 		}
 	}
 
@@ -311,7 +259,7 @@ class RocketsRepository extends AppMongoRepository {
 		try {
 			await this._transactionStart(correlationId, session);
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 			const response = this._initResponse(correlationId);
 
 			rocket.ownerId = userId;
@@ -328,7 +276,7 @@ class RocketsRepository extends AppMongoRepository {
 			return response;
 		}
 		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'RocketsRepository', 'update');
+			return await this._transactionAbort(correlationId, session, null, err, 'RocketSetupsRepository', 'update');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
@@ -336,4 +284,4 @@ class RocketsRepository extends AppMongoRepository {
 	}
 }
 
-export default RocketsRepository;
+export default RocketSetupsRepository;

@@ -20,27 +20,32 @@ class JoiValidationService extends GamerJoiValidationService {
 		.min(2)
 		.max(16);
 	
-	// checklistId = this._id.required();
 	checklistId = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 
-	// ownerId = this._id.required();
 	ownerId = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
-	// checklistId = this._id.required();
 	partId = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
-	
-	// rocketId = this._id.required();
 	rocketId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+
+	rocketSetupId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	rocketType = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
@@ -166,7 +171,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
-		manufacturerId: this.manufacturersId.required(),
+		manufacturerId: this.manufacturersId.allow(null).allow(''),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
@@ -255,21 +260,6 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
 	
-	partsRecoveryParams = Joi.object({
-		diameterMax: Joi.number().allow(null),
-		diameterMin: Joi.number().allow(null),
-		diameterMeasurementUnitId: this._measurementId.allow(null),
-		diameterMeasurementUnitsId: this._measurementId.allow(null),
-		lengthMax: Joi.number().allow(null),
-		lengthMin: Joi.number().allow(null),
-		lengthMeasurementUnitId: this._measurementId.allow(null),
-		lengthMeasurementUnitsId: this._measurementId.allow(null),
-		manufacturerId: this.manufacturersId.allow('').allow(null),
-		manufacturerStockId: this.partId.allow(null).allow(''),
-		name: this._extendedName.allow('').allow(null),
-		thinMill: Joi.boolean().allow(null)
-	});
-	
 	partsParamsAltimeter = this.partsParams.concat(Joi.object({
 	}));
 	
@@ -313,6 +303,23 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null)
 	}));
 	
+	partsParamsSearchRecovery = Joi.object({
+		diameterMax: Joi.number().allow(null),
+		diameterMin: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		lengthMax: Joi.number().allow(null),
+		lengthMin: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null),
+		partTypes: Joi.array().items(this.partId).allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		thinMill: Joi.boolean().allow(null)
+	});
+	
 	partsParamsTracker = this.partsParams.concat(Joi.object({
 	}));
 	
@@ -334,55 +341,23 @@ class JoiValidationService extends GamerJoiValidationService {
 		link: this._url
 	});
 
+	rocketPart = Joi.object({
+		id: this.partId.required(),
+		itemId: this.partId.required(),
+		typeId: this._type.required()
+	});
+
 	rocketStage = Joi.object({
 		id: this.rocketId,
 		rocketId: this.rocketId,
-		altimeters: Joi.array().items(this.partId).allow(null),
-		cg: Joi.number().allow(null),
-		cgFrom: this.partId.allow(null),
-		cgMeasurementUnitId: this._measurementId.allow(null),
-		cgMeasurementUnitsId: this._measurementId.allow(null),
-		cp: Joi.number().allow(null),
-		cpFrom: this.partId.allow(null),
-		cpMeasurementUnitId: this._measurementId.allow(null),
-		cpMeasurementUnitsId: this._measurementId.allow(null),
-		description: this._description.allow(null).allow(''),
-		diameter: Joi.number().allow(null),
-		diameterMeasurementUnitId: this._measurementId.allow(null),
-		diameterMeasurementUnitsId: this._measurementId.allow(null),
-		length: Joi.number().allow(null),
-		lengthMeasurementUnitId: this._measurementId.allow(null),
-		lengthMeasurementUnitsId: this._measurementId.allow(null),
-		name: this._extendedName.allow(null).allow(''),
-		notes: this._description.allow(null).allow(''),
-		recovery: Joi.array().items(this.partId).allow(null),
-		tracking: Joi.array().items(this.partId).allow(null),
-		weight: Joi.number().allow(null),
-		weightMeasurementUnitId: this._measurementId.allow(null),
-		weightMeasurementUnitsId: this._measurementId.allow(null)
-	});
-
-	rocketPart = Joi.object({
-		id: this.partId,
-		typeId: this._type
-	});
-	
-	rocket = Joi.object({
-		id: this.rocketId,
-		createdTimestamp: Joi.number(),
-		createdUserId: this._id.allow(null),
-		typeId: this._type,
-		deleted: Joi.boolean().allow(null),
-		deletedTimestamp: Joi.number().allow(null),
-		deletedUserId: this._id.allow(null),
-		albums: Joi.array().items(this.rocketAlbum).allow(null),
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
-		buildLogUrl: this._url.allow(null),
-		cg: Joi.number().allow(null),
-		cgFrom: this.partId.allow(null),
-		cgMeasurementUnitId: this._measurementId.allow(null),
-		cgMeasurementUnitsId: this._measurementId.allow(null),
-		coverUrl: this._url.allow(null),
+		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
+		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
+		deploymentBags: Joi.array().items(this.rocketPart).allow(null),
+		// cg: Joi.number().allow(null),
+		// cgFrom: this.partId.allow(null),
+		// cgMeasurementUnitId: this._measurementId.allow(null),
+		// cgMeasurementUnitsId: this._measurementId.allow(null),
 		cp: Joi.number().allow(null),
 		cpFrom: this.partId.allow(null),
 		cpMeasurementUnitId: this._measurementId.allow(null),
@@ -397,21 +372,43 @@ class JoiValidationService extends GamerJoiValidationService {
 		length: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturerId: this.manufacturersId.allow(null).allow(''),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow(null).allow(''),
+		notes: this._description.allow(null).allow(''),
+		parachutes: Joi.array().items(this.rocketPart).allow(null),
+		primary: Joi.boolean().allow(null),
+		recovery: Joi.array().items(this.rocketPart).allow(null),
+		streamers: Joi.array().items(this.rocketPart).allow(null),
+		trackers: Joi.array().items(this.rocketPart).allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
+	
+	rocket = Joi.object({
+		id: this.rocketId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type,
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		albums: Joi.array().items(this.rocketAlbum).allow(null),
+		buildLogUrl: this._url.allow(null),
+		coverUrl: this._url.allow(null),
+		description: this._description.allow(null).allow(''),
 		manufacturerId: this.manufacturersId.required(),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
 		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().allow(null),
-		recovery: Joi.array().items(this.rocketPart).allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
-		tracking: Joi.array().items(this.rocketPart).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		videos: Joi.array().items(this.rocketAlbum).allow(null),
-		weight: Joi.number().allow(null),
-		weightMeasurementUnitId: this._measurementId.allow(null),
-		weightMeasurementUnitsId: this._measurementId.allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -425,13 +422,86 @@ class JoiValidationService extends GamerJoiValidationService {
 		diameter: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		diameterMax: Joi.number().allow(null),
+		diameterMaxMeasurementUnitId: this._measurementId.allow(null),
+		diameterMaxMeasurementUnitsId: this._measurementId.allow(null),
+		diameterMin: Joi.number().allow(null),
+		diameterMinMeasurementUnitId: this._measurementId.allow(null),
+		diameterMinMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
+
+	rocketSetupStage = Joi.object({
+		id: this.rocketId,
+		rocketSetupId: this.rocketId,
+		rocketStageId: this.rocketId,
+		altimeters: Joi.array().items(this.rocketPart).allow(null),
+		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
+		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
+		deploymentBags: Joi.array().items(this.rocketPart).allow(null),
+		cg: Joi.number().allow(null),
+		cgFrom: this.partId.allow(null),
+		cgMeasurementUnitId: this._measurementId.allow(null),
+		cgMeasurementUnitsId: this._measurementId.allow(null),
+		// cp: Joi.number().allow(null),
+		// cpFrom: this.partId.allow(null),
+		// cpMeasurementUnitId: this._measurementId.allow(null),
+		// cpMeasurementUnitsId: this._measurementId.allow(null),
+		description: this._description.allow(null).allow(''),
+		name: this._extendedName.allow(null).allow(''),
+		notes: this._description.allow(null).allow(''),
+		parachutes: Joi.array().items(this.rocketPart).allow(null),
+		recovery: Joi.array().items(this.rocketPart).allow(null),
+		streamers: Joi.array().items(this.rocketPart).allow(null),
+		trackers: Joi.array().items(this.rocketPart).allow(null),
+		weight: Joi.number().allow(null),
+		weightMeasurementUnitId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
+	});
+	
+	rocketSetup = Joi.object({
+		id: this.rocketId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description.allow(null).allow(''),
+		name: this._extendedName.allow(null).allow(''),
+		notes: this._description.allow(null).allow(''),
+		ownerId: this.ownerId.allow(null),
+		public: Joi.boolean().allow(null),
+		rocketId: this.rocketId,
+		searchName: this._extendedName.allow(null).allow(''),
+		stages: Joi.array().items(this.rocketSetupStage).allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		typeId: this.rocketType,
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	rocketSetupsCopyParams = Joi.object({
+		id: this.rocketSetupId,
+		name: this._extendedName
+	});
+	
+	rocketSetupsParams = Joi.object({
+		diameter: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		length: Joi.number().allow(null),
+		name: this._extendedName.allow('').allow(null),
+		rocketId: this.rocketId.allow('').allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});
 	
 	syncFrom = Joi.object({

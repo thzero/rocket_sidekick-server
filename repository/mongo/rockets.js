@@ -37,6 +37,19 @@ class RocketsRepository extends AppMongoRepository {
 					correlationId);
 			}
 
+			const collectionRocketSetups = await this._getCollectionRocketSetups(correlationId);
+			
+			const results2 = await this._find(correlationId, collectionRocketSetups, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results2 && results2.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a rocket setup');
+				return this._errorResponse('RocketsRepository', 'delete', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
+					correlationId);
+			}
+
 			// const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			const checklist = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!checklist)
@@ -211,6 +224,14 @@ class RocketsRepository extends AppMongoRepository {
 			
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			
+			if (params.rocketTypes && params.rocketTypes.length > 0) {
+				const arr = [];
+				params.rocketTypes.forEach(element => {
+					arr.push({ 'typeId': element });
+				});
+				where.push({ $or: arr});
+			}
 
 			const defaultFilter = { 
 				$and: [
@@ -233,7 +254,7 @@ class RocketsRepository extends AppMongoRepository {
 					'diameterMajor': 1,
 					'length': 1,
 					'ownerId': 1,
-					'typeId': 1,
+					'rocketTypes': 1,
 					'weight': 1
 				}
 			});

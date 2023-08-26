@@ -15,16 +15,20 @@ class AppMongoRepository extends MongoRepository {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionContent(correlationId));
 	}
 
-	async _getCollectionRockets(correlationId) {
-		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionRockets(correlationId));
-	}
-
 	async _getCollectionManufacturers(correlationId) {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionManufacturers(correlationId));
 	}
 
 	async _getCollectionParts(correlationId) {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionParts(correlationId));
+	}
+
+	async _getCollectionRockets(correlationId) {
+		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionRockets(correlationId));
+	}
+
+	async _getCollectionRocketSetups(correlationId) {
+		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionRocketSetups(correlationId));
 	}
 
 	async _getCollectionUsers(correlationId) {

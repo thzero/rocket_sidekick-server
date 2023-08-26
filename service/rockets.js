@@ -143,17 +143,17 @@ class RocketsService extends Service {
 		}
 	}
 
-	async update(correlationId, user, rocketsUpdate) {
+	async update(correlationId, user, rocketUpdate) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocket, rocketsUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocket, rocketUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	
-			const fetchRespositoryResponse = await this._repositoryRockets.retrieve(correlationId, user.id, rocketsUpdate.id);
+			const fetchRespositoryResponse = await this._repositoryRockets.retrieve(correlationId, user.id, rocketUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
@@ -161,12 +161,12 @@ class RocketsService extends Service {
 	
 			const rocket = fetchRespositoryResponse.results;
 			if (!rocket) {
-				const validResponse = this._checkUpdatedTimestamp(correlationId, rocketsUpdate, rocket, 'rocket');
+				const validResponse = this._checkUpdatedTimestamp(correlationId, rocketUpdate, rocket, 'rocket');
 				if (this._hasFailed(validResponse))
 					return validResponse;
 			}
 			
-			return await this._repositoryRockets.update(correlationId, user.id, rocketsUpdate);
+			return await this._repositoryRockets.update(correlationId, user.id, rocketUpdate);
 		}
 		catch (err) {
 			return this._error('RocketsService', 'update', null, err, null, null, correlationId);

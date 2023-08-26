@@ -22,7 +22,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 		try {
 			await this._transactionStart(correlationId, session);
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 
 			const collectionChecklists = await this._getCollectionChecklists(correlationId);
 			
@@ -61,7 +61,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 	}
 
 	async refreshSearchName(correlationId) {
-		return await this._refreshSearchName(correlationId, await this._getCollectionRockets(correlationId));
+		return await this._refreshSearchName(correlationId, await this._getCollectionRocketSetups(correlationId));
 	}
 	
 	async retrieve(correlationId, userId, id) {
@@ -77,12 +77,36 @@ class RocketSetupsRepository extends AppMongoRepository {
 				}
 			];
 			queryA.push({
+				'$lookup': {
+					'from': 'rockets', 
+					'localField': 'rocketId', 
+					'foreignField': 'id', 
+					'as': 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'temp': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketName': '$temp.name'
+				}
+			});
+			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					rockets: 0,
+					temp: 0
 				}
 			});
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
 			if (results.length === 0)
@@ -170,16 +194,30 @@ class RocketSetupsRepository extends AppMongoRepository {
 
 			const where = [];
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
-				const arr = [];
-				params.manufacturers.forEach(element => {
-					arr.push({ 'manufacturerId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// TODO: against rocket..
+			// if (params.manufacturers && params.manufacturers.length > 0) {
+			// 	const arr = [];
+			// 	params.manufacturers.forEach(element => {
+			// 		arr.push({ 'manufacturerId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
 			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
-				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			// TODO: against rocket..
+			// if (!String.isNullOrEmpty(params.manufacturerStockId))
+			// 	where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			
+			// TODO: against rocket..
+			// if (params.rocketTypes && params.rocketTypes.length > 0) {
+			// 	const arr = [];
+			// 	params.rocketTypes.forEach(element => {
+			// 		arr.push({ 'typeId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
+			
+			if (!String.isNullOrEmpty(params.rocketId))
+				where.push({ 'rocketId': params.rocketId });
 
 			const defaultFilter = { 
 				$and: [
@@ -207,7 +245,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 				}
 			});
 	
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
 			return this._successResponse(results, correlationId);
 		}
@@ -221,7 +259,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 		try {
 			await this._transactionStart(correlationId, session);
 
-			const collection = await this._getCollectionRockets(correlationId);
+			const collection = await this._getCollectionRocketSetups(correlationId);
 			const response = this._initResponse(correlationId);
 
 			rocket.ownerId = userId;

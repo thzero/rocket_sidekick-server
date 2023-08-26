@@ -26,7 +26,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsCopyParams, params);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
@@ -106,7 +106,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
@@ -117,30 +117,30 @@ class RocketSetupsService extends Service {
 		}
 	}
 
-	async update(correlationId, user, rocketsUpdate) {
+	async update(correlationId, user, rocketSetupUpdate) {
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocket, rocketsUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetup, rocketSetupUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	
-			const fetchRespositoryResponse = await this._repositoryRocketSetups.retrieve(correlationId, user.id, rocketsUpdate.id);
+			const fetchRespositoryResponse = await this._repositoryRocketSetups.retrieve(correlationId, user.id, rocketSetupUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
-			const rocket = fetchRespositoryResponse.results;
-			if (!rocket) {
-				const validResponse = this._checkUpdatedTimestamp(correlationId, rocketsUpdate, rocket, 'rocket');
+			const rocketSetup = fetchRespositoryResponse.results;
+			if (!rocketSetup) {
+				const validResponse = this._checkUpdatedTimestamp(correlationId, rocketSetupUpdate, rocketSetup, 'rocket');
 				if (this._hasFailed(validResponse))
 					return validResponse;
 			}
 			
-			return await this._repositoryRocketSetups.update(correlationId, user.id, rocketsUpdate);
+			return await this._repositoryRocketSetups.update(correlationId, user.id, rocketSetupUpdate);
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'update', null, err, null, null, correlationId);

@@ -28,7 +28,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 			
 			const results = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup. - associated with a checklist');
 				return this._errorResponse('RocketsRepository', 'delete', {
 						found: results.length,
 						results: results
@@ -37,17 +37,16 @@ class RocketSetupsRepository extends AppMongoRepository {
 					correlationId);
 			}
 
-			// const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			const checklist = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			if (!checklist)
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - not found.');
+			const rocketSetup = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			if (!rocketSetup)
+				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - not found.');
 
-			checklist.deleted = true;
-			checklist.deletedUserId = userId;
-			checklist.deletedTimestamp = LibraryCommonUtility.getTimestamp();
-			const response = await this._update(correlationId, collection, userId, checklist.id, checklist);
+			rocketSetup.deleted = true;
+			rocketSetup.deletedUserId = userId;
+			rocketSetup.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			const response = await this._update(correlationId, collection, userId, rocketSetup.id, rocketSetup);
 			if (this._hasFailed(response))
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket.');
+				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup.');
 
 			await this._transactionCommit(correlationId, session);
 			return response;
@@ -78,26 +77,40 @@ class RocketSetupsRepository extends AppMongoRepository {
 			];
 			queryA.push({
 				'$lookup': {
-					'from': 'rockets', 
-					'localField': 'rocketId', 
-					'foreignField': 'id', 
-					'as': 'rockets'
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages.id': 1,
+								'stages.name': 1,
+								'stages.level': 1
+							}
+						}
+					],
+					as: 'rockets'
 				}
 			});
 			queryA.push({
 				'$addFields': {
-					'temp': {
+					'rocket': {
 						'$arrayElemAt': [
 							'$rockets', 0
 						]
 					}
 				}
 			});
-			queryA.push({
-				'$addFields': {
-					'rocketName': '$temp.name'
-				}
-			});
+			// queryA.push({
+			// 	'$addFields': {
+			// 		'rocketName': '$rocket.name',
+			// 		'rocketTypes': '$rocket.rocketTypes',
+			// 		'rocketStages': '$rocket.stages'
+			// 	}
+			// });
 			queryA.push({
 				$project: { 
 					'_id': 0,

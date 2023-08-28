@@ -61,10 +61,8 @@ class RocketsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
-	
-			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, id);
-			if (this._hasFailed(fetchRespositoryResponse))
-				return fetchRespositoryResponse;
+
+			// TODO: See if its used in a checklist
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	

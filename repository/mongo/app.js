@@ -36,9 +36,6 @@ class AppMongoRepository extends MongoRepository {
 	}
 
 	_searchFilterText(correlationId, query, name, index) {
-		if (String.isNullOrEmpty(query))
-			return null;
-
 		const filterText = super._searchFilterText(correlationId, query, name, index);
 		if (filterText)
 			return filterText;

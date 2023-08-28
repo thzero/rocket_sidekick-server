@@ -50,15 +50,14 @@ class RocketsRepository extends AppMongoRepository {
 					correlationId);
 			}
 
-			// const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			const checklist = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			if (!checklist)
+			const rocket = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			if (!rocket)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - not found.');
 
-			checklist.deleted = true;
-			checklist.deletedUserId = userId;
-			checklist.deletedTimestamp = LibraryCommonUtility.getTimestamp();
-			const response = await this._update(correlationId, collection, userId, checklist.id, checklist);
+			rocket.deleted = true;
+			rocket.deletedUserId = userId;
+			rocket.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			const response = await this._update(correlationId, collection, userId, rocket.id, rocket);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket.');
 

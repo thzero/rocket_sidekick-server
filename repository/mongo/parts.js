@@ -24,19 +24,7 @@ class PartsRepository extends AppMongoRepository {
 
 			const collection = await this._getCollectionParts(correlationId);
 
-			// TODO: Check to see if the part is in checklists and rockets...
-			// const collectionChecklists = await this._getCollectionChecklists(correlationId);
-			// let results = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			// if (results && results.length > 0) {
-			// 	await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-			// 	return this._errorResponse('PartsRepository', 'deleteUser', {
-			// 			found: results.length,
-			// 			results: results
-			// 		},
-			// 		AppSharedConstants.ErrorCodes.Parts.IncludedInChecklist,
-			// 		correlationId);
-			// }
-
+			// TODO: Check to see if the part is in rockets or rocket setup...
 			// const collectionRockets = await this._getCollectionRockets(correlationId);
 			// results = await this._find(correlationId, collectionRockets, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			// if (results && results.length > 0) {
@@ -49,23 +37,22 @@ class PartsRepository extends AppMongoRepository {
 			// 		correlationId);
 			// }
 
-			// const response = await this._delete(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			const checklist = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			if (!checklist)
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - not found.');
+			const part = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
+			if (!part)
+				return await this._transactionAbort(correlationId, session, 'Unable to delete the part - not found.');
 
-			checklist.deleted = true;
-			checklist.deletedUserId = userId;
-			checklist.deletedTimestamp = LibraryCommonUtility.getTimestamp();
-			const response = await this._update(correlationId, collection, userId, checklist.id, checklist);
+			part.deleted = true;
+			part.deletedUserId = userId;
+			part.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			const response = await this._update(correlationId, collection, userId, part.id, part);
 			if (this._hasFailed(response))
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket.');
+				return await this._transactionAbort(correlationId, session, 'Unable to delete the part.');
 
 			await this._transactionCommit(correlationId, session);
 			return response;
 		}
 		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'RocketsRePartsRepositorypository', 'delete');
+			return await this._transactionAbort(correlationId, session, null, err, 'PartsRepository', 'delete');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);

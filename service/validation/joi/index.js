@@ -455,6 +455,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		// cpMeasurementUnitId: this._measurementId.allow(null),
 		// cpMeasurementUnitsId: this._measurementId.allow(null),
 		description: this._description.allow(null).allow(''),
+		enabled: Joi.boolean().allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		notes: this._description.allow(null).allow(''),
 		parachutes: Joi.array().items(this.rocketPart).allow(null),

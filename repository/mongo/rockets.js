@@ -318,6 +318,10 @@ class RocketsRepository extends AppMongoRepository {
 			await this._update(correlationId, collection, userId, rocket.id, rocket);
 			// response.results = rocket;
 
+			// TODO: reorder the stages
+			// TODO: lookup each of the setups for this rocket, remove any rocket setup stages that are no longer available and update any numbers.
+			// TODO: Save rocket setups
+
 			const responseRetrieve = await this.retrieve(correlationId, userId, rocket.id);
 			if (this._hasFailed(responseRetrieve))
 				return response;

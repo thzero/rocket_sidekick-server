@@ -56,7 +56,6 @@ class ManufacturersRepository extends AppMongoRepository {
 	}
 
 	async retrieve(correlationId, userId, id) {
-
 		try {
 			const queryA = [ { 
 					$match: {

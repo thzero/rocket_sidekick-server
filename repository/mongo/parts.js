@@ -125,6 +125,12 @@ class PartsRepository extends AppMongoRepository {
 			if (params.public !== null && params.public === 3)
 				where.push({ 'public': true });
 			
+			if (!String.isNullOrEmpty(params.impulseClass))
+				where.push({ 'impulseClass': params.impulseClass });
+			
+			if (!String.isNullOrEmpty(params.diameter))
+				where.push({ 'diameter': params.diameter });
+			
 			if (params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
 				params.manufacturers.forEach(element => {
@@ -169,7 +175,7 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
-	async searchSetsRecovery(correlationId, userId, params) {
+	async searchSetsRocket(correlationId, userId, params) {
 		try {
 			const types = [];
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.altimeter) > -1)
@@ -180,6 +186,10 @@ class PartsRepository extends AppMongoRepository {
 				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.deploymentBag) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.deploymentBag);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.motor) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.motor);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.motorCase) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.motorCase);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.parachute) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.parachute);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.streamer) > -1)
@@ -190,7 +200,7 @@ class PartsRepository extends AppMongoRepository {
 			return this._searchSets(correlationId, userId, params, types);
 		}
 		catch (err) {
-			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
+			return this._error('PartsRepository', 'searchSetsRocket', null, err, null, null, correlationId);
 		}
 	}
 

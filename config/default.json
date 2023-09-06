@@ -3,6 +3,8 @@
 		"api": {
 			"version": "v1"
 		},
+		"backend": [
+		],
 		"auth": {
 			"apiKey": "",
 			"claims": {

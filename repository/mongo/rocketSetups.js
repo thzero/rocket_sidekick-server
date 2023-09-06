@@ -88,7 +88,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 								'rocketTypes': 1,
 								'stages.id': 1,
 								'stages.name': 1,
-								'stages.number': 1
+								'stages.number': 1,
+								'stages.motorDiameter': 1
 							}
 						}
 					],

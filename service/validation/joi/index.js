@@ -25,6 +25,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 
+	impulseClass = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[ABCDEFGHIJKLMNOP]*$/);
+
+	motorDiameter = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^('13', '18', '24', '29', '38', '75', '98')*$/);
+
 	ownerId = Joi.string()
 		.trim()
 		// .alphanum()
@@ -303,7 +313,8 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null)
 	}));
 	
-	partsParamsSearchRecovery = Joi.object({
+	partsParamsSearchRocket = Joi.object({
+		diameter: Joi.number().allow(null),
 		diameterMax: Joi.number().allow(null),
 		diameterMin: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
@@ -312,6 +323,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMin: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
+		impulseClass: this.impulseClass.allow(null).allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName.allow('').allow(null),
@@ -374,6 +386,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow(null).allow(''),
 		manufacturerStockId: this.partId.allow(null).allow(''),
+		motorDiameter: this.motorDiameter.allow(null).allow(''),
 		name: this._extendedName.allow(null).allow(''),
 		notes: this._description.allow(null).allow(''),
 		number: Joi.number().allow(null),
@@ -457,6 +470,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		// cpMeasurementUnitsId: this._measurementId.allow(null),
 		description: this._description.allow(null).allow(''),
 		enabled: Joi.boolean().allow(null),
+		motorDiameter: this.motorDiameter.allow(null).allow(''),
 		name: this._extendedName.allow(null).allow(''),
 		number: Joi.number().allow(null),
 		notes: this._description.allow(null).allow(''),

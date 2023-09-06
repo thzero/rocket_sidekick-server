@@ -1,7 +1,7 @@
 import Constants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-import Utility from '@thzero/library_common/utility/index.js';
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
@@ -36,7 +36,7 @@ class PartsService extends Service {
 				return response;
 	
 			const results = response.results;
-			results.id = Utility.generateId();
+			results.id = LibraryCommonUtility.generateId();
 			delete results.createdTimestamp;
 			delete results.createdUserId;
 			delete results.updatedTimestamp;
@@ -132,26 +132,26 @@ class PartsService extends Service {
 		}
 	}
 
-	async searchRecovery(correlationId, user, params) {
-		this._enforceNotNull('PartsService', 'searchRecovery', params, 'params', correlationId);
+	async searchRocket(correlationId, user, params) {
+		this._enforceNotNull('PartsService', 'searchRocket', params, 'params', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchRecovery, params);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchRocket, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
 			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
 			// from the stored measurement unit (which could vary by part) to the user provided search...
 			
-			const response = await this._repositoryParts.searchSetsRecovery(correlationId, user.id, params);
+			const response = await this._repositoryParts.searchSetsRocket(correlationId, user.id, params);
 			return response;
 		}
 		catch (err) {
-			return this._error('PartsService', 'searchRecovery', null, err, null, null, correlationId);
+			return this._error('PartsService', 'searchRocket', null, err, null, null, correlationId);
 		}
 	}
 

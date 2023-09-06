@@ -1,6 +1,6 @@
 import Constants from '../constants.js';
 
-import Utility from '@thzero/library_common/utility/index.js';
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
@@ -35,7 +35,7 @@ class RocketsService extends Service {
 				return response;
 	
 			const results = response.results;
-			results.id = Utility.generateId();
+			results.id = LibraryCommonUtility.generateId();
 			delete results.createdTimestamp;
 			delete results.createdUserId;
 			delete results.updatedTimestamp;

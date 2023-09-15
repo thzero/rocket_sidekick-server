@@ -1,3 +1,4 @@
+import Constants from '../../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
@@ -8,6 +9,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 	constructor() {
 		super();
 		
+		this._serviceManufacturers = null;
 		this._ownerId = null;
 	}
 
@@ -15,6 +17,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+		this._serviceManufacturers = this._injector.getService(Constants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 
 	async delete(correlationId, userId, id) {
@@ -65,6 +68,12 @@ class RocketSetupsRepository extends AppMongoRepository {
 	
 	async retrieve(correlationId, userId, id) {
 		try {
+			const responseManufacturers = await this._serviceManufacturers.listing(correlationId);
+			if (this._hasFailed(responseManufacturers))
+				return responseManufacturers;
+
+			const manufacturers = responseManufacturers.results.data;
+
 			const queryA = [ { 
 					$match: {
 						$and: [
@@ -86,10 +95,11 @@ class RocketSetupsRepository extends AppMongoRepository {
 								'id': 1,
 								'name': 1,
 								'rocketTypes': 1,
-								'stages.id': 1,
-								'stages.name': 1,
-								'stages.number': 1,
-								'stages.motorDiameter': 1
+								'stages': 1
+								// 'stages.id': 1,
+								// 'stages.name': 1,
+								// 'stages.index': 1,
+								// 'stages.description': 1
 							}
 						}
 					],
@@ -129,14 +139,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 			results = results[0];
 			
 			const parts = [];
-			// parts.push(results.altimeters ?? []);
-			// parts.push(results.chuteProtectors ?? []);
-			// parts.push(results.chuteReleases ?? []);
-			// parts.push(results.deploymentBags ?? []);
-			// parts.push(results.parachutes ?? []);
-			// parts.push(results.recovery ?? []);
-			// parts.push(results.streamers ?? []);
-			// parts.push(results.trackers ?? []);
+			const motorIds = [];
+			const motorCaseIds = [];
 
 			for (const item of results.stages) {
 				parts.push(item.altimeters ?? []);
@@ -147,12 +151,23 @@ class RocketSetupsRepository extends AppMongoRepository {
 				parts.push(item.recovery ?? []);
 				parts.push(item.streamers ?? []);
 				parts.push(item.trackers ?? []);
+
+				if (item.motors) {
+					for (const motor of item.motors) {
+						if (motor.motorId)
+							motorIds.push({ 'id': motor.motorId });
+						if (motor.motorCaseId)
+							motorCaseIds.push({ 'id': motor.motorCaseId });
+					}
+				}
 			}
 
 			let partIds = [];
 			parts.map(l => { 
 				partIds.push(...l.map(j => { return { 'id': j.itemId }; }));
 			});
+			partIds.push(...motorIds);
+			partIds.push(...motorCaseIds);
 			partIds = [...new Set(partIds)];
 			
 			if (partIds.length === 0)
@@ -186,6 +201,45 @@ class RocketSetupsRepository extends AppMongoRepository {
 						continue;
 
 					set[i] = Object.assign(LibraryCommonUtility.cloneDeep(temp), item);
+				}
+			}
+
+			if (results.stages) {
+				const fetchManufacturer = (func, id) => {
+					const temp = manufacturers.find(l => l.id === id);
+					if (temp)
+						func(temp.name, temp.abbrev);
+				};
+				for (const item of results.stages) {
+					if (!item.motors)
+						continue;
+
+					for (const motor of item.motors) {
+						if (motor.motorId) {
+							temp = results2.find(l => l.id === motor.motorId);
+							if (temp) {
+								motor.motorName = temp.name;
+	
+								motor.manufacturer = temp.manufacturer;
+								motor.manufacturerAbbrev = temp.manufacturerAbbrev;
+								// fetchManufacturer((name, abbrev) => {
+								// 	motor.motorManufacturer = name;
+								// 	motor.motorManufacturerAbbrev = abbrev; 
+								// }, temp.manufacturerId);
+							}
+						}
+						if (motor.motorCaseId) {
+							temp = results2.find(l => l.id === motor.motorCaseId);
+							if (temp) {
+								motor.motorCaseName = temp.name;
+	
+								fetchManufacturer((name, abbrev) => {
+									motor.motorCaseManufacturer = name;
+									motor.motorCaseManufacturerAbbrev = abbrev; 
+								}, temp.manufacturerId);
+							}
+						}
+					}
 				}
 			}
 

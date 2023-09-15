@@ -32,8 +32,9 @@ class JoiValidationService extends GamerJoiValidationService {
 
 	motorDiameter = Joi.string()
 		.trim()
-		// .alphanum()
-		.regex(/^('13', '18', '24', '29', '38', '75', '98')*$/);
+		.regex(/(13|18|24|29|38|75|98)/);
+	
+	motorIndex = Joi.number().greater(-1).less(3);
 
 	ownerId = Joi.string()
 		.trim()
@@ -314,7 +315,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	}));
 	
 	partsParamsSearchRocket = Joi.object({
-		diameter: Joi.number().allow(null),
 		diameterMax: Joi.number().allow(null),
 		diameterMin: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
@@ -323,9 +323,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMin: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
-		impulseClass: this.impulseClass.allow(null).allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
+		motorDiameter: Joi.number().allow(null),
+		motorImpulseClass: this.impulseClass.allow(null).allow(null),
 		name: this._extendedName.allow('').allow(null),
 		partTypes: Joi.array().items(this.partId).allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
@@ -359,9 +360,15 @@ class JoiValidationService extends GamerJoiValidationService {
 		typeId: this._type.required()
 	});
 
+	rocketStageMotor = Joi.object({
+		index: this.motorIndex.required(),
+		diameter: this.motorDiameter.allow(null).allow(''),
+		count: Joi.number().allow(null)
+	});
+
 	rocketStage = Joi.object({
 		id: this.rocketId,
-		rocketId: this.rocketId,
+		rocketId: this.rocketId.allow(null).allow(''), // TODO: remove
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
@@ -381,15 +388,15 @@ class JoiValidationService extends GamerJoiValidationService {
 		diameterMinor: Joi.number().allow(null),
 		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
+		index: Joi.number().allow(null),
 		length: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow(null).allow(''),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		motorDiameter: this.motorDiameter.allow(null).allow(''),
-		name: this._extendedName.allow(null).allow(''),
+		motors: Joi.array().items(this.rocketStageMotor).allow(null),
 		notes: this._description.allow(null).allow(''),
-		number: Joi.number().allow(null),
 		parachutes: Joi.array().items(this.rocketPart).allow(null),
 		primary: Joi.boolean().allow(null),
 		recovery: Joi.array().items(this.rocketPart).allow(null),
@@ -452,10 +459,17 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
 
+	rocketSetupStageMotor = Joi.object({
+		index: this.motorIndex.required(),
+		motorCaseId: this.partId.allow(null),
+		motorDelay: Joi.number().allow(null),
+		motorId: this.partId.allow(null)
+	});
+
 	rocketSetupStage = Joi.object({
 		id: this.rocketId,
-		rocketSetupId: this.rocketId,
 		rocketStageId: this.rocketId,
+		rocketSetupId: this.rocketId.allow(null).allow(''), // TODO: remove
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
@@ -468,11 +482,9 @@ class JoiValidationService extends GamerJoiValidationService {
 		// cpFrom: this.partId.allow(null),
 		// cpMeasurementUnitId: this._measurementId.allow(null),
 		// cpMeasurementUnitsId: this._measurementId.allow(null),
-		description: this._description.allow(null).allow(''),
 		enabled: Joi.boolean().allow(null),
-		motorDiameter: this.motorDiameter.allow(null).allow(''),
-		name: this._extendedName.allow(null).allow(''),
-		number: Joi.number().allow(null),
+		index: Joi.number().allow(null),
+		motors: Joi.array().items(this.rocketSetupStageMotor).allow(null),
 		notes: this._description.allow(null).allow(''),
 		parachutes: Joi.array().items(this.rocketPart).allow(null),
 		recovery: Joi.array().items(this.rocketPart).allow(null),

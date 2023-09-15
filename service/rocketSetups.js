@@ -4,6 +4,8 @@ import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
+import RocketSetupStageData from 'rocket_sidekick_common/data/rockets/setups/stage.js';
+
 class RocketSetupsService extends Service {
 	constructor() {
 		super();
@@ -89,7 +91,41 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRocketSetups.retrieve(correlationId, user.id, id);
+			const response = await this._repositoryRocketSetups.retrieve(correlationId, user.id, id);
+			if (this>this._hasFailed(response))
+				return response;
+
+			const rocketSetup = response.results;
+			if (!rocketSetup.stages)
+				rocketSetup.stages = [];
+
+			// sync up rocket and rocketsetup stages
+			const tempStages = [];
+			if (rocketSetup.rocket && rocketSetup.rocket.stages) {
+				let rocketSetupStage;
+				for (const item of rocketSetup.rocket.stages) {
+					rocketSetupStage = rocketSetup.stages.find(l => l.rocketStageId === item.id);
+					if (rocketSetupStage) {
+						rocketSetupStage.index = item.index;
+						rocketSetupStage.fromRocket = item;
+						tempStages.push(rocketSetupStage);
+						continue;
+					}
+
+					rocketSetupStage = new RocketSetupStageData();
+					rocketSetupStage.rocketSetupId = rocketSetup.id;
+					rocketSetupStage.rocketStageId = item.id;
+					rocketSetupStage.index = item.index;
+					rocketSetupStage.enabled = true;
+					rocketSetupStage.fromRocket = item;
+					tempStages.push(rocketSetupStage);
+				}
+			}
+			rocketSetup.stages = tempStages;
+
+			response.results = rocketSetup;
+
+			return response;
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'retrieve', null, err, null, null, correlationId);
@@ -125,7 +161,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	
-			const fetchRespositoryResponse = await this._repositoryRocketSetups.retrieve(correlationId, user.id, rocketSetupUpdate.id);
+			let fetchRespositoryResponse = await this._repositoryRocketSetups.retrieve(correlationId, user.id, rocketSetupUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
@@ -138,7 +174,12 @@ class RocketSetupsService extends Service {
 					return validResponse;
 			}
 			
-			return await this._repositoryRocketSetups.update(correlationId, user.id, rocketSetupUpdate);
+			const responseU = await this._repositoryRocketSetups.update(correlationId, user.id, rocketSetupUpdate);
+			if (this._hasFailed(responseU))
+				return responseU;
+
+			fetchRespositoryResponse = await this.retrieve(correlationId, user, rocketSetupUpdate.id);
+			return fetchRespositoryResponse;
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'update', null, err, null, null, correlationId);

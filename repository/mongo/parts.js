@@ -128,10 +128,10 @@ class PartsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.impulseClass))
 				where.push({ 'impulseClass': params.impulseClass });
 			
-			if (!String.isNullOrEmpty(params.diameter))
+			if (params.motorSearch !== true && !String.isNullOrEmpty(params.diameter))
 				where.push({ 'diameter': params.diameter });
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
+			if (params.motorSearch !== true && params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
 				params.manufacturers.forEach(element => {
 					arr.push({ 'manufacturerId': element });
@@ -139,7 +139,7 @@ class PartsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
+			if (params.motorSearch !== true && !String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 
 			this._partsFiltering(correlationId, params, where);
@@ -292,6 +292,12 @@ class PartsRepository extends AppMongoRepository {
 			
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			
+			if (!String.isNullOrEmpty(params.motorDiameter))
+				where.push({ 'diameter': Number(params.motorDiameter) });
+			
+			if (!String.isNullOrEmpty(params.motorImpulseClass))
+				where.push({ 'impulseClass': params.motorImpulseClass });
 
 			if (additional)
 				additional(correlationId, params, where);

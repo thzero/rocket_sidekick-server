@@ -1,3 +1,5 @@
+import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+
 import AppMongoRepository from './app.js';
 
 class ManufacturersRepository extends AppMongoRepository {
@@ -36,6 +38,7 @@ class ManufacturersRepository extends AppMongoRepository {
 				$project: { 
 					'_id': 0,
 					'id': 1,
+					'abbrev': 1,
 					'tcId': 1,
 					'isDefault': 1,
 					'name': 1,
@@ -88,6 +91,41 @@ class ManufacturersRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('ManufacturersRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async sync(correlationId, manufacturers, deleted) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionManufacturers(correlationId);
+			const response = this._initResponse(correlationId);
+
+			for (const manufacturer of deleted) {
+				manufacturer.deleted = true;
+				manufacturer.deletedUserId = this._ownerId;
+				manufacturer.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				const response = await this._update(correlationId, collection, this._ownerId, manufacturer.id, manufacturer);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to delete the manufacturer.');
+			}
+
+			for (const manufacturer of manufacturers) {
+				manufacturer.ownerId = this._ownerId;
+				const response = await this._update(correlationId, collection, this._ownerId, manufacturer.id, manufacturer);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to update the manufacturer.');
+			}
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'ManufacturersRepository', 'sync');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
 		}
 	}
 }

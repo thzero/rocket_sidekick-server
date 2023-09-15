@@ -9,6 +9,7 @@ class MotorsService extends Service {
 	constructor() {
 		super();
 
+		this._repositoryManufacturers = null;
 		this._repositoryMotors = null;
 		this._repositoryParts = null;
 		this._serviceExternalMotorSearch = null;
@@ -18,6 +19,7 @@ class MotorsService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
+		this._repositoryManufacturers = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS);
 		this._repositoryMotors = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MOTORS);
 		this._repositoryParts = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PARTS);
 		this._serviceExternalMotorSearch = this._injector.getService(Constants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH);
@@ -43,11 +45,11 @@ class MotorsService extends Service {
 			if (this._hasFailed(responseMa))
 				return responseMa;
 
+			const manufacturers = responseMa.results.data;
+
 			let responseM = await this._repositoryMotors.listing(correlationId);
 			if (this._hasFailed(responseM))
 				return responseM;
-
-			const manufacturers = responseMa.results.data;
 
 			let motors = responseM.results.data;
 
@@ -78,6 +80,8 @@ class MotorsService extends Service {
 
 				for (motor of results) {
 					motor.id = motor.motorId;
+					motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
+					motor.name = motor.commonName;
 
 					if (motor.dataFiles === 0)
 						continue;
@@ -112,29 +116,6 @@ class MotorsService extends Service {
 			let temp;
 			let deleted = [];
 
-			// Remove any existing motors that are not in the external motors list...
-			// for (const motor of motors) {
-			// 	temp = motorsExternal.find(l => l.motorId === motor.id);
-			// 	if (!(temp === null || temp === undefined))
-			// 		continue;
-				
-			// 	// only if external...
-			// 	if (!motor.external)
-			// 		continue;
-			// 	deleted.push(motor.motorId);
-			// }
-			
-			for (const motor of motorsExternal) {
-				temp = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
-				if (temp != null)
-					motor.manufacturerId = temp.id;
-				motor.id = motor.motorId;
-				motor.name = motor.commonName.trim();
-				motor.external = true;
-				motor.public = true;
-				motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
-			}
-
 			const responseU = await this._repositoryMotors.sync(correlationId, motorsExternal, deleted);
 			if (this._hasFailed(responseU))
 				return responseU;
@@ -152,6 +133,7 @@ class MotorsService extends Service {
 				return responseMc;
 
 			const motorCases = responseMc.results.data;
+			const motorCasesUpdated = [];
 
 			// Remove any existing motor casess that are not in the external motor list...
 			deleted = [];
@@ -163,26 +145,45 @@ class MotorsService extends Service {
 					continue;
 					
 				temp = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
-				if (temp === null || temp === undefined)
+				if (LibraryCommonUtility.isNull(temp))
 					continue;
 
 				temp2 = motorCases.find(l => l.name.toLowerCase().trim() === motor.caseInfo.toLowerCase().trim());
-				if (temp2 !== null && temp2 !== undefined)
-					continue;
+				if (LibraryCommonUtility.isNull(temp2)) {
+					motorCase = {
+						id: LibraryCommonUtility.generateId(),
+						typeId: AppSharedConstants.Rocketry.PartTypes.motorCase,
+						diameter: motor.diameter,
+						external: true,
+						manufacturerId: temp.id,
+						name: motor.caseInfo.trim(),
+						public: true
+					};
 
-				motorCase = {
-					id: LibraryCommonUtility.generateId(),
-					typeId: AppSharedConstants.Rocketry.PartTypes.motorCase,
-					external: true,
-					manufacturerId: temp.id,
-					name: motor.caseInfo.trim(),
-					public: true
+					if (!motor.diameter)
+						console.log(`motor.new: ${motor.id}`);
+				}
+				else {
+					motorCase = {
+						id: temp.id,
+						typeId: AppSharedConstants.Rocketry.PartTypes.motorCase,
+						diameter: motor.diameter,
+						external: true,
+						manufacturerId: temp.id,
+						name: motor.caseInfo.trim(),
+						public: true
+					};
+
+					if (!motor.diameter)
+						console.log(`motor.updated: ${motor.id}`);
 				}
 
-				motorCases.push(motorCase);
+				temp2 = motorCasesUpdated.find(l => l.name.toLowerCase().trim() === motor.caseInfo.toLowerCase().trim());
+				if (LibraryCommonUtility.isNull(temp2))
+					motorCasesUpdated.push(motorCase);
 			}
 
-			const responseUc = await this._repositoryMotors.syncCases(correlationId, motorCases, deleted);
+			const responseUc = await this._repositoryMotors.syncCases(correlationId, motorCasesUpdated, deleted);
 			if (this._hasFailed(responseUc))
 				return responseUc;
 

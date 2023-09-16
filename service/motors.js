@@ -9,7 +9,6 @@ class MotorsService extends Service {
 	constructor() {
 		super();
 
-		this._repositoryManufacturers = null;
 		this._repositoryMotors = null;
 		this._repositoryParts = null;
 		this._serviceExternalMotorSearch = null;
@@ -19,7 +18,6 @@ class MotorsService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryManufacturers = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS);
 		this._repositoryMotors = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MOTORS);
 		this._repositoryParts = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PARTS);
 		this._serviceExternalMotorSearch = this._injector.getService(Constants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH);
@@ -56,9 +54,10 @@ class MotorsService extends Service {
 			// Get list of external motors...
 
 			const motorsExternal = [];
-			const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'J', 'K', 'L', 'M', 'O', 'P'];
+			const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'J', 'K', 'L', 'M', 'O', 'P' ];
 			let response;
 			let response2;
+			let manufacturer;
 			let motor;
 			let motor2;
 			let results;
@@ -82,6 +81,13 @@ class MotorsService extends Service {
 					motor.id = motor.motorId;
 					motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
 					motor.name = motor.commonName;
+					
+					manufacturer = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
+					if (LibraryCommonUtility.isNull(manufacturer)) {
+						console.log(`...${motor.manufacturerAbbrev} not found for ${motor.motorId} not found...`);
+						continue;
+					}
+					motor.manufacturerId = manufacturer.id;
 
 					if (motor.dataFiles === 0)
 						continue;
@@ -113,7 +119,6 @@ class MotorsService extends Service {
 				motorsExternal.push(...results);
 			}
 
-			let temp;
 			let deleted = [];
 
 			const responseU = await this._repositoryMotors.sync(correlationId, motorsExternal, deleted);
@@ -144,9 +149,11 @@ class MotorsService extends Service {
 				if (String.isNullOrEmpty(motor.caseInfo))
 					continue;
 					
-				temp = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
-				if (LibraryCommonUtility.isNull(temp))
+				manufacturer = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
+				if (LibraryCommonUtility.isNull(manufacturer)) {
+					console.log(`...${motor.manufacturerAbbrev} not found for ${motor.motorId} not found...`);
 					continue;
+				}
 
 				temp2 = motorCases.find(l => l.name.toLowerCase().trim() === motor.caseInfo.toLowerCase().trim());
 				if (LibraryCommonUtility.isNull(temp2)) {
@@ -155,7 +162,7 @@ class MotorsService extends Service {
 						typeId: AppSharedConstants.Rocketry.PartTypes.motorCase,
 						diameter: motor.diameter,
 						external: true,
-						manufacturerId: temp.id,
+						manufacturerId: manufacturer.id,
 						name: motor.caseInfo.trim(),
 						public: true
 					};
@@ -165,11 +172,11 @@ class MotorsService extends Service {
 				}
 				else {
 					motorCase = {
-						id: temp.id,
+						id: temp2.id,
 						typeId: AppSharedConstants.Rocketry.PartTypes.motorCase,
 						diameter: motor.diameter,
 						external: true,
-						manufacturerId: temp.id,
+						manufacturerId: manufacturer.id,
 						name: motor.caseInfo.trim(),
 						public: true
 					};

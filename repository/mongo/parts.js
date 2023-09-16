@@ -68,6 +68,48 @@ class PartsRepository extends AppMongoRepository {
 		return this._success(correlationId);
 	}
 
+	async listing(correlationId, params) {
+		try {
+			const defaultFilter = { 
+				// $and: [
+				// 	{ 
+				// 		$or: [
+				// 			{ 'ownerId': this._ownerId },
+				// 			{ 'public': true }
+				// 		]
+				// 	},
+				// 	{ $expr: { $ne: [ 'deleted', true ] } 
+				// ]
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					// 'id': 1,
+					// 'tcId': 1,
+					// 'external': 1,
+					// 'name': 1,
+					// 'ownerId': 1,
+					// 'public': 1,
+					// 'typeId': 1
+				}
+			});
+	
+			const collection = await this._getCollectionParts(correlationId);
+			// const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'listing', null, err, null, null, correlationId);
+		}
+	}
+
 	async refreshSearchName(correlationId) {
 		return await this._refreshSearchName(correlationId, await this._getCollectionParts(correlationId));
 	}
@@ -76,16 +118,16 @@ class PartsRepository extends AppMongoRepository {
 		try {
 			const queryA = [ { 
 					$match: {
-						$and: [
-							{ 'id': id },
-							{ 
-								$or: [
-									{ 'ownerId': userId },
-									{ 'public': { $eq: true } }
-								]
-							},
-							// { 'deleted': { $ne: true } }
-						]
+						// $and: [
+						// 	// { 'id': id },
+						// 	// { 
+						// 	// 	$or: [
+						// 	// 		{ 'ownerId': userId },
+						// 	// 		{ 'public': { $eq: true } }
+						// 	// 	]
+						// 	// },
+						// 	// { 'deleted': { $ne: true } }
+						// ]
 					}
 				}
 			];
@@ -201,6 +243,40 @@ class PartsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('PartsRepository', 'searchSetsRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async sync(correlationId, parts, deleted) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionParts(correlationId);
+			const response = this._initResponse(correlationId);
+
+			for (const part of deleted) {
+				part.deleted = true;
+				part.deletedUserId = this._ownerId;
+				part.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				const response = await this._update(correlationId, collection, this._ownerId, part.id, part);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to delete the part.');
+			}
+
+			for (const part of parts) {
+				const response = await this._update(correlationId, collection, this._ownerId, part.id, part);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to update the part.');
+			}
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'PartsRepository', 'sync');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
 		}
 	}
 

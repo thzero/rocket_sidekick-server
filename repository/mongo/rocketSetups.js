@@ -142,7 +142,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 			const motorIds = [];
 			const motorCaseIds = [];
 
-			for (const item of results.stages) {
+			const stages = [...results.stages, ...results.rocket.stages];
+			for (const item of stages) {
 				parts.push(item.altimeters ?? []);
 				parts.push(item.chuteProtectors ?? []);
 				parts.push(item.chuteReleases ?? []);
@@ -200,7 +201,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 					if (!temp)
 						continue;
 
-					set[i] = Object.assign(LibraryCommonUtility.cloneDeep(temp), item);
+					temp = LibraryCommonUtility.cloneDeep(temp);
+					set[i] = Object.assign(temp, item);
 				}
 			}
 
@@ -208,7 +210,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 				const fetchManufacturer = (func, id) => {
 					const temp = manufacturers.find(l => l.id === id);
 					if (temp)
-						func(temp.name, temp.abbrev);
+						func(temp.id, temp.name, temp.abbrev);
 				};
 				for (const item of results.stages) {
 					if (!item.motors)
@@ -220,12 +222,9 @@ class RocketSetupsRepository extends AppMongoRepository {
 							if (temp) {
 								motor.motorName = temp.name;
 	
-								motor.manufacturer = temp.manufacturer;
-								motor.manufacturerAbbrev = temp.manufacturerAbbrev;
-								// fetchManufacturer((name, abbrev) => {
-								// 	motor.motorManufacturer = name;
-								// 	motor.motorManufacturerAbbrev = abbrev; 
-								// }, temp.manufacturerId);
+								fetchManufacturer((id, name, abbrev) => {
+									motor.motorManufacturerId = id;
+								}, temp.manufacturerId);
 							}
 						}
 						if (motor.motorCaseId) {
@@ -233,9 +232,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 							if (temp) {
 								motor.motorCaseName = temp.name;
 	
-								fetchManufacturer((name, abbrev) => {
-									motor.motorCaseManufacturer = name;
-									motor.motorCaseManufacturerAbbrev = abbrev; 
+								fetchManufacturer((id, name, abbrev) => {
+									motor.motorCaseManufacturerId = id;
 								}, temp.manufacturerId);
 							}
 						}

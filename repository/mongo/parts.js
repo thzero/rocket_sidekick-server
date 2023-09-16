@@ -68,6 +68,48 @@ class PartsRepository extends AppMongoRepository {
 		return this._success(correlationId);
 	}
 
+	async listing(correlationId, params) {
+		try {
+			const defaultFilter = { 
+				// $and: [
+				// 	{ 
+				// 		$or: [
+				// 			{ 'ownerId': this._ownerId },
+				// 			{ 'public': true }
+				// 		]
+				// 	},
+				// 	{ $expr: { $ne: [ 'deleted', true ] } 
+				// ]
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					// 'id': 1,
+					// 'tcId': 1,
+					// 'external': 1,
+					// 'name': 1,
+					// 'ownerId': 1,
+					// 'public': 1,
+					// 'typeId': 1
+				}
+			});
+	
+			const collection = await this._getCollectionParts(correlationId);
+			// const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'listing', null, err, null, null, correlationId);
+		}
+	}
+
 	async refreshSearchName(correlationId) {
 		return await this._refreshSearchName(correlationId, await this._getCollectionParts(correlationId));
 	}
@@ -76,16 +118,16 @@ class PartsRepository extends AppMongoRepository {
 		try {
 			const queryA = [ { 
 					$match: {
-						$and: [
-							{ 'id': id },
-							{ 
-								$or: [
-									{ 'ownerId': userId },
-									{ 'public': { $eq: true } }
-								]
-							},
-							// { 'deleted': { $ne: true } }
-						]
+						// $and: [
+						// 	// { 'id': id },
+						// 	// { 
+						// 	// 	$or: [
+						// 	// 		{ 'ownerId': userId },
+						// 	// 		{ 'public': { $eq: true } }
+						// 	// 	]
+						// 	// },
+						// 	// { 'deleted': { $ne: true } }
+						// ]
 					}
 				}
 			];
@@ -125,7 +167,13 @@ class PartsRepository extends AppMongoRepository {
 			if (params.public !== null && params.public === 3)
 				where.push({ 'public': true });
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
+			if (!String.isNullOrEmpty(params.impulseClass))
+				where.push({ 'impulseClass': params.impulseClass });
+			
+			if (params.motorSearch !== true && !String.isNullOrEmpty(params.diameter))
+				where.push({ 'diameter': params.diameter });
+			
+			if (params.motorSearch !== true && params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
 				params.manufacturers.forEach(element => {
 					arr.push({ 'manufacturerId': element });
@@ -133,7 +181,7 @@ class PartsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
+			if (params.motorSearch !== true && !String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 
 			this._partsFiltering(correlationId, params, where);
@@ -169,7 +217,7 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
-	async searchSetsRecovery(correlationId, userId, params) {
+	async searchSetsRocket(correlationId, userId, params) {
 		try {
 			const types = [];
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.altimeter) > -1)
@@ -180,6 +228,10 @@ class PartsRepository extends AppMongoRepository {
 				types.push(AppSharedConstants.Rocketry.PartTypes.chuteRelease);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.deploymentBag) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.deploymentBag);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.motor) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.motor);
+			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.motorCase) > -1)
+				types.push(AppSharedConstants.Rocketry.PartTypes.motorCase);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.parachute) > -1)
 				types.push(AppSharedConstants.Rocketry.PartTypes.parachute);
 			if ((params.partTypes ?? []).indexOf(AppSharedConstants.Rocketry.PartTypes.streamer) > -1)
@@ -190,7 +242,41 @@ class PartsRepository extends AppMongoRepository {
 			return this._searchSets(correlationId, userId, params, types);
 		}
 		catch (err) {
-			return this._error('PartsRepository', 'searchSetsRecovery', null, err, null, null, correlationId);
+			return this._error('PartsRepository', 'searchSetsRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async sync(correlationId, parts, deleted) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionParts(correlationId);
+			const response = this._initResponse(correlationId);
+
+			for (const part of deleted) {
+				part.deleted = true;
+				part.deletedUserId = this._ownerId;
+				part.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				const response = await this._update(correlationId, collection, this._ownerId, part.id, part);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to delete the part.');
+			}
+
+			for (const part of parts) {
+				const response = await this._update(correlationId, collection, this._ownerId, part.id, part);
+				if (this._hasFailed(response))
+					return await this._transactionAbort(correlationId, session, 'Unable to update the part.');
+			}
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'PartsRepository', 'sync');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
 		}
 	}
 
@@ -282,6 +368,12 @@ class PartsRepository extends AppMongoRepository {
 			
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			
+			if (!String.isNullOrEmpty(params.motorDiameter))
+				where.push({ 'diameter': Number(params.motorDiameter) });
+			
+			if (!String.isNullOrEmpty(params.motorImpulseClass))
+				where.push({ 'impulseClass': params.motorImpulseClass });
 
 			if (additional)
 				additional(correlationId, params, where);

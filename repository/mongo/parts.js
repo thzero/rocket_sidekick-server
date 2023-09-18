@@ -118,16 +118,16 @@ class PartsRepository extends AppMongoRepository {
 		try {
 			const queryA = [ { 
 					$match: {
-						// $and: [
-						// 	// { 'id': id },
-						// 	// { 
-						// 	// 	$or: [
-						// 	// 		{ 'ownerId': userId },
-						// 	// 		{ 'public': { $eq: true } }
-						// 	// 	]
-						// 	// },
-						// 	// { 'deleted': { $ne: true } }
-						// ]
+						$and: [
+							{ 'id': id },
+							{ 
+								$or: [
+									{ 'ownerId': userId },
+									{ 'public': { $eq: true } }
+								]
+							},
+							{ 'deleted': { $ne: true } }
+						]
 					}
 				}
 			];
@@ -204,7 +204,8 @@ class PartsRepository extends AppMongoRepository {
 			});
 			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					'data': 0
 				}
 			});
 	

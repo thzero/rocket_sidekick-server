@@ -27,28 +27,36 @@ class ThrustCurveMotorSearchExternalService extends MotorSearchExternalService {
 		};
 		const body = {
 			motorId: motorId,
-			format: 'RASP',
+			// format: 'RASP',
 			data: 'samples',
 			maxResults: 200
 		};
 		const response = await this._serviceCommunicationRest.post(correlationId, this._urlKey(), { url: 'download.json' }, body, opts);
 		this._logger.debug('ThrustCurveMotorSearchExternalService', '_manufacturers', 'response', response, correlationId);
-		if (response && response.results) {
-			if (Array.isArray(response.results.results)) {
-				let motor = null;
-				for (const item of response.results.results) {
-					if (item.motorId !== motorId)
-						continue;
-	
-					motor = item;
-					break;
-				}
-	
-				return this._successResponse(motor, correlationId);
-			}
-		}
+		if (this._hasFailed(response))
+			return response;
+		if (response.results)
+			return this._successResponse(response.results.results, correlationId);
+			
+		return this._error('ThrustCurveMotorSearchExternalService', '_motor', null, null, null, null, correlationId);
 
-		return this._success(correlationId);
+		// if (this._hasFailed(response) || !response.results)
+		// 	return response;
+
+		// if (Array.isArray(response.results.results)) {
+		// 	let motor = null;
+		// 	for (const item of response.results.results) {
+		// 		if (item.motorId !== motorId)
+		// 			continue;
+
+		// 		motor = item;
+		// 		break;
+		// 	}
+
+		// 	return this._successResponse(motor, correlationId);
+		// }
+
+		// return this._success(correlationId);
 	}
 
 	async _search(correlationId, criteria) {

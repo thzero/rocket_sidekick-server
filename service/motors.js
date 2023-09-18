@@ -54,12 +54,13 @@ class MotorsService extends Service {
 			// Get list of external motors...
 
 			const motorsExternal = [];
-			const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'J', 'K', 'L', 'M', 'O', 'P' ];
+			const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' ];
+			// const impulseClasses = [ 'H' ];
 			let response;
 			let response2;
 			let manufacturer;
 			let motor;
-			let motor2;
+			let motorData;
 			let results;
 			for (const impulseClass of impulseClasses) {
 				console.log(`...${impulseClass}....`);
@@ -89,7 +90,7 @@ class MotorsService extends Service {
 					}
 					motor.manufacturerId = manufacturer.id;
 
-					if (motor.dataFiles === 0)
+					if (!(motor.dataFiles > 0))
 						continue;
 
 					response2 = await this._serviceExternalMotorSearch.motor(correlationId, motor.motorId);
@@ -99,21 +100,29 @@ class MotorsService extends Service {
 						continue;
 					}
 
-					if (!response2.results)
+					if (!response2.results) {
+						console.log(`...${impulseClass} - ${motor.motorId} error:`);
+						console.dir('response', response2);
 						continue;
+					}
 
-					motor2 = await results.find(l => l.motorId === motor.id);
-					if (!motor2)
-						continue;
+					motorData = response2.results;
+					// if (Array.isArray(response2.results)) {
+					// 	motorData = await response2.results.find(l => l.motorId === motor.id);
+					// 	if (!motorData)
+					// 		continue;
+					// }
 
-					motor.simfileId = motor2.simfileId;
-					motor.format = motor2.format;
-					motor.source = motor2.source;
-					motor.license = motor2.license;
-					motor.data = motor2.data;
-					motor.samples = motor2.samples;
-					motor.infoUrl = motor2.infoUrl;
-					motor.dataUrl = motor2.dataUrl;
+					motor.data = motorData;
+
+					// motor.simfileId = motor2.simfileId;
+					// motor.format = motor2.format;
+					// motor.source = motor2.source;
+					// motor.license = motor2.license;
+					// motor.data = motor2.data;
+					// motor.samples = motor2.samples;
+					// motor.infoUrl = motor2.infoUrl;
+					// motor.dataUrl = motor2.dataUrl;
 				}
 
 				motorsExternal.push(...results);

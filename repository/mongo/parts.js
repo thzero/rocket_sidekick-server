@@ -116,16 +116,27 @@ class PartsRepository extends AppMongoRepository {
 
 	async retrieve(correlationId, userId, id) {
 		try {
+			let or = { 'public': { $eq: true } };
+			if (userId) {
+				or = {
+						$or: [
+						{ 'ownerId': userId },
+						{ 'public': { $eq: true } }
+					]
+				};
+			}
+			
 			const queryA = [ { 
 					$match: {
 						$and: [
 							{ 'id': id },
-							{ 
-								$or: [
-									{ 'ownerId': userId },
-									{ 'public': { $eq: true } }
-								]
-							},
+							// { 
+							// 	$or: [
+							// 		{ 'ownerId': userId },
+							// 		{ 'public': { $eq: true } }
+							// 	]
+							// },
+							or,
 							{ 'deleted': { $ne: true } }
 						]
 					}
@@ -186,14 +197,19 @@ class PartsRepository extends AppMongoRepository {
 
 			this._partsFiltering(correlationId, params, where);
 
+			let or = { 'public': { $eq: true } };
+			if (userId) {
+				or = {
+						$or: [
+						{ 'ownerId': userId },
+						{ 'public': { $eq: true } }
+					]
+				};
+			}
+
 			const defaultFilter = { 
 				$and: [
-					{ 
-						$or: [
-							{ 'ownerId': userId },
-							{ 'public': { $eq: true } }
-						]
-					},
+					or,
 					{ 'deleted': { $ne: true } },
 					...where
 				],

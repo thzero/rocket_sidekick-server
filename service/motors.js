@@ -82,6 +82,7 @@ class MotorsService extends Service {
 					motor.id = motor.motorId;
 					motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
 					motor.name = motor.commonName;
+					motor.public = true;
 					
 					manufacturer = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
 					if (LibraryCommonUtility.isNull(manufacturer)) {

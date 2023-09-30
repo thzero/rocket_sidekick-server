@@ -164,6 +164,9 @@ class JoiValidationService extends GamerJoiValidationService {
 			.allow('')
 	});
 	
+	countriesParams = Joi.object({
+	});
+	
 	// manufacturersId = this._id.required();
 	manufacturersId = Joi.string()
 		.trim()

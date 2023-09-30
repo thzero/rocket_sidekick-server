@@ -1,3 +1,4 @@
+import AppConstants from '../../constants.js';
 import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import UtilityRoute from '@thzero/library_server_fastify/routes/utility.js';
@@ -40,6 +41,14 @@ class AppUtilityRoute extends UtilityRoute {
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[LibraryServerConstants.InjectorKeys.SERVICE_UTILITY].contentReset(request.correlationId, request.body)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
+		router.post(this._join('/country/sync'),
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_COUNTRIES].sync(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

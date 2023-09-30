@@ -1,7 +1,8 @@
 const Constants = {
 	InjectorKeys: {
-		REPOSITORY_CONTENT: 'repositoryContent',
 		REPOSITORY_CHECKLISTS: 'repositoryChecklists',
+		REPOSITORY_CONTENT: 'repositoryContent',
+		REPOSITORY_COUNTRIES: 'repositoryCountries',
 		REPOSITORY_LAUNCHES: 'repositoryLaunches',
 		REPOSITORY_LOCATIONS: 'repositoryLocations',
 		REPOSITORY_MANUFACTURERS: 'repositoryManufacturers',
@@ -14,6 +15,7 @@ const Constants = {
 		SERVICE_API: 'serviceApi',
 		SERVICE_CHECKLISTS: 'serviceChecklists',
 		SERVICE_COMMUNICATION_REST: 'serviceCommunicationRest',
+		SERVICE_COUNTRIES: 'serviceCountries',
 		SERVICE_EXTERNAL_MOTOR_SEARCH: 'serviceExternalMotorSearch',
 		SERVICE_LAUNCHES: 'serviceLaunches',
 		SERVICE_LOCATIONS: 'serviceLocations',

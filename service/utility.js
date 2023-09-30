@@ -1,3 +1,5 @@
+import * as https from 'https';
+
 import { Mutex as asyncMutex } from 'async-mutex';
 import SnappyJS from 'snappyjs';
 import { decode, encode } from 'cbor-x';
@@ -13,6 +15,7 @@ class AppUtilityService extends UtilityService {
 		super();
 
 		this._repositoryContent = null;
+		this._repositorySync = null;
 		
 		this._cacheContentListing = null;
 		this._cacheContentListingLocales = {};
@@ -37,6 +40,7 @@ class AppUtilityService extends UtilityService {
 		await super.init(injector);
 
 		this._repositoryContent = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CONTENT);
+		this._repositorySync = this._injector.getService(Constants.InjectorKeys.REPOSITORY_SYNC);
 	}
 
 	async contentListing(correlationId, body) {
@@ -110,6 +114,13 @@ class AppUtilityService extends UtilityService {
 			url: 'https://github.com/kriszyp/cbor-x',
 			licenseName: 'MIT',
 			licenseUrl: 'https://github.com/kriszyp/cbor-x/blob/master/LICENSE'
+		});
+		openSource.push({
+			category: 'server',
+			name: 'countries-states-cities-database',
+			url: 'https://github.com/dr5hn/countries-states-cities-database',
+			licenseName: 'ODC',
+			licenseUrl: 'https://github.com/dr5hn/countries-states-cities-database/blob/master/LICENSE'
 		});
 		openSource.push({
 			category: 'server',

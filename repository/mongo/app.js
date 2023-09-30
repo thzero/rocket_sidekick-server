@@ -19,7 +19,7 @@ class AppMongoRepository extends MongoRepository {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionLaunches(correlationId));
 	}
 
-	async _getCollectionLocationss(correlationId) {
+	async _getCollectionLocations(correlationId) {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionLocations(correlationId));
 	}
 

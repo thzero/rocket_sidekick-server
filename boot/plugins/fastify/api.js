@@ -5,6 +5,8 @@ import FrontApiBootPlugin from '@thzero/library_server_fastify/boot/plugins/apiF
 
 import checklistsRepository from '../../../repository/mongo/checklists.js';
 import contentRepository from '../../../repository/mongo/content.js';
+import launchesRepository from '../../../repository/mongo/launches.js';
+import locationsRepository from '../../../repository/mongo/locations.js';
 import manufacturersRepository from '../../../repository/mongo/manufacturers.js';
 import motorsRepository from '../../../repository/mongo/motors.js';
 import partsRepository from '../../../repository/mongo/parts.js';
@@ -14,6 +16,8 @@ import syncRepository from '../../../repository/mongo/sync.js';
 
 import checklistsRoute from '../../../routes/fastify/checklists.js';
 import apiRoute from '../../../routes/fastify/api.js';
+import launchesRoute from '../../../routes/fastify/launches.js';
+import locationsRoute from '../../../routes/fastify/locations.js';
 import manufacturersRoute from '../../../routes/fastify/manufacturers.js';
 import motorsRoute from '../../../routes/fastify/motors.js';
 import partsRoute from '../../../routes/fastify/parts.js';
@@ -28,6 +32,8 @@ import checklistsService from '../../../service/checklists.js';
 import communicationRestService from '@thzero/library_server_service_rest_axios';
 import externalMotorSearchService from '../../../service/external/motorSearchThrustCurve.js';
 import repositoryCollectionsService from '../../../repository/mongo/collections.js';
+import launchesService from '../../../service/launches.js';
+import locationsService from '../../../service/locations.js';
 import manufacturersService from '../../../service/manufacturers.js';
 import motorsService from '../../../service/motors.js';
 import partsService from '../../../service/parts.js';
@@ -45,6 +51,8 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CHECKLISTS, new checklistsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CONTENT, new contentRepository());
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_LAUNCHES, new launchesRepository());
+		this._injectRepository(Constants.InjectorKeys.REPOSITORY_LOCATIONS, new locationsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS, new manufacturersRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MOTORS, new motorsRepository());
 		this._injectRepository(Constants.InjectorKeys.REPOSITORY_PARTS, new partsRepository());
@@ -58,6 +66,8 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 		this._initRoute(new apiRoute());
 		this._initRoute(new checklistsRoute());
+		this._initRoute(new launchesRoute());
+		this._initRoute(new locationsRoute());
 		this._initRoute(new manufacturersRoute());
 		this._initRoute(new motorsRoute());
 		this._initRoute(new partsRoute());
@@ -87,6 +97,8 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 
 		this._injectService(RepositoryConstants.InjectorKeys.SERVICE_REPOSITORY_COLLECTIONS, new repositoryCollectionsService());
 
+		this._injectService(Constants.InjectorKeys.SERVICE_LAUNCHES, new launchesService());
+		this._injectService(Constants.InjectorKeys.SERVICE_LOCATIONS, new locationsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_MANUFACTURERS, new manufacturersService());
 		this._injectService(Constants.InjectorKeys.SERVICE_MOTORS, new motorsService());
 		this._injectService(Constants.InjectorKeys.SERVICE_PARTS, new partsService());

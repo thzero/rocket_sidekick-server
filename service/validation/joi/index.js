@@ -173,6 +173,59 @@ class JoiValidationService extends GamerJoiValidationService {
 	manufacturersParams = Joi.object({
 	});
 	
+	launches = Joi.object({
+		id: this.partId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type.required(),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description.allow(null).allow(''),
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		public: Joi.boolean().required(),
+		searchName: this._extendedName.allow(null).allow(''),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	launchesParams = Joi.object({
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null),
+		rocketId: this.rocketId.allow('').allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null)
+	});
+	
+	locations = Joi.object({
+		id: this.partId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type.required(),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description.allow(null).allow(''),
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		public: Joi.boolean().required(),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		searchName: this._extendedName.allow(null).allow(''),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	locationsParams = Joi.object({
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
+		manufacturerStockId: this.partId.allow(null).allow(''),
+		name: this._extendedName.allow('').allow(null),
+		rocketId: this.rocketId.allow('').allow(null),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null)
+	});
+	
 	parts = Joi.object({
 		id: this.partId,
 		createdTimestamp: Joi.number(),
@@ -193,7 +246,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		updatedUserId: this._id.allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
-		weightMeasurementUnitsId: this._measurementId.allow(null),
+		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
 	
 	partsAltimeter = this.parts.concat(Joi.object({

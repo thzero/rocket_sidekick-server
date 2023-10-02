@@ -107,17 +107,6 @@ class LocationsRepository extends AppMongoRepository {
 
 			const where = [];
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
-				const arr = [];
-				params.manufacturers.forEach(element => {
-					arr.push({ 'manufacturerId': element });
-				});
-				where.push({ $or: arr});
-			}
-			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
-				where.push({ 'manufacturerStockId': params.manufacturerStockId });
-			
 			if (params.rocketTypes && params.rocketTypes.length > 0) {
 				const arr = [];
 				params.rocketTypes.forEach(element => {
@@ -139,7 +128,8 @@ class LocationsRepository extends AppMongoRepository {
 			});
 			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					'iterations': 0
 				}
 			});
 	

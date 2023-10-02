@@ -70,6 +70,24 @@ class LaunchesRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
+		router.post(this._join('/launches'),
+			{
+				preHandler: router.auth([
+					router.authenticationDefault,
+					router.authorizationDefault
+				], 
+				{ 
+					relation: 'and',
+					roles: [ 'rockets' ]
+				}),
+			},
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[Constants.InjectorKeys.SERVICE_LAUNCHES].update(request.correlationId, request.user, request.body)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
 		router.get(this._join('/launches/refresh'),
 		// 	{
 		// 		preHandler: router.auth([

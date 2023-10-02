@@ -86,7 +86,7 @@ class LocationsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.location, locationUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.locations, locationUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	

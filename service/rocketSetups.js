@@ -64,9 +64,9 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: See if its used in a checklist
-
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+
+			// TODO: See if its used in a checklist or launch
 	
 			return await this._repositoryRocketSetups.delete(correlationId, user.id, id);
 		}

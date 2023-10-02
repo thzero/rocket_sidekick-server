@@ -62,12 +62,14 @@ class PartsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
-
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+				
+			// TODO: See if its used in a checklist or rocket setup
 	
 			const part = fetchRespositoryResponse.results;
 			if (!part) {

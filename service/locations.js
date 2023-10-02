@@ -27,9 +27,10 @@ class LocationsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: See if its used in a checklist
-
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+
+			// TODO: See if its used in a checklist
+			// TODO: See if its used in a launch
 	
 			return await this._repositoryLocations.delete(correlationId, user.id, id);
 		}

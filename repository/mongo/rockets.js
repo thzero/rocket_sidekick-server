@@ -25,26 +25,36 @@ class RocketsRepository extends AppMongoRepository {
 			const collection = await this._getCollectionRockets(correlationId);
 
 			const collectionChecklists = await this._getCollectionChecklists(correlationId);
-			
-			const results = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (results && results.length > 0) {
+			const resultsChecklist = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (resultsChecklist && resultsChecklist.length > 0) {
 				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
 				return this._errorResponse('RocketsRepository', 'delete', {
-						found: results.length,
-						results: results
+						found: resultsChecklist.length,
+						results: resultsChecklist
 					},
 					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
 					correlationId);
 			}
 
+			const collectionLaunches = await this._getCollectionLaunches(correlationId);
+			const resultsLaunches = await this._find(correlationId, collectionLaunches, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (resultsLaunches && resultsLaunches.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a launch');
+				return this._errorResponse('RocketsRepository', 'delete', {
+						found: resultsLaunches.length,
+						results: resultsLaunches
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInLaunch,
+					correlationId);
+			}
+
 			const collectionRocketSetups = await this._getCollectionRocketSetups(correlationId);
-			
-			const results2 = await this._find(correlationId, collectionRocketSetups, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (results2 && results2.length > 0) {
+			const resultsRocketSetups = await this._find(correlationId, collectionRocketSetups, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (resultsRocketSetups && resultsRocketSetups.length > 0) {
 				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a rocket setup');
 				return this._errorResponse('RocketsRepository', 'delete', {
-						found: results.length,
-						results: results
+						found: resultsRocketSetups.length,
+						results: resultsRocketSetups
 					},
 					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
 					correlationId);

@@ -223,6 +223,7 @@ class PartsService extends Service {
 				return fetchRespositoryResponse;
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			// TODO: SECURITY: Also needs to check if setting public if its an admin
 	
 			const part = fetchRespositoryResponse.results;
 			if (part) {

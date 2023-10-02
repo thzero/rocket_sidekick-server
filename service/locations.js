@@ -95,6 +95,7 @@ class LocationsService extends Service {
 				return fetchRespositoryResponse;
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			// TODO: SECURITY: Also needs to check if setting public if its an admin
 	
 			const location = fetchRespositoryResponse.results;
 			if (!location) {

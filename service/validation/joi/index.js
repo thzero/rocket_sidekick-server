@@ -257,10 +257,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		address: this.locationsAddress.allow(null),
 		experimental: Joi.boolean().allow(null),
 		name: this._extendedName.allow(null).allow(''),
-		number: this.locationsIterationNumber.allow(null).allow(null),
+		number: this.locationsIterationNumber.allow(null).allow(''),
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
-		year: this.locationsIterationYear.allow(null).allow(null)
+		year: this.locationsIterationYear.allow(null).allow('')
 	});
 	
 	locations = Joi.object({

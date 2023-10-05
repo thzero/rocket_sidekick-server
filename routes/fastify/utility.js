@@ -34,7 +34,7 @@ class AppUtilityRoute extends UtilityRoute {
 					router.authorizationDefault
 				], 
 				{ 
-					// relation: 'and',
+					// relation: LibraryCommonnConstants.Security.logicalAnd,
 					roles: [ 'content.reset' ]
 				}),
 			},

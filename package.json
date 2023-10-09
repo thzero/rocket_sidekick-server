@@ -29,7 +29,7 @@
     "id": "library-cli --nano"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.17.10",
+    "@thzero/library_common": "^0.17.11",
     "@thzero/library_common_service": "^0.17.2",
     "@thzero/library_server": "^0.17.15",
     "@thzero/library_server_fastify": "^0.17.15",
@@ -41,7 +41,7 @@
     "cbor-x": "^1.5.4",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.2.0",
-    "rocket_sidekick_common": "^0.0.55",
+    "rocket_sidekick_common": "^0.0.56",
     "snappyjs": "^0.7.0"
   },
   "devDependencies": {

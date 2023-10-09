@@ -53,6 +53,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		.trim()
 		// .alphanum()
 		.regex(/^[ABCDEFGHIJKLMNOP]*$/);
+	
+	launchId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	locationId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
 
 	motorDiameter = Joi.string()
 		.trim()
@@ -201,17 +211,21 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	launches = Joi.object({
-		id: this.partId,
+		id: this.launchId,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
-		typeId: this._type.required(),
+		date: Joi.number().required(),
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
-		name: this._extendedName,
+		locationId: this.locationId.allow('').allow(null),
+		locationIterationId: this.locationId.allow('').allow(null),
+		name: this._extendedName.allow(null).allow(''),
+		//launchStatus: nominal, rapid unscheduled disassembly (rud), deployment failed, lost
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
+		rocketId: this.rocketId.allow('').allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
@@ -219,9 +233,9 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	launchesParams = Joi.object({
-		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
-		manufacturerStockId: this.partId.allow(null).allow(''),
+		locationId: this.locationId.allow('').allow(null),
 		name: this._extendedName.allow('').allow(null),
+		organizations: Joi.array().items(this.rocketType).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});
@@ -249,11 +263,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		country: this._country.allow(null).allow(''),
 		name: this._extendedName.allow(null).allow(''),
 		postalCode: this._postalCode.allow(null).allow(''),
-		stateProvince: this._stateProvince.allow(null).allow(''),
+		stateProvince: this._stateProvince.allow(null).allow('')
 	});
 	
 	locationsIterations = Joi.object({
-		id: this.partId,
+		id: this.locationId,
 		address: this.locationsAddress.allow(null),
 		experimental: Joi.boolean().allow(null),
 		name: this._extendedName.allow(null).allow(''),
@@ -264,7 +278,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	locations = Joi.object({
-		id: this.partId,
+		id: this.locationId,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		address: this.locationsAddress.allow(null),
@@ -287,9 +301,13 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	locationsParams = Joi.object({
+		city: this._city.allow(null).allow(''),
+		country: this._country.allow(null).allow(''),
 		name: this._extendedName.allow('').allow(null),
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
-		rocketTypes: Joi.array().items(this.rocketType).allow(null)
+		postalCode: this._postalCode.allow(null).allow(''),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		stateProvince: this._stateProvince.allow(null).allow('')
 	});
 	
 	parts = Joi.object({

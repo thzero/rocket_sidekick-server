@@ -125,8 +125,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					rockets: 0,
-					temp: 0
+					rockets: 0
 				}
 			});
 
@@ -297,6 +296,39 @@ class RocketSetupsRepository extends AppMongoRepository {
 				$match: defaultFilter
 			});
 			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'rockets': 0
+				}
+			});
+			queryA.push({
 				$project: { 
 					'_id': 0,
 					'id': 1,
@@ -307,7 +339,10 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'length': 1,
 					'ownerId': 1,
 					'typeId': 1,
-					'weight': 1
+					'weight': 1,
+					'rocket.id': 1,
+					'rocket.name': 1,
+					'rocket.rocketTypes': 1
 				}
 			});
 	

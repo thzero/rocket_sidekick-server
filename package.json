@@ -40,7 +40,7 @@
     "@thzero/library_server_validation_joi": "^0.17.6",
     "cbor-x": "^1.5.4",
     "decimal.js-light": "^2.5.1",
-    "pino-pretty": "^10.2.0",
+    "pino-pretty": "^10.2.3",
     "rocket_sidekick_common": "^0.0.56",
     "snappyjs": "^0.7.0"
   },

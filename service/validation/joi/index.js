@@ -210,6 +210,17 @@ class JoiValidationService extends GamerJoiValidationService {
 	manufacturersParams = Joi.object({
 	});
 	
+	launchResults = Joi.object({
+		flightAltitude: Joi.number().allow(null),
+		flightVelocity: Joi.number().allow(null),
+		flightAcceleration: Joi.number().allow(null),
+		launchCoordsLat: Joi.number().allow(null),
+		launchoordsLong: Joi.number().allow(null),
+		landingCoordsLat: Joi.number().allow(null),
+		landingCoordsLong: Joi.number().allow(null),
+		landingVelocity: Joi.number().allow(null),
+	});
+	
 	launches = Joi.object({
 		id: this.launchId,
 		createdTimestamp: Joi.number(),
@@ -225,6 +236,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		//launchStatus: nominal, rapid unscheduled disassembly (rud), deployment failed, lost
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
+		results: this.launchResults.allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		syncTimestamp: Joi.number().allow(null),
@@ -494,7 +506,12 @@ class JoiValidationService extends GamerJoiValidationService {
 	rocketPart = Joi.object({
 		id: this.partId.required(),
 		itemId: this.partId.required(),
-		typeId: this._type.required()
+		typeId: this._type.required(),
+		apogeeDelay: Joi.number().allow(null).allow(''),
+		altitudeMain: Joi.number().allow(null).allow(''),
+		altitudeMainMeasurementUnitId: this._type.allow(null).allow(''),
+		altitudeMainMeasurementUnitsId: this._type.allow(null).allow(''),
+		motorDelay: Joi.number().allow(null).allow('')
 	});
 
 	rocketStageMotor = Joi.object({
@@ -629,7 +646,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		trackers: Joi.array().items(this.rocketPart).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
-		weightMeasurementUnitsId: this._measurementId.allow(null)
+		weightMeasurementUnitsId: this._measurementId.allow(null),
+		weightNose: Joi.number().allow(null),
+		weightNoseMeasurementUnitId: this._measurementId.allow(null),
+		weightNoseMeasurementUnitsId: this._measurementId.allow(null)
 	});
 	
 	rocketSetup = Joi.object({

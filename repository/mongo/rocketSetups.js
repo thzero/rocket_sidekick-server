@@ -191,27 +191,52 @@ class RocketSetupsRepository extends AppMongoRepository {
 			if (results2.length === 0)
 				return this._successResponse(results, correlationId);
 
-			let item;
+			// let item;
 			let temp;
-			for (const set of parts) {
-				for (let i = 0; i < set.length; i++) {
-					item = set[i];
-					temp = results2.find(l => l.id === item.itemId);
+			// for (const set of parts) {
+			// 	for (let i = 0; i < set.length; i++) {
+			// 		item = set[i];
+			// 		temp = results2.find(l => l.id === item.itemId);
+			// 		if (!temp)
+			// 			continue;
+
+			// 		temp = LibraryCommonUtility.cloneDeep(temp);
+			// 		temp.fromRocket = true;
+			// 		set[i] = Object.assign(temp, item);
+			// 	}
+			// }
+
+			const updateStagePart = (stageParts, fromRocket) => {
+				for (let part of stageParts) {
+					temp = results2.find(l => l.id === part.itemId);
 					if (!temp)
 						continue;
 
 					temp = LibraryCommonUtility.cloneDeep(temp);
-					set[i] = Object.assign(temp, item);
+					part  =LibraryCommonUtility.merge2(part, temp);
+					temp.fromRocket = fromRocket;
 				}
-			}
+			};
+			const updateStageParts = (stage, fromRocket) => {
+				updateStagePart(stage.altimeters ?? [], fromRocket);
+				updateStagePart(stage.chuteProtectors ?? [], fromRocket);
+				updateStagePart(stage.chuteReleases ?? [], fromRocket);
+				updateStagePart(stage.deploymentBags ?? [], fromRocket);
+				updateStagePart(stage.parachutes ?? [], fromRocket);
+				updateStagePart(stage.recovery ?? [], fromRocket);
+				updateStagePart(stage.streamers ?? [], fromRocket);
+				updateStagePart(stage.trackers ?? [], fromRocket);
+			};
+			const fetchManufacturer = (func, id) => {
+				const temp = manufacturers.find(l => l.id === id);
+				if (temp)
+					func(temp.id, temp.name, temp.abbrev);
+			};
 
 			if (results.stages) {
-				const fetchManufacturer = (func, id) => {
-					const temp = manufacturers.find(l => l.id === id);
-					if (temp)
-						func(temp.id, temp.name, temp.abbrev);
-				};
 				for (const item of results.stages) {
+					updateStageParts(item, false);
+
 					if (!item.motors)
 						continue;
 
@@ -238,6 +263,12 @@ class RocketSetupsRepository extends AppMongoRepository {
 						}
 					}
 				}
+			}
+			
+
+			if (results.rocket.stages) {
+				for (const item of results.rocket.stages)
+					updateStageParts(item, true);
 			}
 
 			return this._successResponse(results, correlationId);

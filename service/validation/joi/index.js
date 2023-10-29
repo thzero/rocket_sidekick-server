@@ -211,15 +211,45 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	launchResults = Joi.object({
-		flightAltitude: Joi.number().allow(null),
-		flightVelocity: Joi.number().allow(null),
-		flightAcceleration: Joi.number().allow(null),
-		launchCoordsLat: Joi.number().allow(null),
-		launchoordsLong: Joi.number().allow(null),
-		landingCoordsLat: Joi.number().allow(null),
-		landingCoordsLong: Joi.number().allow(null),
-		landingVelocity: Joi.number().allow(null),
+		accelerationMax: Joi.number().allow(null),
+		accelerationMaxMeasurementUnitId: this._measurementId.allow(null),
+		accelerationMaxMeasurementUnitsId: this._measurementId.allow(null),
+		altitudeDrogue: Joi.number().allow(null),
+		altitudeDrogueMeasurementUnitId: this._measurementId.allow(null),
+		altitudeDrogueMeasurementUnitsId: this._measurementId.allow(null),
+		altitudeMain: Joi.number().allow(null),
+		altitudeMainMeasurementUnitId: this._measurementId.allow(null),
+		altitudeMainMeasurementUnitsId: this._measurementId.allow(null),
+		altitudeMax: Joi.number().allow(null),
+		altitudeMaxMeasurementUnitId: this._measurementId.allow(null),
+		altitudeMaxMeasurementUnitsId: this._measurementId.allow(null),
+		coordsLatLaunch: Joi.number().allow(null),
+		coordsLongLaunch: Joi.number().allow(null),
+		coordsLatRecovery: Joi.number().allow(null),
+		coordsLongRecovery: Joi.number().allow(null),
+		velocityRecovery: Joi.number().allow(null),
+		velocityRecoveryMeasurementUnitId: this._measurementId.allow(null),
+		velocityRecoveryMeasurementUnitsId: this._measurementId.allow(null),
+		velcoityMax: Joi.number().allow(null),
+		velcoityMaxMeasurementUnitId: this._measurementId.allow(null),
+		velcoityMaxMeasurementUnitsId: this._measurementId.allow(null)
 	});
+
+	launchResultsReasonsFailure() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Reasons.Failure).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
+
+	launchResultsReasonsSuccess() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Reasons.Success).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
 	
 	launches = Joi.object({
 		id: this.launchId,
@@ -230,15 +260,17 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
+		failureReasons: Joi.array().items(Joi.string().valid(...this.launchResultsReasonsFailure())).allow(null),
 		locationId: this.locationId.allow('').allow(null),
 		locationIterationId: this.locationId.allow('').allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		//launchStatus: nominal, rapid unscheduled disassembly (rud), deployment failed, lost
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
-		results: this.launchResults.allow(null),
+		result: this.launchResults.allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
+		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
@@ -508,10 +540,17 @@ class JoiValidationService extends GamerJoiValidationService {
 		itemId: this.partId.required(),
 		typeId: this._type.required(),
 		apogeeDelay: Joi.number().allow(null).allow(''),
+		altitude: Joi.number().allow(null).allow(''),
+		altitudeMeasurementUnitId: this._type.allow(null).allow(''),
+		altitudeMeasurementUnitsId: this._type.allow(null).allow(''),
 		altitudeMain: Joi.number().allow(null).allow(''),
 		altitudeMainMeasurementUnitId: this._type.allow(null).allow(''),
 		altitudeMainMeasurementUnitsId: this._type.allow(null).allow(''),
-		motorDelay: Joi.number().allow(null).allow('')
+		motorDelay: Joi.number().allow(null).allow(''),
+		reefed: Joi.boolean().allow(null),
+		reefedLength: Joi.number().allow(null).allow(''),
+		reefedLengthMeasurementUnitId: this._type.allow(null).allow(''),
+		reefedLengthMeasurementUnitsId: this._type.allow(null).allow('')
 	});
 
 	rocketStageMotor = Joi.object({

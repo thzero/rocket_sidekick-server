@@ -182,7 +182,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		contentId: Joi.string()
 			.trim()
 			// .alphanum()
-			.regex(/^info\.[a-zA-Z0-9-_]*$/)
+			.regex(/^(info|tools)\.[a-zA-Z0-9-_]*$/)
 			.min(2)
 			.max(30)
 	});
@@ -191,7 +191,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		contentId: Joi.string()
 			.trim()
 			// .alphanum()
-			.regex(/^info\.[a-zA-Z0-9-_]*$/)
+			.regex(/^(info|tools)\.[a-zA-Z0-9-_]*$/)
 			.min(2)
 			.max(30)
 			.allow(null)
@@ -267,7 +267,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		//launchStatus: nominal, rapid unscheduled disassembly (rud), deployment failed, lost
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
-		result: this.launchResults.allow(null),
+		results: this.launchResults.allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		searchName: this._extendedName.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
@@ -313,6 +313,8 @@ class JoiValidationService extends GamerJoiValidationService {
 	locationsIterations = Joi.object({
 		id: this.locationId,
 		address: this.locationsAddress.allow(null),
+		coordsLat: Joi.number().allow(null),
+		coordsLong: Joi.number().allow(null),
 		experimental: Joi.boolean().allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		number: this.locationsIterationNumber.allow(null).allow(''),
@@ -326,12 +328,15 @@ class JoiValidationService extends GamerJoiValidationService {
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		address: this.locationsAddress.allow(null),
+		coordsLat: Joi.number().allow(null),
+		coordsLong: Joi.number().allow(null),
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
 		experimental: Joi.boolean().allow(null),
 		iterations: Joi.array().items(this.locationsIterations).allow(null),
+		link: this._url.allow(null).allow(''),
 		name: this._extendedName,
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		ownerId: this.ownerId.allow(null),

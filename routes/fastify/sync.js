@@ -1,4 +1,5 @@
 import Constants from '../../constants.js';
+import LibraryCommonnConstants from '@thzero/library_common/constants.js';
 
 import BaseRoute from '@thzero/library_server_fastify/routes/index.js';
 
@@ -27,7 +28,7 @@ class SyncRoute extends BaseRoute {
 					router.authorizationDefault
 				], 
 				{ 
-					relation: 'and',
+					relation: LibraryCommonnConstants.Security.logicalAnd,
 					roles: [ 'sync' ]
 				}),
 			},

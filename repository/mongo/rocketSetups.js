@@ -125,8 +125,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					rockets: 0,
-					temp: 0
+					rockets: 0
 				}
 			});
 
@@ -192,27 +191,52 @@ class RocketSetupsRepository extends AppMongoRepository {
 			if (results2.length === 0)
 				return this._successResponse(results, correlationId);
 
-			let item;
+			// let item;
 			let temp;
-			for (const set of parts) {
-				for (let i = 0; i < set.length; i++) {
-					item = set[i];
-					temp = results2.find(l => l.id === item.itemId);
+			// for (const set of parts) {
+			// 	for (let i = 0; i < set.length; i++) {
+			// 		item = set[i];
+			// 		temp = results2.find(l => l.id === item.itemId);
+			// 		if (!temp)
+			// 			continue;
+
+			// 		temp = LibraryCommonUtility.cloneDeep(temp);
+			// 		temp.fromRocket = true;
+			// 		set[i] = Object.assign(temp, item);
+			// 	}
+			// }
+
+			const updateStagePart = (stageParts, fromRocket) => {
+				for (let part of stageParts) {
+					temp = results2.find(l => l.id === part.itemId);
 					if (!temp)
 						continue;
 
 					temp = LibraryCommonUtility.cloneDeep(temp);
-					set[i] = Object.assign(temp, item);
+					part  =LibraryCommonUtility.merge2(part, temp);
+					temp.fromRocket = fromRocket;
 				}
-			}
+			};
+			const updateStageParts = (stage, fromRocket) => {
+				updateStagePart(stage.altimeters ?? [], fromRocket);
+				updateStagePart(stage.chuteProtectors ?? [], fromRocket);
+				updateStagePart(stage.chuteReleases ?? [], fromRocket);
+				updateStagePart(stage.deploymentBags ?? [], fromRocket);
+				updateStagePart(stage.parachutes ?? [], fromRocket);
+				updateStagePart(stage.recovery ?? [], fromRocket);
+				updateStagePart(stage.streamers ?? [], fromRocket);
+				updateStagePart(stage.trackers ?? [], fromRocket);
+			};
+			const fetchManufacturer = (func, id) => {
+				const temp = manufacturers.find(l => l.id === id);
+				if (temp)
+					func(temp.id, temp.name, temp.abbrev);
+			};
 
 			if (results.stages) {
-				const fetchManufacturer = (func, id) => {
-					const temp = manufacturers.find(l => l.id === id);
-					if (temp)
-						func(temp.id, temp.name, temp.abbrev);
-				};
 				for (const item of results.stages) {
+					updateStageParts(item, false);
+
 					if (!item.motors)
 						continue;
 
@@ -239,6 +263,12 @@ class RocketSetupsRepository extends AppMongoRepository {
 						}
 					}
 				}
+			}
+			
+
+			if (results.rocket.stages) {
+				for (const item of results.rocket.stages)
+					updateStageParts(item, true);
 			}
 
 			return this._successResponse(results, correlationId);
@@ -297,6 +327,39 @@ class RocketSetupsRepository extends AppMongoRepository {
 				$match: defaultFilter
 			});
 			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'rockets': 0
+				}
+			});
+			queryA.push({
 				$project: { 
 					'_id': 0,
 					'id': 1,
@@ -307,7 +370,10 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'length': 1,
 					'ownerId': 1,
 					'typeId': 1,
-					'weight': 1
+					'weight': 1,
+					'rocket.id': 1,
+					'rocket.name': 1,
+					'rocket.rocketTypes': 1
 				}
 			});
 	

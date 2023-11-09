@@ -61,8 +61,60 @@ class LaunchesRepository extends AppMongoRepository {
 				}
 			];
 			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+								// 'stages.id': 1,
+								// 'stages.name': 1,
+								// 'stages.index': 1,
+								// 'stages.description': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					},
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					}
+				}
+			});
+			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					locations: 0,
+					rockets: 0
 				}
 			});
 
@@ -124,8 +176,79 @@ class LaunchesRepository extends AppMongoRepository {
 				$match: defaultFilter
 			});
 			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$addFields': {	
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					},
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					}
+				}
+			});
+			queryA.push({
 				$project: { 
-					'_id': 0
+					'locations': 0,
+					'rockets': 0
+				}
+			});
+			queryA.push({
+				$addFields: {
+					'location.iteration': {
+						$arrayElemAt: [ 
+							{ 
+								$filter: {
+									input: '$location.iterations',
+									cond: { 
+										$and: [
+											{ $eq: [ "$$this.id", "$locationIterationId" ] },
+										] 
+									}
+								}
+							}, 
+							0
+						] 
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'location.iterations': 0
 				}
 			});
 	

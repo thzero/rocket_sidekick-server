@@ -262,14 +262,16 @@ class AppUtilityService extends UtilityService {
 
 			this._cacheContentListingLocalesTitlesDescriptions = {};
 			for (const item of response.results) {
-				for (let localeI of item.locales) {
-					localeI = localeI.toLowerCase();
-					if (!this._cacheContentListingLocalesTitlesDescriptions[localeI])
-						this._cacheContentListingLocalesTitlesDescriptions[localeI] = [];
-
-					this._cacheContentListingLocalesTitlesDescriptions[localeI].push(item);
+				if (item.locales) {
+					for (let localeI of item.locales) {
+						localeI = localeI.toLowerCase();
+						if (!this._cacheContentListingLocalesTitlesDescriptions[localeI])
+							this._cacheContentListingLocalesTitlesDescriptions[localeI] = [];
+	
+						this._cacheContentListingLocalesTitlesDescriptions[localeI].push(item);
+					}
 				}
-				delete item.locale;
+				delete item.locales;
 			}
 			this._ttlContentListingTitlesDescriptions = LibraryCommonUtility.getTimestamp();
 

@@ -86,7 +86,7 @@ class LaunchesService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launch, launchUpdate);
+			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launches, launchUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 	

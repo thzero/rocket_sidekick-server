@@ -94,6 +94,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	albumOrVideoUrl = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
 
 	checklistStep = Joi.object({
 		id: this.checklistId,
@@ -253,6 +259,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	launches = Joi.object({
 		id: this.launchId,
+		album: this.albumOrVideoUrl.allow(null).allow(''),
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		date: Joi.number().required(),
@@ -272,6 +279,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		searchName: this._extendedName.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		video: this.albumOrVideoUrl.allow(null).allow(''),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -528,12 +536,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	rocketAlbum = Joi.object({
-		name: this._extendedName,
-		type: Joi.string(),
-		link: this._url
-	});
-	
 	rocketRocvery = Joi.object({
 		name: this._extendedName,
 		type: Joi.string(),
@@ -613,7 +615,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		albums: Joi.array().items(this.rocketAlbum).allow(null),
+		albums: Joi.array().items(this.albumOrVideoUrl).allow(null),
 		buildLogUrl: this._url.allow(null),
 		coverUrl: this._url.allow(null),
 		description: this._description.allow(null).allow(''),
@@ -627,7 +629,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		searchName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
-		videos: Joi.array().items(this.rocketAlbum).allow(null),
+		videos: Joi.array().items(this.albumOrVideoUrl).allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});

@@ -264,12 +264,17 @@ class RocketsRepository extends AppMongoRepository {
 					'length': 1,
 					'ownerId': 1,
 					'rocketTypes': 1,
+					'stages': 1,
 					'weight': 1
 				}
 			});
 	
 			const collection = await this._getCollectionRockets(correlationId);
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			for (const result of results.data) {
+				result.motors = this._motorDisplay(result);
+				delete result.stages;
+			}
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
@@ -346,6 +351,20 @@ class RocketsRepository extends AppMongoRepository {
 		finally {
 			await this._transactionEnd(correlationId, session);
 		}
+	}
+
+	_motorDisplay(item) {
+		if (!item || !item.stages)
+			return null;
+		let output = [];
+		for(const stage of item.stages) {
+			for (const motor of stage.motors) {
+				if (String.isNullOrEmpty(motor.diameter))
+					continue;
+				output.push({ diameter: motor.diameter, count: motor.count });
+			}
+		}
+		return output;
 	}
 }
 

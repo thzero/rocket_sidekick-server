@@ -207,6 +207,39 @@ class MotorsRepository extends AppMongoRepository {
 			await this._transactionEnd(correlationId, session);
 		}
 	}
+
+	async syncCasesToMotors(correlationId, motorCases, motors) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionParts(correlationId);
+			const response = this._initResponse(correlationId);
+			let response2;
+
+			let temp;
+			for (const motorCase of motorCases) {
+				temp = motors.filter(l => l.caseInfo === motorCase.name);
+				if (!temp)
+					continue;
+
+				for (const motor of temp) {
+					motor.motorCaseId = motorCase.id;	
+					response2 = await this._update(correlationId, collection, this._ownerId, motor.id, motor);
+					if (this._hasFailed(response2))
+						return await this._transactionAbort(correlationId, session, 'Unable to delete the motor case.');
+				}
+			}
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'MotorsRepository', 'syncCasesToMotors');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
+		}
+	}
 }
 
 export default MotorsRepository;

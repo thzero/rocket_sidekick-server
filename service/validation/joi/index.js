@@ -66,7 +66,7 @@ class JoiValidationService extends GamerJoiValidationService {
 
 	motorDiameter = Joi.string()
 		.trim()
-		.regex(/(13|18|24|29|38|75|98)/);
+		.regex(/(13|18|24|29|38|54|75|98)/);
 	
 	motorIndex = Joi.number().greater(-1).less(3);
 
@@ -94,6 +94,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
+	
+	albumOrVideoUrl = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
 
 	checklistStep = Joi.object({
 		id: this.checklistId,
@@ -129,7 +135,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ownerId: this.ownerId.allow(null),
 		rocketId: this.rocketId.allow(null),
 		rocketSetupId: this.rocketId.allow(null),
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		statusId: this._type,
 		steps: Joi.array().items(Joi.any()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
@@ -253,6 +259,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	launches = Joi.object({
 		id: this.launchId,
+		albumUrl: this.albumOrVideoUrl.allow(null).allow(''),
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		date: Joi.number().required(),
@@ -269,9 +276,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		public: Joi.boolean().required(),
 		results: this.launchResults.allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		videoUrl: this.albumOrVideoUrl.allow(null).allow(''),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -325,6 +333,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	locations = Joi.object({
 		id: this.locationId,
+		alias: this._extendedName,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		address: this.locationsAddress.allow(null),
@@ -342,7 +351,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		sortName: this._extendedName.allow(null).allow(''),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
@@ -373,7 +382,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		syncTimestamp: Joi.number().allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null),
@@ -528,12 +537,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	rocketAlbum = Joi.object({
-		name: this._extendedName,
-		type: Joi.string(),
-		link: this._url
-	});
-	
 	rocketRocvery = Joi.object({
 		name: this._extendedName,
 		type: Joi.string(),
@@ -559,6 +562,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 
 	rocketStageMotor = Joi.object({
+		id: this.partId.allow(null),
 		index: this.motorIndex.required(),
 		diameter: this.motorDiameter.allow(null).allow(''),
 		count: Joi.number().allow(null)
@@ -613,7 +617,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		albums: Joi.array().items(this.rocketAlbum).allow(null),
+		albums: Joi.array().items(this.albumOrVideoUrl).allow(null),
 		buildLogUrl: this._url.allow(null),
 		coverUrl: this._url.allow(null),
 		description: this._description.allow(null).allow(''),
@@ -624,10 +628,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
-		videos: Joi.array().items(this.rocketAlbum).allow(null),
+		videos: Joi.array().items(this.albumOrVideoUrl).allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});
@@ -709,7 +713,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().allow(null),
 		rocketId: this.rocketId,
-		searchName: this._extendedName.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketSetupStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		typeId: this.rocketType,

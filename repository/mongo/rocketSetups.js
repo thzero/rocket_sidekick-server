@@ -264,7 +264,6 @@ class RocketSetupsRepository extends AppMongoRepository {
 					}
 				}
 			}
-			
 
 			if (results.rocket.stages) {
 				for (const item of results.rocket.stages)
@@ -369,11 +368,35 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'diameterMajor': 1,
 					'length': 1,
 					'ownerId': 1,
+					'stages': 1,
 					'typeId': 1,
 					'weight': 1,
 					'rocket.id': 1,
 					'rocket.name': 1,
-					'rocket.rocketTypes': 1
+					'rocket.rocketTypes': 1,
+					'rocket.stages': 1
+				}
+			});
+			queryA.push({
+				$project: { 
+					'stages.id': 0,
+					'stages.altimeters': 0,
+					'stages.chuteProtectors': 0,
+					'stages.chuteReleases': 0,
+					'stages.motors.id': 0,
+					'stages.deploymentBags': 0,
+					'stages.parachutes': 0,
+					'stages.streamers': 0,
+					'stages.trackers': 0,
+					'rocket.stages.id': 0,
+					'rocket.stages.altimeters': 0,
+					'rocket.stages.chuteProtectors': 0,
+					'rocket.stages.chuteReleases': 0,
+					'rocket.stages.motors.id': 0,
+					'rocket.stages.deploymentBags': 0,
+					'rocket.stages.parachutes': 0,
+					'rocket.stages.streamers': 0,
+					'rocket.stages.trackers': 0
 				}
 			});
 	
@@ -384,6 +407,20 @@ class RocketSetupsRepository extends AppMongoRepository {
 		catch (err) {
 			return this._error('RocketSetupsRepository', 'search', null, err, null, null, correlationId);
 		}
+	}
+
+	_motorDisplay(item) {
+		if (!item || !item.stages)
+			return null;
+		let output = [];
+		for(const stage of item.stages) {
+			for (const motor of stage.motors) {
+				if (String.isNullOrEmpty(motor.diameter))
+					continue;
+				output.push({ diameter: motor.diameter, count: motor.count });
+			}
+		}
+		return output;
 	}
 
 	async update(correlationId, userId, rocket) {

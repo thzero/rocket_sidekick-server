@@ -268,13 +268,26 @@ class RocketsRepository extends AppMongoRepository {
 					'weight': 1
 				}
 			});
+			queryA.push({
+				$project: { 
+					'stages.id': 0,
+					'stages.altimeters': 0,
+					'stages.chuteProtectors': 0,
+					'stages.chuteReleases': 0,
+					'stages.motors.id': 0,
+					'stages.deploymentBags': 0,
+					'stages.parachutes': 0,
+					'stages.streamers': 0,
+					'stages.trackers': 0
+				}
+			});
 	
 			const collection = await this._getCollectionRockets(correlationId);
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
-			for (const result of results.data) {
-				result.motors = this._motorDisplay(result);
-				delete result.stages;
-			}
+			// for (const result of results.data) {
+			// 	result.motors = this._motorDisplay(result);
+			// 	delete result.stages;
+			// }
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
@@ -353,19 +366,29 @@ class RocketsRepository extends AppMongoRepository {
 		}
 	}
 
-	_motorDisplay(item) {
-		if (!item || !item.stages)
-			return null;
-		let output = [];
-		for(const stage of item.stages) {
-			for (const motor of stage.motors) {
-				if (String.isNullOrEmpty(motor.diameter))
-					continue;
-				output.push({ diameter: motor.diameter, count: motor.count });
-			}
-		}
-		return output;
-	}
+	// _motorDisplay(item) {
+	// 	if (!item || !item.stages)
+	// 		return null;
+	// 	let output = [];
+	// 	for (const stage of item.stages) {
+	// 		for (const motor of stage.motors) {
+	// 			if (String.isNullOrEmpty(motor.diameter))
+	// 				continue;
+	// 			output.push({ diameter: motor.diameter, count: motor.count });
+	// 		}
+	// 	}
+	// 	return output;
+	// }
+
+	// _stagesDisplay(item) {
+	// 	if (!item || !item.stages)
+	// 		return null;
+	// 	let output = [];
+	// 	for (const stage of item.stages) {
+	// 		output.push({ diameterMajor: stage.diameterMajor });
+	// 	}
+	// 	return output;
+	// }
 }
 
 export default RocketsRepository;

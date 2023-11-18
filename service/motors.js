@@ -143,7 +143,7 @@ class MotorsService extends Service {
 			motors = responseM.results.data;
 			
 			// Get motor cases loaded already....
-			const responseMc = await this._repositoryMotors.listingCases(correlationId);
+			let responseMc = await this._repositoryMotors.listingCases(correlationId);
 			if (this._hasFailed(responseMc))
 				return responseMc;
 
@@ -203,6 +203,19 @@ class MotorsService extends Service {
 			const responseUc = await this._repositoryMotors.syncCases(correlationId, motorCasesUpdated, deleted);
 			if (this._hasFailed(responseUc))
 				return responseUc;
+
+			// Get motors to update case id...
+			responseM = await this._repositoryMotors.listing(correlationId);
+			if (this._hasFailed(responseM))
+				return responseM;
+
+			responseMc = await this._repositoryMotors.listingCases(correlationId);
+			if (this._hasFailed(responseMc))
+				return responseMc;
+
+			const responseUc2 = await this._repositoryMotors.syncCasesToMotors(correlationId, responseMc.results.data, responseM.results.data);
+			if (this._hasFailed(responseUc2))
+				return responseUc2;
 
 			return this._success(correlationId);
 		}

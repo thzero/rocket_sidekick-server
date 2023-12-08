@@ -245,6 +245,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 							temp = results2.find(l => l.id === motor.motorId);
 							if (temp) {
 								motor.motorName = temp.name;
+								motor.motorCaseInfo = temp.caseInfo;
 	
 								fetchManufacturer((id, name, abbrev) => {
 									motor.motorManufacturerId = id;
@@ -349,7 +350,61 @@ class RocketSetupsRepository extends AppMongoRepository {
 						'$arrayElemAt': [
 							'$rockets', 0
 						]
+					},
+					'motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
 					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'motorCases'
 				}
 			});
 			queryA.push({
@@ -367,6 +422,8 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'coverUrl': 1,
 					'diameterMajor': 1,
 					'length': 1,
+					'motorCases': 1,
+					'motors': 1,
 					'ownerId': 1,
 					'stages': 1,
 					'typeId': 1,
@@ -409,19 +466,19 @@ class RocketSetupsRepository extends AppMongoRepository {
 		}
 	}
 
-	_motorDisplay(item) {
-		if (!item || !item.stages)
-			return null;
-		let output = [];
-		for(const stage of item.stages) {
-			for (const motor of stage.motors) {
-				if (String.isNullOrEmpty(motor.diameter))
-					continue;
-				output.push({ diameter: motor.diameter, count: motor.count });
-			}
-		}
-		return output;
-	}
+	// _motorDisplay(item) {
+	// 	if (!item || !item.stages)
+	// 		return null;
+	// 	let output = [];
+	// 	for(const stage of item.stages) {
+	// 		for (const motor of stage.motors) {
+	// 			if (String.isNullOrEmpty(motor.diameter))
+	// 				continue;
+	// 			output.push({ diameter: motor.diameter, count: motor.count });
+	// 		}
+	// 	}
+	// 	return output;
+	// }
 
 	async update(correlationId, userId, rocket) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));

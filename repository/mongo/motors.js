@@ -150,6 +150,7 @@ class MotorsRepository extends AppMongoRepository {
 				motor.deleted = true;
 				motor.deletedUserId = this._ownerId;
 				motor.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				motor.searchName = this._createEdgeNGrams(correlationId, motor.commonName);
 				const response = await this._update(correlationId, collection, this._ownerId, motor.id, motor);
 				if (this._hasFailed(response))
 					return await this._transactionAbort(correlationId, session, 'Unable to delete the motor.');
@@ -192,6 +193,7 @@ class MotorsRepository extends AppMongoRepository {
 
 			for (const motorCase of motorCases) {
 				motorCase.ownerId = this._ownerId;
+				motorCase.searchName = this._createEdgeNGrams(correlationId, motorCase.name);
 				const response = await this._update(correlationId, collection, this._ownerId, motorCase.id, motorCase);
 				if (this._hasFailed(response))
 					return await this._transactionAbort(correlationId, session, 'Unable to update the motor case.');

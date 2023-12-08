@@ -58,11 +58,14 @@ class AppMongoRepository extends MongoRepository {
 		if ('atlas' !== (this._searchFilterTextType ?? '').toLowerCase())
 			return null;
 
+		query = !String.isNullOrEmpty(query) ? query : '';
+		query = query.replace(/[^\w\s\']|_/g, '').replace(/\s+/g, ' ');
+
 		return {
 			$search: {
 				index: index,
 				wildcard: {
-					query: (!String.isNullOrEmpty(query) ? query : '') + '*' , 
+					query: query + '*' , 
 					path: name, 
 					allowAnalyzedField: true
 				}
@@ -105,6 +108,8 @@ class AppMongoRepository extends MongoRepository {
 	_createEdgeNGrams(correlationId, str) {
 		if (!str || str.length <= 3)
 			return str;
+
+		str = str.replace(/[^\w\s\']|_/g, '').replace(/\s+/g, ' ');
 
 		const minGram = 3
 		const maxGram = str.length

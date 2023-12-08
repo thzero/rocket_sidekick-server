@@ -50,97 +50,97 @@ class MotorsService extends Service {
 				return responseM;
 
 			let motors = responseM.results.data;
-
-			// Get list of external motors...
-
-			const motorsExternal = [];
-			const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' ];
-			// const impulseClasses = [ 'H' ];
-			let response;
-			let response2;
 			let manufacturer;
-			let motor;
-			let motorData;
-			let results;
-			for (const impulseClass of impulseClasses) {
-				console.log(`...${impulseClass}....`);
-				response = await this._serviceExternalMotorSearch.motors(correlationId, {
-					impulseClass: impulseClass
-				});
-				if (this._hasFailed(response)) {
-					console.log(`...${impulseClass} error:`);
-					console.dir('response', response);
-					continue;
-				}
-				if (!response.results) {
-					console.log(`...${impulseClass} no results...`);
-					continue;
-				}
-				results = response.results.results;
 
-				for (motor of results) {
-					motor.id = motor.motorId;
-					motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
-					motor.name = motor.commonName;
-					motor.public = true;
+			// // Get list of external motors...
+
+			// const motorsExternal = [];
+			// const impulseClasses = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' ];
+			// // const impulseClasses = [ 'H' ];
+			// let response;
+			// let response2;
+			// let motor;
+			// let motorData;
+			// let results;
+			// for (const impulseClass of impulseClasses) {
+			// 	console.log(`...${impulseClass}....`);
+			// 	response = await this._serviceExternalMotorSearch.motors(correlationId, {
+			// 		impulseClass: impulseClass
+			// 	});
+			// 	if (this._hasFailed(response)) {
+			// 		console.log(`...${impulseClass} error:`);
+			// 		console.dir('response', response);
+			// 		continue;
+			// 	}
+			// 	if (!response.results) {
+			// 		console.log(`...${impulseClass} no results...`);
+			// 		continue;
+			// 	}
+			// 	results = response.results.results;
+
+			// 	for (motor of results) {
+			// 		motor.id = motor.motorId;
+			// 		motor.typeId = AppSharedConstants.Rocketry.PartTypes.motor;
+			// 		motor.name = motor.commonName;
+			// 		motor.public = true;
 					
-					manufacturer = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
-					if (LibraryCommonUtility.isNull(manufacturer)) {
-						console.log(`...${motor.manufacturerAbbrev} not found for ${motor.motorId} not found...`);
-						continue;
-					}
-					motor.manufacturerId = manufacturer.id;
+			// 		manufacturer = manufacturers.find(l => l.tcId === motor.manufacturerAbbrev);
+			// 		if (LibraryCommonUtility.isNull(manufacturer)) {
+			// 			console.log(`...${motor.manufacturerAbbrev} not found for ${motor.motorId} not found...`);
+			// 			continue;
+			// 		}
+			// 		motor.manufacturerId = manufacturer.id;
 
-					if (!(motor.dataFiles > 0))
-						continue;
+			// 		if (!(motor.dataFiles > 0))
+			// 			continue;
 
-					response2 = await this._serviceExternalMotorSearch.motor(correlationId, motor.motorId);
-					if (this._hasFailed(response2)) {
-						console.log(`...${impulseClass} - ${motor.motorId} error:`);
-						console.dir('response', response2);
-						continue;
-					}
+			// 		response2 = await this._serviceExternalMotorSearch.motor(correlationId, motor.motorId);
+			// 		if (this._hasFailed(response2)) {
+			// 			console.log(`...${impulseClass} - ${motor.motorId} error:`);
+			// 			console.dir('response', response2);
+			// 			continue;
+			// 		}
 
-					if (!response2.results) {
-						console.log(`...${impulseClass} - ${motor.motorId} error:`);
-						console.dir('response', response2);
-						continue;
-					}
+			// 		if (!response2.results) {
+			// 			console.log(`...${impulseClass} - ${motor.motorId} error:`);
+			// 			console.dir('response', response2);
+			// 			continue;
+			// 		}
 
-					motorData = response2.results;
-					// if (Array.isArray(response2.results)) {
-					// 	motorData = await response2.results.find(l => l.motorId === motor.id);
-					// 	if (!motorData)
-					// 		continue;
-					// }
+			// 		motorData = response2.results;
+			// 		// if (Array.isArray(response2.results)) {
+			// 		// 	motorData = await response2.results.find(l => l.motorId === motor.id);
+			// 		// 	if (!motorData)
+			// 		// 		continue;
+			// 		// }
 
-					motor.data = motorData;
+			// 		motor.data = motorData;
 
-					// motor.simfileId = motor2.simfileId;
-					// motor.format = motor2.format;
-					// motor.source = motor2.source;
-					// motor.license = motor2.license;
-					// motor.data = motor2.data;
-					// motor.samples = motor2.samples;
-					// motor.infoUrl = motor2.infoUrl;
-					// motor.dataUrl = motor2.dataUrl;
-				}
+			// 		// motor.simfileId = motor2.simfileId;
+			// 		// motor.format = motor2.format;
+			// 		// motor.source = motor2.source;
+			// 		// motor.license = motor2.license;
+			// 		// motor.data = motor2.data;
+			// 		// motor.samples = motor2.samples;
+			// 		// motor.infoUrl = motor2.infoUrl;
+			// 		// motor.dataUrl = motor2.dataUrl;
+			// 	}
 
-				motorsExternal.push(...results);
-			}
+			// 	motorsExternal.push(...results);
+			// }
 
-			let deleted = [];
+			// const deletedMotors = [];
 
-			const responseU = await this._repositoryMotors.sync(correlationId, motorsExternal, deleted);
-			if (this._hasFailed(responseU))
-				return responseU;
+			// const responseU = await this._repositoryMotors.sync(correlationId, motorsExternal, deletedMotors);
+			// if (this._hasFailed(responseU))
+			// 	return responseU;
 
-			// Get motors to look for cases...
-			responseM = await this._repositoryMotors.listing(correlationId);
-			if (this._hasFailed(responseM))
-				return responseM;
+			// // Get motors to look for cases...
+			// responseM = await this._repositoryMotors.listing(correlationId);
+			// if (this._hasFailed(responseM))
+			// 	return responseM;
 
-			motors = responseM.results.data;
+			// motors = responseM.results.data;
 			
 			// Get motor cases loaded already....
 			let responseMc = await this._repositoryMotors.listingCases(correlationId);
@@ -151,7 +151,7 @@ class MotorsService extends Service {
 			const motorCasesUpdated = [];
 
 			// Remove any existing motor casess that are not in the external motor list...
-			deleted = [];
+			const deletedMotorCases = [];
 
 			let motorCase;
 			let temp2;
@@ -173,6 +173,7 @@ class MotorsService extends Service {
 						diameter: motor.diameter,
 						external: true,
 						manufacturerId: manufacturer.id,
+						manufacturer: manufacturer.name,
 						name: motor.caseInfo.trim(),
 						public: true
 					};
@@ -187,6 +188,7 @@ class MotorsService extends Service {
 						diameter: motor.diameter,
 						external: true,
 						manufacturerId: manufacturer.id,
+						manufacturer: manufacturer.name,
 						name: motor.caseInfo.trim(),
 						public: true
 					};
@@ -200,7 +202,7 @@ class MotorsService extends Service {
 					motorCasesUpdated.push(motorCase);
 			}
 
-			const responseUc = await this._repositoryMotors.syncCases(correlationId, motorCasesUpdated, deleted);
+			const responseUc = await this._repositoryMotors.syncCases(correlationId, motorCasesUpdated, deletedMotorCases);
 			if (this._hasFailed(responseUc))
 				return responseUc;
 

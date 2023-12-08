@@ -386,6 +386,14 @@ class PartsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 			
+			if (params.manufacturers && params.manufacturers.length > 0) {
+				const arr = [];
+				params.manufacturers.forEach(element => {
+					arr.push({ 'manufacturerId': element });
+				});
+				where.push({ $or: arr});
+			}
+			
 			if (!String.isNullOrEmpty(params.motorDiameter))
 				where.push({ 'diameter': Number(params.motorDiameter) });
 			

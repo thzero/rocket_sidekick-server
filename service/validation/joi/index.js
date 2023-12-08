@@ -367,6 +367,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		stateProvince: this._stateProvince.allow(null).allow('')
 	});
+
+	_partsName = Joi.string()
+		.trim()
+		//.alphanum()
+		.regex(/^[a-zA-Z0-9]+(['"._\-a-zA-Z0-9 :;,\/\(\\+)@]*)*$/)
+		.min(3)
+		.max(50);
 	
 	parts = Joi.object({
 		id: this.partId,
@@ -379,7 +386,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		description: this._description.allow(null).allow(''),
 		manufacturerId: this.manufacturersId.allow(null).allow(''),
 		manufacturerStockId: this.partId.allow(null).allow(''),
-		name: this._extendedName,
+		name: this._partsName,
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
 		searchName: this._extendedNameBase.allow(null).allow(''),
@@ -409,7 +416,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsCopyParams = Joi.object({
 		id: this.partId,
-		name: this._extendedName
+		name: this._partsName
 	});
 	
 	partsDeploymentBag = this.parts.concat(Joi.object({
@@ -458,7 +465,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerId: this.manufacturersId.allow('').allow(null),
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
-		name: this._extendedName.allow('').allow(null),
+		name: this._partsName.allow('').allow(null),
 		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
 		weight: Joi.number().allow(null),
@@ -519,10 +526,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
+		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		motorDiameter: Joi.number().allow(null),
 		motorImpulseClass: this.impulseClass.allow(null).allow(null),
-		name: this._extendedName.allow('').allow(null),
+		name: this._partsName.allow('').allow(null),
 		partTypes: Joi.array().items(this.partId).allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		thinMill: Joi.boolean().allow(null)

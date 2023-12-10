@@ -256,10 +256,21 @@ class JoiValidationService extends GamerJoiValidationService {
 		});
 		return reasons;
 	}
+
+	launchWeather() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Weather).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
 	
 	launches = Joi.object({
 		id: this.launchId,
 		albumUrl: this.albumOrVideoUrl.allow(null).allow(''),
+		ceiling: Joi.number().allow(null),
+		ceilingMeasurementUnitId: this._measurementId.allow(null),
+		ceilingMeasurementUnitsId: this._measurementId.allow(null),
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		date: Joi.number().required(),
@@ -279,9 +290,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		temperature: Joi.number().allow(null),
+		temperatureMeasurementUnitId: this._measurementId.allow(null),
+		temperatureMeasurementUnitsId: this._measurementId.allow(null),
 		videoUrl: this.albumOrVideoUrl.allow(null).allow(''),
 		updatedTimestamp: Joi.number(),
-		updatedUserId: this._id.allow(null)
+		updatedUserId: this._id.allow(null),
+		weather: Joi.array().items(Joi.string().valid(...this.launchWeather())).allow(null),
+		windSpeed: Joi.number().allow(null),
+		windSpeedMeasurementUnitId: this._measurementId.allow(null),
+		windSpeedMeasurementUnitsId: this._measurementId.allow(null)
 	});
 	
 	launchesParams = Joi.object({
@@ -760,8 +778,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		id: this._measurementId.allow(null).allow(''),
 		acceleration: this._measurementId.allow(null).allow(''),
 		area: this._measurementId.allow(null).allow(''),
+		altitude: this._measurementId.allow(null).allow(''),
 		distance: this._measurementId.allow(null).allow(''),
 		length: this._measurementId.allow(null).allow(''),
+		temperature: this._measurementId.allow(null).allow(''),
 		velocity: this._measurementId.allow(null).allow(''),
 		volume: this._measurementId.allow(null).allow(''),
 		weight: this._measurementId.allow(null).allow('')

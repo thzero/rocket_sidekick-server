@@ -35,7 +35,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	_measurementId = Joi.string()
 		.trim()
 		.alphanum()
-		.min(2)
+		.min(1)
 		.max(10);
 
 	_type = Joi.string()
@@ -220,12 +220,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		accelerationMax: Joi.number().allow(null),
 		accelerationMaxMeasurementUnitId: this._measurementId.allow(null),
 		accelerationMaxMeasurementUnitsId: this._measurementId.allow(null),
-		altitudeDrogue: Joi.number().allow(null),
-		altitudeDrogueMeasurementUnitId: this._measurementId.allow(null),
-		altitudeDrogueMeasurementUnitsId: this._measurementId.allow(null),
-		altitudeMain: Joi.number().allow(null),
-		altitudeMainMeasurementUnitId: this._measurementId.allow(null),
-		altitudeMainMeasurementUnitsId: this._measurementId.allow(null),
+		altitudeDeployDrogue: Joi.number().allow(null),
+		altitudeDeployDrogueMeasurementUnitId: this._measurementId.allow(null),
+		altitudeDeployDrogueMeasurementUnitsId: this._measurementId.allow(null),
+		altitudeDeployMain: Joi.number().allow(null),
+		altitudeDeployMainMeasurementUnitId: this._measurementId.allow(null),
+		altitudeDeployMainMeasurementUnitsId: this._measurementId.allow(null),
 		altitudeMax: Joi.number().allow(null),
 		altitudeMaxMeasurementUnitId: this._measurementId.allow(null),
 		altitudeMaxMeasurementUnitsId: this._measurementId.allow(null),
@@ -236,9 +236,9 @@ class JoiValidationService extends GamerJoiValidationService {
 		velocityRecovery: Joi.number().allow(null),
 		velocityRecoveryMeasurementUnitId: this._measurementId.allow(null),
 		velocityRecoveryMeasurementUnitsId: this._measurementId.allow(null),
-		velcoityMax: Joi.number().allow(null),
-		velcoityMaxMeasurementUnitId: this._measurementId.allow(null),
-		velcoityMaxMeasurementUnitsId: this._measurementId.allow(null)
+		velocityMax: Joi.number().allow(null),
+		velocityMaxMeasurementUnitId: this._measurementId.allow(null),
+		velocityMaxMeasurementUnitsId: this._measurementId.allow(null)
 	});
 
 	launchResultsReasonsFailure() {

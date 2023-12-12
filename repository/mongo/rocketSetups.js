@@ -338,9 +338,15 @@ class RocketSetupsRepository extends AppMongoRepository {
 								'name': 1,
 								'rocketTypes': 1,
 								'stages.index': 1,
+								'stages.cp': 1,
+								'stages.cpMeasurementUnitId': 1,
+								'stages.cpMeasurementUnitsId': 1,
 								'stages.diameterMajor': 1,
 								'stages.diameterMajorMeasurementUnitId': 1,
 								'stages.diameterMajorMeasurementUnitsId': 1,
+								'stages.length': 1,
+								'stages.lengthMeasurementUnitId': 1,
+								'stages.lengthMeasurementUnitsId': 1,
 								'stages.motors': 1
 							}
 						}

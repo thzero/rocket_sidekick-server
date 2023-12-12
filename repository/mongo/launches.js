@@ -199,7 +199,8 @@ class LaunchesRepository extends AppMongoRepository {
 								'_id': 0,
 								'id': 1,
 								'name': 1,
-								'rocketTypes': 1
+								'rocketTypes': 1,
+								'stages': 1
 							}
 						}
 					],

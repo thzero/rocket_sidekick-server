@@ -72,6 +72,82 @@ class ChecklistsService extends Service {
 		}
 	}
 
+	async hasLaunch(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'hasLaunch', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryChecklists.hasLaunch(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'hasLaunch', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasLocation(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'hasLocation', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryChecklists.hasLocation(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'hasLocation', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocket(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'hasRocket', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryChecklists.hasRocket(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'hasRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocketSetup(correlationId, user, id) {
+		this._enforceNotNull('ChecklistsService', 'hasRocketSetup', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryChecklists.hasRocket(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'hasRocketSetup', null, err, null, null, correlationId);
+		}
+	}
+
 	async refreshSearchName(correlationId) {
 		return await this._repositoryChecklists.refreshSearchName(correlationId);
 	}

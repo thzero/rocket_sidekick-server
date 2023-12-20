@@ -1,3 +1,5 @@
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
+
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppMongoRepository from './app.js';
@@ -44,6 +46,98 @@ class LaunchesRepository extends AppMongoRepository {
 		}
 	}
 
+	async hasChecklist(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionLaunches(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the checklist - associated with a launch.');
+				return this._errorResponse('LaunchesRepository', 'hasChecklist', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Checklists.IncludedInLaunch,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'hasChecklist', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasLocation(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionLaunches(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the location - associated with a launch.');
+				return this._errorResponse('LaunchesRepository', 'hasLocation', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Locations.IncludedInLaunch,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'hasLocation', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocket(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionLaunches(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - associated with a launch.');
+				return this._errorResponse('LaunchesRepository', 'hasRocket', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInLaunch,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'hasRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocketSetup(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionLaunches(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketSetupId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - associated with a launch.');
+				return this._errorResponse('LaunchesRepository', 'hasRocketSetup', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.RocketsSetup.IncludedInLaunch,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'hasRocketSetup', null, err, null, null, correlationId);
+		}
+	}
+
 	async refreshSearchName(correlationId) {
 		return await this._refreshSearchName(correlationId, await this._getCollectionLaunches(correlationId));
 	}
@@ -85,11 +179,12 @@ class LaunchesRepository extends AppMongoRepository {
 								'id': 1,
 								'name': 1,
 								'rocketTypes': 1,
-								'stages': 1
-								// 'stages.id': 1,
-								// 'stages.name': 1,
-								// 'stages.index': 1,
-								// 'stages.description': 1
+								// 'stages': 1
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
 							}
 						}
 					],
@@ -97,24 +192,110 @@ class LaunchesRepository extends AppMongoRepository {
 				}
 			});
 			queryA.push({
+				'$lookup': {
+					from: 'rocketSetups',
+					localField: 'rocketSetupId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								// 'stages': 1,
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
+							}
+						}
+					],
+					as: 'rocketSetups'
+				}
+			});
+			queryA.push({
 				'$addFields': {
-					'rocket': {
-						'$arrayElemAt': [
-							'$rockets', 0
-						]
-					},
 					'location': {
 						'$arrayElemAt': [
 							'$locations', 0
 						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
+						]
 					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
 				}
 			});
 			queryA.push({
 				$project: { 
 					'_id': 0,
 					locations: 0,
-					rockets: 0
+					rockets: 0,
+					rocketSetups: 0
 				}
 			});
 
@@ -198,8 +379,10 @@ class LaunchesRepository extends AppMongoRepository {
 							$project: {
 								'_id': 0,
 								'id': 1,
+								'coverUrl': 1,
 								'name': 1,
-								'rocketTypes': 1
+								'rocketTypes': 1,
+								'stages': 1
 							}
 						}
 					],
@@ -207,23 +390,109 @@ class LaunchesRepository extends AppMongoRepository {
 				}
 			});
 			queryA.push({
-				'$addFields': {	
-					'rocket': {
-						'$arrayElemAt': [
-							'$rockets', 0
-						]
-					},
+				'$lookup': {
+					from: 'rocketSetups',
+					localField: 'rocketSetupId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								// 'stages': 1,
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
+							}
+						}
+					],
+					as: 'rocketSetups'
+				}
+			});
+			queryA.push({
+				'$addFields': {
 					'location': {
 						'$arrayElemAt': [
 							'$locations', 0
+						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
 						]
 					}
 				}
 			});
 			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
+				}
+			});
+			queryA.push({
 				$project: { 
 					'locations': 0,
-					'rockets': 0
+					'rockets': 0,
+					'rocketSetups': 0
 				}
 			});
 			queryA.push({

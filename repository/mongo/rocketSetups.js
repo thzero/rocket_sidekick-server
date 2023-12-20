@@ -27,19 +27,6 @@ class RocketSetupsRepository extends AppMongoRepository {
 
 			const collection = await this._getCollectionRocketSetups(correlationId);
 
-			const collectionChecklists = await this._getCollectionChecklists(correlationId);
-			
-			const results = await this._find(correlationId, collectionChecklists, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup. - associated with a checklist');
-				return this._errorResponse('RocketsRepository', 'delete', {
-						found: results.length,
-						results: results
-					},
-					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
-					correlationId);
-			}
-
 			const rocketSetup = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!rocketSetup)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - not found.');
@@ -59,6 +46,29 @@ class RocketSetupsRepository extends AppMongoRepository {
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
+		}
+	}
+
+	async hasRocket(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionChecklists(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - associated with a rocket setup.');
+				return this._errorResponse('RocketSetupsRepository', 'hasRocket', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInRocketSetup,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('RocketSetupsRepository', 'hasRocket', null, err, null, null, correlationId);
 		}
 	}
 
@@ -335,9 +345,20 @@ class RocketSetupsRepository extends AppMongoRepository {
 							$project: {
 								'_id': 0,
 								'id': 1,
+								'coverUrl': 1,
 								'name': 1,
 								'rocketTypes': 1,
-								'stages': 1
+								'stages.index': 1,
+								'stages.cp': 1,
+								'stages.cpMeasurementUnitId': 1,
+								'stages.cpMeasurementUnitsId': 1,
+								'stages.diameterMajor': 1,
+								'stages.diameterMajorMeasurementUnitId': 1,
+								'stages.diameterMajorMeasurementUnitsId': 1,
+								'stages.length': 1,
+								'stages.lengthMeasurementUnitId': 1,
+								'stages.lengthMeasurementUnitsId': 1,
+								'stages.motors': 1
 							}
 						}
 					],
@@ -346,11 +367,6 @@ class RocketSetupsRepository extends AppMongoRepository {
 			});
 			queryA.push({
 				'$addFields': {
-					'rocket': {
-						'$arrayElemAt': [
-							'$rockets', 0
-						]
-					},
 					'motors': {
 						'$setDifference': [ {
 									'$setUnion': [ {
@@ -381,6 +397,11 @@ class RocketSetupsRepository extends AppMongoRepository {
 								]
 							}, 
 							[ null ] 
+						]
+					},
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
 						]
 					}
 				}
@@ -419,7 +440,6 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'id': 1,
 					'name': 1,
 					'description': 1,
-					'coverUrl': 1,
 					'diameterMajor': 1,
 					'length': 1,
 					'motorCases': 1,
@@ -429,6 +449,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 					'typeId': 1,
 					'weight': 1,
 					'rocket.id': 1,
+					'rocket.coverUrl': 1,
 					'rocket.name': 1,
 					'rocket.rocketTypes': 1,
 					'rocket.stages': 1

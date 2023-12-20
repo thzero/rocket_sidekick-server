@@ -13,6 +13,9 @@ class LocationsService extends Service {
 		await super.init(injector);
 
 		this._repositoryLocations = this._injector.getService(Constants.InjectorKeys.REPOSITORY_LOCATIONS);
+		
+		this._serviceChecklists = this._injector.getService(Constants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceLaunches = this._injector.getService(Constants.InjectorKeys.SERVICE_LAUNCHES);
 	}
 
 	async delete(correlationId, user, id) {
@@ -29,8 +32,14 @@ class LocationsService extends Service {
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 
-			// TODO: See if its used in a checklist
-			// TODO: See if its used in a launch
+			// See if its used in a checklist
+			const checklistResponse = this._serviceChecklists.hasLocation(correlationId, user, id);
+			if (this._hasFailed(checklistResponse))
+				return checklistResponse;
+			// See if its used in a launch
+			const launchResponse = this._serviceLaunches.hasLocation(correlationId, user, id);
+			if (this._hasFailed(launchResponse))
+				return launchResponse;
 	
 			return await this._repositoryLocations.delete(correlationId, user.id, id);
 		}

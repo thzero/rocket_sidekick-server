@@ -1,3 +1,5 @@
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
+
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppMongoRepository from './app.js';
@@ -42,6 +44,98 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);
+		}
+	}
+
+	async hasLaunch(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionChecklists(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the launch - associated with a checklist.');
+				return this._errorResponse('ChecklistsRepository', 'hasLaunch', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Launches.IncludedInChecklist,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'hasLaunch', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasLocation(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionChecklists(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the location - associated with a checklist.');
+				return this._errorResponse('ChecklistsRepository', 'hasLocation', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Locations.IncludedInChecklist,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'hasLocation', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocket(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionChecklists(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - associated with a checklist.');
+				return this._errorResponse('ChecklistsRepository', 'hasRocket', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'hasRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocketSetup(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionLaunches(correlationId);
+
+			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketSetupId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - associated with a checklist.');
+				return this._errorResponse('ChecklistsRepository', 'hasRocketSetup', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.RocketSetups.IncludedInChecklist,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'hasRocketSetup', null, err, null, null, correlationId);
 		}
 	}
 

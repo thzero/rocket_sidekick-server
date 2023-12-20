@@ -13,6 +13,8 @@ class LaunchesService extends Service {
 		await super.init(injector);
 
 		this._repositoryLaunches = this._injector.getService(Constants.InjectorKeys.REPOSITORY_LAUNCHES);
+		
+		this._serviceChecklists = this._injector.getService(Constants.InjectorKeys.SERVICE_CHECKLISTS);
 	}
 
 	async delete(correlationId, user, id) {
@@ -27,7 +29,10 @@ class LaunchesService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: See if its used in a checklist
+			// See if its used in a checklist
+			const checklistResponse = this._serviceChecklists.hasLaunch(correlationId, user, id);
+			if (this._hasFailed(checklistResponse))
+				return checklistResponse;
 
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
@@ -35,6 +40,63 @@ class LaunchesService extends Service {
 		}
 		catch (err) {
 			return this._error('LaunchesService', 'delete', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasLocation(correlationId, user, id) {
+		this._enforceNotNull('LaunchesService', 'hasLaunch', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryLaunches.hasLocation(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('LaunchesService', 'hasLocation', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocket(correlationId, user, id) {
+		this._enforceNotNull('LaunchesService', 'hasRocket', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryLaunches.hasRocket(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('LaunchesService', 'hasRocket', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasRocketSetup(correlationId, user, id) {
+		this._enforceNotNull('LaunchesService', 'hasRocketSetup', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryLaunches.hasRocket(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('LaunchesService', 'hasRocketSetup', null, err, null, null, correlationId);
 		}
 	}
 

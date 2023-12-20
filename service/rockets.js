@@ -16,6 +16,9 @@ class RocketsService extends Service {
 		await super.init(injector);
 
 		this._repositoryRockets = this._injector.getService(Constants.InjectorKeys.REPOSITORY_ROCKETS);
+		
+		this._serviceChecklists = this._injector.getService(Constants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceLaunches = this._injector.getService(Constants.InjectorKeys.SERVICE_LAUNCHES);
 	}
 
 	async copy(correlationId, user, params) {
@@ -65,6 +68,15 @@ class RocketsService extends Service {
 			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 
 			// TODO: See if its used in a checklist or rocket setup
+
+			// See if its used in a checklist
+			const checklistResponse = this._serviceChecklists.hasRocket(correlationId, user, id);
+			if (this._hasFailed(checklistResponse))
+				return checklistResponse;
+			// See if its used in a launch
+			const launchResponse = this._serviceLaunches.hasRocket(correlationId, user, id);
+			if (this._hasFailed(launchResponse))
+				return launchResponse;
 	
 			return await this._repositoryRockets.delete(correlationId, user.id, id);
 		}

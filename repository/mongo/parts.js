@@ -24,19 +24,6 @@ class PartsRepository extends AppMongoRepository {
 
 			const collection = await this._getCollectionParts(correlationId);
 
-			// TODO: Check to see if the part is in rockets or rocket setup...
-			// const collectionRockets = await this._getCollectionRockets(correlationId);
-			// results = await this._find(correlationId, collectionRockets, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			// if (results && results.length > 0) {
-			// 	await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-			// 	return this._errorResponse('PartsRepository', 'deleteUser', {
-			// 			found: results.length,
-			// 			results: results
-			// 		},
-			// 		AppSharedConstants.ErrorCodes.Parts.IncludedInRocket,
-			// 		correlationId);
-			// }
-
 			const part = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!part)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the part - not found.');

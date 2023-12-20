@@ -80,7 +80,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launchId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -99,7 +99,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.locationId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -137,7 +137,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 

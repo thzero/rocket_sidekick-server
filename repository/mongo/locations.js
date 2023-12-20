@@ -27,18 +27,6 @@ class LocationsRepository extends AppMongoRepository {
 			const location = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!location)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the location - not found.');
-			
-			const collectionLauunches = await this._getCollectionLauunchess(correlationId);
-			const resultsLauunches = await this._find(correlationId, collectionLauunches, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (resultsLauunches && resultsLauunches.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-				return this._errorResponse('RocketsRepository', 'delete', {
-						found: resultsLauunches.length,
-						results: resultsLauunches
-					},
-					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
-					correlationId);
-			}
 
 			location.deleted = true;
 			location.deletedUserId = userId;

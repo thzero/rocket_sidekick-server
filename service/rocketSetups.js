@@ -63,7 +63,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -82,6 +82,25 @@ class RocketSetupsService extends Service {
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'delete', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasPart(correlationId, user, id) {
+		this._enforceNotNull('RocketSetupsService', 'hasPart', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryRocketSetups.hasPart(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('RocketSetupsService', 'hasPart', null, err, null, null, correlationId);
 		}
 	}
 
@@ -116,7 +135,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	

@@ -85,6 +85,25 @@ class RocketsService extends Service {
 		}
 	}
 
+	async hasPart(correlationId, user, id) {
+		this._enforceNotNull('RocketsService', 'hasPart', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryRockets.hasPart(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('RocketsService', 'hasPart', null, err, null, null, correlationId);
+		}
+	}
+
 	async refreshSearchName(correlationId) {
 		return await this._repositoryRockets.refreshSearchName(correlationId);
 	}

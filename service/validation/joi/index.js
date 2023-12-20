@@ -134,7 +134,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		rocketId: this.rocketId.allow(null),
-		rocketSetupId: this.rocketId.allow(null),
+		rocketSetupId: this.rocketSetupId.allow(null),
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		statusId: this._type,
 		steps: Joi.array().items(Joi.any()).allow(null),
@@ -287,7 +287,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		public: Joi.boolean().required(),
 		results: this.launchResults.allow(null),
 		rocketId: this.rocketId,
-		rocketSetupId: this.rocketId,
+		rocketSetupId: this.rocketSetupId,
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
@@ -698,7 +698,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	rocketSetupStage = Joi.object({
 		id: this.rocketId,
 		rocketStageId: this.rocketId,
-		rocketSetupId: this.rocketId.allow(null).allow(''), // TODO: remove
+		rocketSetupId: this.rocketSetupId.allow(null).allow(''), // TODO: remove
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),

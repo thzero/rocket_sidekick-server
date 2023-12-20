@@ -17,6 +17,9 @@ class PartsService extends Service {
 		await super.init(injector);
 
 		this._repositoryParts = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PARTS);
+		
+		this._serviceRockets = this._injector.getService(Constants.InjectorKeys.SERVICE_ROCKETS);
+		this._serviceRocketSetups = this._injector.getService(Constants.InjectorKeys.SERVICE_ROCKETSETUPS);
 	}
 
 	async copy(correlationId, user, params) {
@@ -69,7 +72,14 @@ class PartsService extends Service {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 				
-			// TODO: See if its used in a checklist or rocket setup
+			// See if its used in a rocket
+			const checklistResponse = this._serviceRockets.hasPart(correlationId, user, id);
+			if (this._hasFailed(checklistResponse))
+				return checklistResponse;
+			// See if its used in a rocket setup
+			const launchResponse = this._serviceRocketSetups.hasPart(correlationId, user, id);
+			if (this._hasFailed(launchResponse))
+				return launchResponse;
 	
 			const part = fetchRespositoryResponse.results;
 			if (!part) {

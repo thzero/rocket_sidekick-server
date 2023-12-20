@@ -1,8 +1,8 @@
 import Constants from '../constants.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
-class LocationsService extends Service {
+class LocationsService extends AppService {
 	constructor() {
 		super();
 
@@ -30,7 +30,18 @@ class LocationsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			const responseLookup = this._repositoryLocations.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isPublic(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'LocationsService', 'delete');
+			}
 
 			// See if its used in a checklist
 			const checklistResponse = this._serviceChecklists.hasLocation(correlationId, user, id);
@@ -104,8 +115,18 @@ class LocationsService extends Service {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
-			// TODO: SECURITY: Also needs to check if setting public if its an admin
+			const responseLookup = this._repositoryLocations.retrieveSecurity(correlationId, user.id, locationUpdate.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isPublic(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'LocationsService', 'update');
+			}
 	
 			const location = fetchRespositoryResponse.results;
 			if (!location) {

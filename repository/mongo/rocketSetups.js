@@ -327,6 +327,34 @@ class RocketSetupsRepository extends AppMongoRepository {
 			return this._error('RocketSetupsRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{ 'ownerId': userId },
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+
+			const collection = await this._getCollectionRocketSetups(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketSetupsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
+		}
+	}
 
 	async search(correlationId, userId, params) {
 		try {

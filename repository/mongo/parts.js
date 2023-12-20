@@ -147,6 +147,47 @@ class PartsRepository extends AppMongoRepository {
 			return this._error('PartsRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{
+								$or: [
+									{ 'ownerId': userId },
+									{ 'public': { $ne: false } }
+								]
+							},
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'ownerId': 0,
+					'isDefault': 0,
+					'name': 0
+				}
+			});
+
+			const collection = await this._getCollectionParts(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
+		}
+	}
 
 	async search(correlationId, userId, params) {
 		try {

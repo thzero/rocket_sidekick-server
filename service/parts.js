@@ -33,6 +33,19 @@ class PartsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isPublic(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'PartsService', 'copy');
+			}
 	
 			const response = await this._repositoryParts.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
@@ -66,7 +79,18 @@ class PartsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isPublic(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'PartsService', 'delete');
+			}
 	
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, id);
 			if (this._hasFailed(fetchRespositoryResponse))
@@ -229,19 +253,26 @@ class PartsService extends Service {
 			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidation(correlationId, partsUpdate.typeId), partsUpdate);
 			if (this._hasFailed(validationChecklistResponse2))
 				return validationChecklistResponse2;
+
+			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, partsUpdate.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isPublic(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'PartsService', 'update');
+			}
 	
 			const fetchRespositoryResponse = await this._repositoryParts.retrieve(correlationId, user.id, partsUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
-
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
-			// TODO: SECURITY: Also needs to check if setting public if its an admin
 	
 			const part = fetchRespositoryResponse.results;
 			if (part) {
-				// TODO: SECURITY: Check admin security...
-				// if (part.public)
-				// 	return this._error('PartsService', 'update', null, null, AppSharedConstants.ErrorCodes.Parts.UpdatePublic, null, correlationId);
 	
 				const validResponse = this._checkUpdatedTimestamp(correlationId, partsUpdate, part, 'part');
 				if (this._hasFailed(validResponse))

@@ -34,7 +34,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
+			const responseLookup = await this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -79,7 +79,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
+			const responseLookup = await this._repositoryParts.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -254,7 +254,7 @@ class PartsService extends Service {
 			if (this._hasFailed(validationChecklistResponse2))
 				return validationChecklistResponse2;
 
-			const responseLookup = this._repositoryParts.retrieveSecurity(correlationId, user.id, partsUpdate.id);
+			const responseLookup = await this._repositoryParts.retrieveSecurity(correlationId, user.id, partsUpdate.id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 

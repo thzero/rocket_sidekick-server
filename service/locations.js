@@ -30,7 +30,7 @@ class LocationsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryLocations.retrieveSecurity(correlationId, user.id, id);
+			const responseLookup = await this._repositoryLocations.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -115,7 +115,7 @@ class LocationsService extends AppService {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
-			const responseLookup = this._repositoryLocations.retrieveSecurity(correlationId, user.id, locationUpdate.id);
+			const responseLookup = await this._repositoryLocations.retrieveSecurity(correlationId, user.id, locationUpdate.id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 

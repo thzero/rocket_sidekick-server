@@ -30,7 +30,7 @@ class ChecklistsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryChecklists.retrieveSecurity(correlationId, user.id, params.id);
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, params.id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -73,7 +73,7 @@ class ChecklistsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryChecklists.retrieveSecurity(correlationId, user.id, id);
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -221,7 +221,7 @@ class ChecklistsService extends AppService {
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
 
-			const responseLookup = this._repositoryChecklists.retrieveSecurity(correlationId, user.id, checklistUpdate.id);
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, checklistUpdate.id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 

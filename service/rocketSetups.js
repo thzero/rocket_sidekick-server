@@ -35,7 +35,7 @@ class RocketSetupsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryRocketSetups.retrieveSecurity(correlationId, user.id, params.id);
+			const responseLookup = await this._repositoryRocketSetups.retrieveSecurity(correlationId, user.id, params.id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 			
@@ -75,7 +75,7 @@ class RocketSetupsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = this._repositoryLaunches.retrieveSecurity(correlationId, user.id, id);
+			const responseLookup = await this._repositoryLaunches.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 			

@@ -342,6 +342,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		address: this.locationsAddress.allow(null),
 		coordsLat: Joi.number().allow(null),
 		coordsLong: Joi.number().allow(null),
+		dates: Joi.array().items(Joi.number()).allow(null),
 		experimental: Joi.boolean().allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		number: this.locationsIterationNumber.allow(null).allow(''),

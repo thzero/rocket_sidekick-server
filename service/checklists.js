@@ -234,7 +234,7 @@ class ChecklistsService extends AppService {
 					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'update');
 			}
 	
-			const fetchRespositoryResponse = await this._repositoryChecklists.retrieveUser(correlationId, user.id, checklistUpdate.id);
+			const fetchRespositoryResponse = await this._repositoryChecklists.retrieve(correlationId, user.id, checklistUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 	

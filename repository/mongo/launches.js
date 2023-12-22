@@ -161,7 +161,12 @@ class LaunchesRepository extends AppMongoRepository {
 					foreignField: 'id',  
 					pipeline: [ {
 							$project: {
-								'_id': 0
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
 							}
 						}
 					],
@@ -320,12 +325,7 @@ class LaunchesRepository extends AppMongoRepository {
 					$match: {
 						$and: [
 							{ 'id': id },
-							{
-								$or: [
-									{ 'ownerId': userId },
-									{ 'public': { $ne: false } }
-								]
-							},
+							{ 'ownerId': userId },
 							{ 'deleted': { $ne: true } }
 						]
 					}
@@ -334,9 +334,9 @@ class LaunchesRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					'ownerId': 0,
-					'public': 0,
-					'name': 0
+					'id': 1,
+					'ownerId': 1,
+					'name': 1
 				}
 			});
 
@@ -404,7 +404,12 @@ class LaunchesRepository extends AppMongoRepository {
 					foreignField: 'id',  
 					pipeline: [ {
 							$project: {
-								'_id': 0
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
 							}
 						}
 					],

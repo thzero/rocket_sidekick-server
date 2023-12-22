@@ -103,9 +103,11 @@ class LocationsRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					'ownerId': 0,
-					'isDefault': 0,
-					'name': 0
+					'id': 1,
+					'isDefault': 1,
+					'ownerId': 1,
+					'public': 1,
+					'name': 1
 				}
 			});
 

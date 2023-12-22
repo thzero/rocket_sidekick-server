@@ -119,7 +119,7 @@ class ChecklistsRepository extends AppMongoRepository {
 	async hasRocketSetup(correlationId, userId, id) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
-			const collection = await this._getCollectionLaunches(correlationId);
+			const collection = await this._getCollectionChecklists(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketSetupId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
@@ -137,10 +137,6 @@ class ChecklistsRepository extends AppMongoRepository {
 		catch (err) {
 			return this._error('ChecklistsRepository', 'hasRocketSetup', null, err, null, null, correlationId);
 		}
-	}
-
-	async refreshSearchName(correlationId) {
-		return await this._refreshSearchName(correlationId, await this._getCollectionChecklists(correlationId));
 	}
 
 	async retrieve(correlationId, userId, id) {
@@ -169,8 +165,152 @@ class ChecklistsRepository extends AppMongoRepository {
 				}
 			];
 			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								// 'stages': 1
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rocketSetups',
+					localField: 'rocketSetupId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								// 'stages': 1,
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
+							}
+						}
+					],
+					as: 'rocketSetups'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
+				}
+			});
+			queryA.push({
 				$project: { 
-					'_id': 0
+					'_id': 0,
+					locations: 0,
+					rockets: 0,
+					rocketSetups: 0
 				}
 			});
 	
@@ -184,6 +324,53 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('ChecklistsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+
+	async refreshSearchName(correlationId) {
+		return await this._refreshSearchName(correlationId, await this._getCollectionChecklists(correlationId));
+	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{
+								$or: [
+									{ 'ownerId': userId },
+									{ 'isDefault': { $ne: false } }
+								]
+							},
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'isDefault': 1,
+					'ownerId': 1,
+					'public': 1,
+					'name': 1
+				}
+			});
+
+			const collection = await this._getCollectionChecklists(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('ChecklistsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
 		}
 	}
 
@@ -229,8 +416,181 @@ class ChecklistsRepository extends AppMongoRepository {
 					'typeId': 1,
 					'isDefault': 1,
 					'launchTypeId': 1,
+					'locationId': 1,
+					'locationIterationId': 1,
+					'rocketId': 1,
+					'rocketSetupId': 1,
 					'statusId': 1,
 					'ownerId': 1
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'coverUrl': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rocketSetups',
+					localField: 'rocketSetupId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								// 'stages': 1,
+								'stages.id': 1,
+								'stages.description': 1,
+								'stages.index': 1,
+								'stages.motors': 1,
+								'stages.name': 1
+							}
+						}
+					],
+					as: 'rocketSetups'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
+				}
+			});
+			queryA.push({
+				$project: { 
+					'locations': 0,
+					'rockets': 0,
+					'rocketSetups': 0
+				}
+			});
+			queryA.push({
+				$addFields: {
+					'location.iteration': {
+						$arrayElemAt: [ 
+							{ 
+								$filter: {
+									input: '$location.iterations',
+									cond: { 
+										$and: [
+											{ $eq: [ "$$this.id", "$locationIterationId" ] },
+										] 
+									}
+								}
+							}, 
+							0
+						] 
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'location.iterations': 0
 				}
 			});
 

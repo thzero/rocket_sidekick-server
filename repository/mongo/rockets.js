@@ -248,6 +248,14 @@ class RocketsRepository extends AppMongoRepository {
 					}
 				}
 			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'ownerId': 1,
+					'name': 1
+				}
+			});
 
 			const collection = await this._getCollectionRockets(correlationId);
 			let results = await this._aggregate(correlationId, collection, queryA);

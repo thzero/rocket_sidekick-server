@@ -161,7 +161,12 @@ class LaunchesRepository extends AppMongoRepository {
 					foreignField: 'id',  
 					pipeline: [ {
 							$project: {
-								'_id': 0
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
 							}
 						}
 					],
@@ -313,6 +318,42 @@ class LaunchesRepository extends AppMongoRepository {
 			return this._error('LaunchesRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{ 'ownerId': userId },
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'ownerId': 1,
+					'name': 1
+				}
+			});
+
+			const collection = await this._getCollectionLaunches(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'retrieveSecurity', null, err, null, null, correlationId);
+		}
+	}
 
 	async search(correlationId, userId, params) {
 		try {
@@ -363,7 +404,12 @@ class LaunchesRepository extends AppMongoRepository {
 					foreignField: 'id',  
 					pipeline: [ {
 							$project: {
-								'_id': 0
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
 							}
 						}
 					],

@@ -2,9 +2,9 @@ import Constants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
-class RocketsService extends Service {
+class RocketsService extends AppService {
 	constructor() {
 		super();
 
@@ -32,6 +32,14 @@ class RocketsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			const responseLookup = await this._repositoryRockets.retrieveSecurity(correlationId, user.id, params.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+			
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, responseLookup.results))
+				return this._securityErrorResponse(correlationId, 'RocketsService', 'copy');
 	
 			const response = await this._repositoryRockets.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
@@ -65,9 +73,13 @@ class RocketsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
-
-			// TODO: See if its used in a checklist or rocket setup
+			const responseLookup = await this._repositoryLaunches.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+			
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, responseLookup.results))
+				return this._securityErrorResponse(correlationId, 'RocketsService', 'delete');
 
 			// See if its used in a checklist
 			const checklistResponse = this._serviceChecklists.hasRocket(correlationId, user, id);
@@ -82,6 +94,25 @@ class RocketsService extends Service {
 		}
 		catch (err) {
 			return this._error('RocketsService', 'delete', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasPart(correlationId, user, id) {
+		this._enforceNotNull('RocketsService', 'hasPart', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryRockets.hasPart(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('RocketsService', 'hasPart', null, err, null, null, correlationId);
 		}
 	}
 
@@ -167,7 +198,9 @@ class RocketsService extends Service {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, fetchRespositoryResponse.results))
+				return this._securityErrorResponse(correlationId, 'RocketsService', 'update');
 	
 			const rocket = fetchRespositoryResponse.results;
 			if (!rocket) {

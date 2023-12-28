@@ -27,18 +27,6 @@ class LocationsRepository extends AppMongoRepository {
 			const location = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!location)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the location - not found.');
-			
-			const collectionLauunches = await this._getCollectionLauunchess(correlationId);
-			const resultsLauunches = await this._find(correlationId, collectionLauunches, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (resultsLauunches && resultsLauunches.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-				return this._errorResponse('RocketsRepository', 'delete', {
-						found: resultsLauunches.length,
-						results: resultsLauunches
-					},
-					AppSharedConstants.ErrorCodes.Rockets.IncludedInChecklist,
-					correlationId);
-			}
 
 			location.deleted = true;
 			location.deletedUserId = userId;
@@ -92,6 +80,49 @@ class LocationsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('LocationsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{
+								$or: [
+									{ 'ownerId': userId },
+									{ 'public': { $ne: false } }
+								]
+							},
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'isDefault': 1,
+					'ownerId': 1,
+					'public': 1,
+					'name': 1
+				}
+			});
+
+			const collection = await this._getCollectionLocations(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('LocationsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
 		}
 	}
 

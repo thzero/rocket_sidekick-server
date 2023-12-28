@@ -2,11 +2,11 @@ import Constants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
 import RocketSetupStageData from 'rocket_sidekick_common/data/rockets/setups/stage.js';
 
-class RocketSetupsService extends Service {
+class RocketSetupsService extends AppService {
 	constructor() {
 		super();
 
@@ -24,7 +24,7 @@ class RocketSetupsService extends Service {
 	}
 
 	async copy(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'copy', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'copy', 'user', user, correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -34,6 +34,14 @@ class RocketSetupsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupsCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			const responseLookup = await this._repositoryRocketSetups.retrieveSecurity(correlationId, user.id, params.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+			
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, responseLookup.results))
+				return this._securityErrorResponse(correlationId, 'RocketSetupsService', 'copy');
 	
 			const response = await this._repositoryRocketSetups.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
@@ -63,11 +71,17 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			const responseLookup = await this._repositoryLaunches.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+			
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, responseLookup.results))
+				return this._securityErrorResponse(correlationId, 'RocketSetupsService', 'delete');
 
 			// See if its used in a checklist
 			const checklistResponse = this._serviceChecklists.hasRocketSetup(correlationId, user, id);
@@ -82,6 +96,25 @@ class RocketSetupsService extends Service {
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'delete', null, err, null, null, correlationId);
+		}
+	}
+
+	async hasPart(correlationId, user, id) {
+		this._enforceNotNull('RocketSetupsService', 'hasPart', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			return await this._repositoryRocketSetups.hasPart(correlationId, user.id, id);
+		}
+		catch (err) {
+			return this._error('RocketSetupsService', 'hasPart', null, err, null, null, correlationId);
 		}
 	}
 
@@ -116,7 +149,7 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
@@ -194,7 +227,9 @@ class RocketSetupsService extends Service {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, fetchRespositoryResponse.results))
+				return this._securityErrorResponse(correlationId, 'RocketSetupsService', 'update');
 	
 			const rocketSetup = fetchRespositoryResponse.results;
 			if (!rocketSetup) {

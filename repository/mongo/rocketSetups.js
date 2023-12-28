@@ -49,6 +49,46 @@ class RocketSetupsRepository extends AppMongoRepository {
 		}
 	}
 
+	async hasPart(correlationId, userId, id) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			const collection = await this._getCollectionChecklists(correlationId);
+
+			const results = await this._find(correlationId, collection, { 
+				$and: [ 
+					{ 'ownerId' : userId }, 
+					{ $or: [ 
+							{ 'altimeters.id' : id }, 
+							{ 'chuteProtectors.id': id }, 
+							{ 'chuteReleases.id': id }, 
+							{ 'deploymentBags.id': id }, 
+							{ 'motors.motorId': id }, 
+							{ 'motors.motorCaseId': id }, 
+							{ 'parachutes.id': id }, 
+							{ 'streamers.id': id }, 
+							{ 'trackers.id': id }
+						] 
+					}, 
+					{ $expr: { $ne: [ 'deleted', true ] } } 
+				] 
+			});
+			if (results && results.length > 0) {
+				await this._transactionAbort(correlationId, session, 'Unable to delete the part - associated with a rocket setup.');
+				return this._errorResponse('RocketSetupsRepository', 'hasPart', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Rockets.IncludedInRocketSetup,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('RocketSetupsRepository', 'hasPart', null, err, null, null, correlationId);
+		}
+	}
+
 	async hasRocket(correlationId, userId, id) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
@@ -285,6 +325,42 @@ class RocketSetupsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('RocketSetupsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{ 'ownerId': userId },
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'id': 1,
+					'ownerId': 1,
+					'name': 1
+				}
+			});
+
+			const collection = await this._getCollectionRocketSetups(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketSetupsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
 		}
 	}
 

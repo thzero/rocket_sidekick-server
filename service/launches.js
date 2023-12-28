@@ -1,8 +1,8 @@
 import Constants from '../constants.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
-class LaunchesService extends Service {
+class LaunchesService extends AppService {
 	constructor() {
 		super();
 
@@ -29,12 +29,18 @@ class LaunchesService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
+			const responseLookup = await this._repositoryLaunches.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, responseLookup.results))
+				return this._securityErrorResponse(correlationId, 'LaunchesService', 'delete');
+
 			// See if its used in a checklist
 			const checklistResponse = this._serviceChecklists.hasLaunch(correlationId, user, id);
 			if (this._hasFailed(checklistResponse))
 				return checklistResponse;
-
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			return await this._repositoryLaunches.delete(correlationId, user.id, id);
 		}
@@ -51,7 +57,7 @@ class LaunchesService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.locationId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -89,7 +95,7 @@ class LaunchesService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -156,7 +162,9 @@ class LaunchesService extends Service {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			// SECURITY: Check is the owner
+			if (!this._isOwner(correlationId, user, fetchRespositoryResponse.results))
+				return this._securityErrorResponse(correlationId, 'LaunchesService', 'update');
 	
 			const launch = fetchRespositoryResponse.results;
 			if (!launch) {

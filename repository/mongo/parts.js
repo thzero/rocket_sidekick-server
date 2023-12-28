@@ -24,19 +24,6 @@ class PartsRepository extends AppMongoRepository {
 
 			const collection = await this._getCollectionParts(correlationId);
 
-			// TODO: Check to see if the part is in rockets or rocket setup...
-			// const collectionRockets = await this._getCollectionRockets(correlationId);
-			// results = await this._find(correlationId, collectionRockets, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			// if (results && results.length > 0) {
-			// 	await this._transactionAbort(correlationId, session, 'Unable to delete the rocket. - associated with a checklist');
-			// 	return this._errorResponse('PartsRepository', 'deleteUser', {
-			// 			found: results.length,
-			// 			results: results
-			// 		},
-			// 		AppSharedConstants.ErrorCodes.Parts.IncludedInRocket,
-			// 		correlationId);
-			// }
-
 			const part = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
 			if (!part)
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the part - not found.');
@@ -158,6 +145,47 @@ class PartsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('PartsRepository', 'retrieve', null, err, null, null, correlationId);
+		}
+	}
+	
+	async retrieveSecurity(correlationId, userId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{
+								$or: [
+									{ 'ownerId': userId },
+									{ 'public': { $ne: false } }
+								]
+							},
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'ownerId': 0,
+					'isDefault': 0,
+					'name': 0
+				}
+			});
+
+			const collection = await this._getCollectionParts(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length === 0)
+				return this._success(correlationId);
+			
+			results = results[0];
+
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('PartsRepository', 'retrieveSecurity', null, err, null, null, correlationId);
 		}
 	}
 

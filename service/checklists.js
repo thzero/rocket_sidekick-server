@@ -2,9 +2,9 @@ import Constants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
-class ChecklistsService extends Service {
+class ChecklistsService extends AppService {
 	constructor() {
 		super();
 
@@ -29,6 +29,16 @@ class ChecklistsService extends Service {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistCopyParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, params.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (!this._isDefault(correlationId, user, responseLookup.results) && !this._isPublic(correlationId, user, responseLookup.results)) {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'copy');
+			}
 	
 			const response = await this._repositoryChecklists.retrieve(correlationId, user.id, params.id);
 			if (this._hasFailed(validationResponse))
@@ -63,7 +73,18 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isDefault(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'delete');
+			}
 	
 			return await this._repositoryChecklists.delete(correlationId, user.id, id);
 		}
@@ -80,7 +101,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launchId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -99,7 +120,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.locationId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -137,7 +158,7 @@ class ChecklistsService extends Service {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketSetupId, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
@@ -199,12 +220,23 @@ class ChecklistsService extends Service {
 			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklist, checklistUpdate);
 			if (this._hasFailed(validationChecklistResponse))
 				return validationChecklistResponse;
+
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, checklistUpdate.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (this._isDefault(correlationId, user, responseLookup.results)) {
+				// TODO: SECURITY: Check for admin if its a public
+			}
+			else {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'update');
+			}
 	
-			const fetchRespositoryResponse = await this._repositoryChecklists.retrieveUser(correlationId, user.id, checklistUpdate.id);
+			const fetchRespositoryResponse = await this._repositoryChecklists.retrieve(correlationId, user.id, checklistUpdate.id);
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
-
-			// TODO: SECURITY: Check for admin if its a default otherwise is the owner
 	
 			const checklist = fetchRespositoryResponse.results;
 			if (!checklist) {

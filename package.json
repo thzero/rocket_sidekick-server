@@ -1,11 +1,11 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.1.34",
+  "version": "0.1.37",
   "version_major": 0,
   "version_minor": 1,
-  "version_patch": 34,
-  "version_date": "12/20/2023",
+  "version_patch": 37,
+  "version_date": "12/28/2023",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
   "license": "MIT",
@@ -29,29 +29,19 @@
     "id": "library-cli --nano"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.17.12",
+    "@thzero/library_common": "^0.17.13",
     "@thzero/library_common_service": "^0.17.2",
-    "@thzero/library_server": "^0.17.15",
+    "@thzero/library_server": "^0.17.16",
     "@thzero/library_server_fastify": "^0.17.18",
     "@thzero/library_server_firebase": "^0.17.7",
-    "@thzero/library_server_logger_pino": "^0.17.6",
+    "@thzero/library_server_logger_pino": "^0.17.7",
     "@thzero/library_server_repository_mongo": "^0.17.11",
     "@thzero/library_server_service_rest_axios": "^0.17.7",
-    "@thzero/library_server_validation_joi": "^0.17.8",
+    "@thzero/library_server_validation_joi": "^0.17.9",
     "cbor-x": "^1.5.6",
     "decimal.js-light": "^2.5.1",
-    "pino-pretty": "^10.2.3",
+    "pino-pretty": "^10.3.1",
     "rocket_sidekick_common": "^0.0.72",
     "snappyjs": "^0.7.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "^7.20.2",
-    "babel-loader": "^9.1.2",
-    "eslint": "^8.36.0",
-    "eslint-plugin-node": "^11.1.0",
-    "webpack": "^5.76.2",
-    "webpack-cli": "^5.0.1"
   }
 }

@@ -15,6 +15,7 @@
 		"cors": {
 			"origin": "*"
 		},
+		"http2": false,
 		"logging": {
 			"level": null,
 			"prettify": true

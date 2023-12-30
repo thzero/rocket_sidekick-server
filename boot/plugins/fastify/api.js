@@ -26,7 +26,6 @@ import partsRoute from '../../../routes/fastify/parts.js';
 import rocketsRoute from '../../../routes/fastify/rockets.js';
 import rocketSetupsRoute from '../../../routes/fastify/rocketSetups.js';
 import syncRoute from '../../../routes/fastify/sync.js';
-import usersRoute from '../../../routes/fastify/users.js';
 import utilityRoute from '../../../routes/fastify/utility.js';
 
 import apiService from '../../../service/api.js';
@@ -81,10 +80,6 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		this._initRoute(new syncRoute());
 	}
 
-	_initRoutesUsers() {
-		return new usersRoute();
-	}
-
 	_initRoutesUtility() {
 		return new utilityRoute();
 	}
@@ -125,12 +120,12 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 		return new securityService();
 	}
 
-	_initServicesVersion() {
-		return new versionService();
-	}
-
 	_initServicesUtility() {
 		return new utilityService();
+	}
+
+	_initServicesVersion() {
+		return new versionService();
 	}
 }
 

@@ -1,5 +1,3 @@
-import * as https from 'https';
-
 import { Mutex as asyncMutex } from 'async-mutex';
 import SnappyJS from 'snappyjs';
 import { decode, encode } from 'cbor-x';
@@ -182,9 +180,9 @@ class AppUtilityService extends UtilityService {
 				return response;
 
 			const now = LibraryCommonUtility.getTimestamp();
-			response.results.info = response.results.info.filter(l => this._contentListingFilter(l, now));
-			response.results.links = response.results.links.filter(l => this._contentListingFilter(l, now));
-			response.results.tools = response.results.tools.filter(l => this._contentListingFilter(l, now));
+			response.results.info = (response.results && response.results.length > 0) ? response.results.info.filter(l => this._contentListingFilter(l, now)) : [];
+			response.results.links = (response.results && response.results.length > 0) ? response.results.links.filter(l => this._contentListingFilter(l, now)) : [];
+			response.results.tools = (response.results && response.results.length > 0) ? response.results.tools.filter(l => this._contentListingFilter(l, now)) : [];
 
 			this._cacheContentListing = response.results;
 			this._ttlContentListing = LibraryCommonUtility.getTimestamp();

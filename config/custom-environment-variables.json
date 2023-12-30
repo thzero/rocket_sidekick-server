@@ -23,7 +23,7 @@
 			"level": "LOGGING_LEVEL",
 			"prettify": "LOGGING_PRETTIFY"
 		},
-		"port": "PORT",
-		"ownerId": "OWNER_ID"
+		"ownerId": "OWNER_ID",
+		"port": "PORT"
 	}
 }

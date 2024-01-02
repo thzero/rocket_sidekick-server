@@ -38,7 +38,7 @@
     "@thzero/library_server_repository_mongo": "^0.17.12",
     "@thzero/library_server_service_rest_axios": "^0.17.8",
     "@thzero/library_server_validation_joi": "^0.17.10",
-    "cbor-x": "^1.5.6",
+    "cbor-x": "^1.5.7",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.3.1",
     "rocket_sidekick_common": "^0.0.72",

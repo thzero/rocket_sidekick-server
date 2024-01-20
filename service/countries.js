@@ -4,7 +4,7 @@ import { Mutex as asyncMutex } from 'async-mutex';
 
 import Constants from '../constants.js';
 
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
@@ -27,7 +27,7 @@ class CountriesService extends Service {
 
 	async listing(correlationId, user, params) {
 		try {
-			const now = LibraryCommonUtility.getTimestamp();
+			const now = LibraryMomentUtility.getTimestamp();
 			const ttl = this._ttlCache ? this._ttlCache : 0;
 			const delta = now - ttl;
 	
@@ -45,7 +45,7 @@ class CountriesService extends Service {
 					return response;
 	
 				this._cache = response.results;
-				this._ttlCache = LibraryCommonUtility.getTimestamp();
+				this._ttlCache = LibraryMomentUtility.getTimestamp();
 	
 				return this._successResponse(this._cache, correlationId);
 			}

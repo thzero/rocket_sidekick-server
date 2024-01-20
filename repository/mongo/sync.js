@@ -1,4 +1,5 @@
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -43,7 +44,7 @@ class SyncRepository extends AppMongoRepository {
 					item.id = temp.id;
 		
 				if (!item.createdTimestamp)
-					item.createdTimestamp = LibraryCommonUtility.getTimestamp();
+					item.createdTimestamp = LibraryMomentUtility.getTimestamp();
 				if (!String.isNullOrEmpty(item.createdUserId))
 					item.createdUserId = this._ownerId;
 					
@@ -62,7 +63,7 @@ class SyncRepository extends AppMongoRepository {
 					country = countriesCurrent.find(l => l.id);
 					country.deleted = true;
 					country.deletedUserId = this._ownerId;
-					country.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+					country.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 					response = await this._update(correlationId, collection, this._ownerId, country.id, country);
 					if (this._hasFailed(response))
 						return await this._transactionAbort(correlationId, session, 'Unable to delete the country.');
@@ -159,11 +160,11 @@ class SyncRepository extends AppMongoRepository {
 				// delete item.id;
 				item.id = item.identifier;
 				if (!item.createdTimestamp)
-					item.createdTimestamp = LibraryCommonUtility.getTimestamp();
+					item.createdTimestamp = LibraryMomentUtility.getTimestamp();
 				if (!String.isNullOrEmpty(item.createdUserId))
 					item.createdUserId = userId;
 					
-				item.syncTimestamp = LibraryCommonUtility.getTimestamp();
+				item.syncTimestamp = LibraryMomentUtility.getTimestamp();
 
 				response = await this._update(correlationId, collection, userId, item.id, item); //, 'identifier');
 				if (this._hasFailed(response))

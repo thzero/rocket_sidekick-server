@@ -1,6 +1,6 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -149,7 +149,7 @@ class MotorsRepository extends AppMongoRepository {
 			for (const motor of deleted) {
 				motor.deleted = true;
 				motor.deletedUserId = this._ownerId;
-				motor.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				motor.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 				motor.searchName = this._createEdgeNGrams(correlationId, motor.commonName);
 				const response = await this._update(correlationId, collection, this._ownerId, motor.id, motor);
 				if (this._hasFailed(response))
@@ -185,7 +185,7 @@ class MotorsRepository extends AppMongoRepository {
 			for (const motorCase of deleted) {
 				motorCase.deleted = true;
 				motorCase.deletedUserId = this._ownerId;
-				motorCase.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				motorCase.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 				const response = await this._update(correlationId, collection, this._ownerId, motorCase.id, motorCase);
 				if (this._hasFailed(response))
 					return await this._transactionAbort(correlationId, session, 'Unable to delete the motor case.');

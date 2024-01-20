@@ -1,6 +1,6 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -30,7 +30,7 @@ class PartsRepository extends AppMongoRepository {
 
 			part.deleted = true;
 			part.deletedUserId = userId;
-			part.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			part.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 			const response = await this._update(correlationId, collection, userId, part.id, part);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the part.');
@@ -302,7 +302,7 @@ class PartsRepository extends AppMongoRepository {
 			for (const part of deleted) {
 				part.deleted = true;
 				part.deletedUserId = this._ownerId;
-				part.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				part.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 				const response = await this._update(correlationId, collection, this._ownerId, part.id, part);
 				if (this._hasFailed(response))
 					return await this._transactionAbort(correlationId, session, 'Unable to delete the part.');

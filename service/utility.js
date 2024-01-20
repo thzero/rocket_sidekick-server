@@ -5,6 +5,7 @@ import { decode, encode } from 'cbor-x';
 import Constants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import UtilityService from '@thzero/library_server/service/utility.js';
 
@@ -146,7 +147,7 @@ class AppUtilityService extends UtilityService {
 	async _contentListing(correlationId, locale) {
 		this._enforceNotEmpty('AppUtilityService', '_contentListing', 'locale', locale, correlationId);
 
-		const now = LibraryCommonUtility.getTimestamp();
+		const now = LibraryMomentUtility.getTimestamp();
 		const ttlContent = this._ttlContentListing ? this._ttlContentListing : 0;
 		const delta = now - ttlContent;
 
@@ -179,13 +180,13 @@ class AppUtilityService extends UtilityService {
 			if (this._hasFailed(response)) 
 				return response;
 
-			const now = LibraryCommonUtility.getTimestamp();
+			const now = LibraryMomentUtility.getTimestamp();
 			response.results.info = response.results ? response.results.info.filter(l => this._contentListingFilter(l, now)) : [];
 			response.results.links = response.results ? response.results.links.filter(l => this._contentListingFilter(l, now)) : [];
 			response.results.tools = response.results ? response.results.tools.filter(l => this._contentListingFilter(l, now)) : [];
 
 			this._cacheContentListing = response.results;
-			this._ttlContentListing = LibraryCommonUtility.getTimestamp();
+			this._ttlContentListing = LibraryMomentUtility.getTimestamp();
 			return this._success(correlationId);
 		}
 		finally {
@@ -245,7 +246,7 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async _contentListingTitlesDescriptions(correlationId) {
-		const now = LibraryCommonUtility.getTimestamp();
+		const now = LibraryMomentUtility.getTimestamp();
 		const ttlContent = this._ttlContentListingTitlesDescriptions ? this._ttlContentListingTitlesDescriptions : 0;
 		const delta = now - ttlContent;
 
@@ -271,7 +272,7 @@ class AppUtilityService extends UtilityService {
 				}
 				delete item.locales;
 			}
-			this._ttlContentListingTitlesDescriptions = LibraryCommonUtility.getTimestamp();
+			this._ttlContentListingTitlesDescriptions = LibraryMomentUtility.getTimestamp();
 
 			return this._success(correlationId);
 		}
@@ -284,7 +285,7 @@ class AppUtilityService extends UtilityService {
 		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'contentId', contentId, correlationId);
 		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'locale', locale, correlationId);
 
-		const now = LibraryCommonUtility.getTimestamp();
+		const now = LibraryMomentUtility.getTimestamp();
 		const ttlContent = this._ttlContentMarkup ? this._ttlContentMarkup : 0;
 		const delta = now - ttlContent;
 
@@ -310,7 +311,7 @@ class AppUtilityService extends UtilityService {
 			const serializedBuffer = encode(response.results);
 			const compressed = SnappyJS.compress(serializedBuffer);
 			this._cacheContentMarkup[key] = compressed;
-			this._ttlContentMarkup = LibraryCommonUtility.getTimestamp();
+			this._ttlContentMarkup = LibraryMomentUtility.getTimestamp();
 			return response;
 		}
 		finally {

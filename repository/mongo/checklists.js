@@ -1,6 +1,6 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -31,7 +31,7 @@ class ChecklistsRepository extends AppMongoRepository {
 
 			checklist.deleted = true;
 			checklist.deletedUserId = userId;
-			checklist.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			checklist.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 			const response = await this._update(correlationId, collection, userId, checklist.id, checklist);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the checklist.');

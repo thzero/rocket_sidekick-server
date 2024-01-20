@@ -1,8 +1,9 @@
 import Constants from '../constants.js';
 import LibraryServerConstants from '@thzero/library_server/constants.js';
 
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
+
 import Service from '@thzero/library_server/service/index.js';
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 class SyncService extends Service {
 	constructor() {
@@ -39,7 +40,7 @@ class SyncService extends Service {
 			// 	// checklists: responseSyncChecklists.results,
 			// 	rockets: responseSyncRockets.results
 			// }
-			// response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
+			// response.results.lastSyncTimestamp = LibraryMomentUtility.getTimestamp();
 			// return response;
 	
 			const collectionNames = params.collections;
@@ -67,7 +68,7 @@ class SyncService extends Service {
 				response.results[collectionName] = responseSync.results;
 			}
 	
-			response.results.lastSyncTimestamp = LibraryCommonUtility.getTimestamp();
+			response.results.lastSyncTimestamp = LibraryMomentUtility.getTimestamp();
 			return response;
 		}
 		catch (err) {

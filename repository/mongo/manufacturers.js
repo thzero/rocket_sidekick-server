@@ -1,4 +1,4 @@
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -105,7 +105,7 @@ class ManufacturersRepository extends AppMongoRepository {
 			for (const manufacturer of deleted) {
 				manufacturer.deleted = true;
 				manufacturer.deletedUserId = this._ownerId;
-				manufacturer.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+				manufacturer.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 				const response = await this._update(correlationId, collection, this._ownerId, manufacturer.id, manufacturer);
 				if (this._hasFailed(response))
 					return await this._transactionAbort(correlationId, session, 'Unable to delete the manufacturer.');

@@ -1,6 +1,6 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -30,7 +30,7 @@ class LaunchesRepository extends AppMongoRepository {
 
 			launch.deleted = true;
 			launch.deletedUserId = userId;
-			launch.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			launch.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 			const response = await this._update(correlationId, collection, userId, launch.id, launch);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the launch.');

@@ -1,6 +1,7 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -30,7 +31,7 @@ class RocketsRepository extends AppMongoRepository {
 
 			rocket.deleted = true;
 			rocket.deletedUserId = userId;
-			rocket.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			rocket.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 			const response = await this._update(correlationId, collection, userId, rocket.id, rocket);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the rocket.');

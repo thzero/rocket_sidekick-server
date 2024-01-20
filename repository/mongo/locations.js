@@ -1,6 +1,4 @@
-import AppSharedConstants from 'rocket_sidekick_common/constants.js';
-
-import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
 
@@ -30,7 +28,7 @@ class LocationsRepository extends AppMongoRepository {
 
 			location.deleted = true;
 			location.deletedUserId = userId;
-			location.deletedTimestamp = LibraryCommonUtility.getTimestamp();
+			location.deletedTimestamp = LibraryMomentUtility.getTimestamp();
 			const response = await this._update(correlationId, collection, userId, location.id, location);
 			if (this._hasFailed(response))
 				return await this._transactionAbort(correlationId, session, 'Unable to delete the location.');

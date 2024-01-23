@@ -137,6 +137,14 @@ Enable the following APIs in the Enable APIs & Services section for the project.
 * Cloud Source Repositories API
 * Cloud Build API
 
+### Project's cloudbuild.yaml
+
+Update the cloudbuild.yaml file in the source project and change the following based on your account name
+
+```
+https://source.developers.google.com/p/<account name>/r/github_thzero_rocket_sidekick-common
+```
+
 ### Setup Google Cloud Source Repositories
 
 This is a mirror of the GitHub repo for the following repos:
@@ -146,7 +154,7 @@ This is a mirror of the GitHub repo for the following repos:
 * Add Repository
 * Connect external repository
 * Select the project setup by Firebase, then GitHub
-* Select the rocket_sidekick-common repo
+* Select the web-common repo
 * Connect selected repositories
 
 Select repository, then permissions.  Verify that the Cloud Build Service Account is listed.
@@ -158,26 +166,39 @@ https://cloud.google.com/run/docs/deploying#service
 
 #### Settings for Cloud Run configuration
 
+##### Cloud Run
+* Continuously deploy new revisions from a source repository
+* Use Set Up With Cloud Build
+ * Select the Repository Provide and Repository
+ * Click Next
+ * Branch: ^master$
+ * Build Type: Dockerfile
+  * Source location: /Dockerfile
+ * Click Save
+
+##### CPU Allocation
+* CPU is only allocated during request processing
+
+##### Revision Autoscaling
+* Minimum 0
+* Maximum 1000
+
+##### Ingress Control
+* All
+
+##### Authentication
+* Allow unauthenticated invocations
+
 ##### Capacity
 * 512mb 1 cpu
 * Requested Timeout 300
 * Max Request per Container 80
 
-##### Ingress
-* Allow all traffic
-
-##### Authentication
-* Allow unauthenticated invocations
-
-##### Autoscaling
-* Minimum 0
-* Maximum 1000
-
-##### Environment variables
+##### Variables & Secrets
 
 Add these variables:
 
-* SERVICE_ACCOUNT_KEY - <Firebase service account key JSON>
+* SERVICE_ACCOUNT_KEY - <Firebase servicecAccountKey.json file in local config folder>
 * AUTH_API_KEY - <guid>
 * ALTAS_DB_CONNECTION - <connection string>
 * ALTAS_DB_NAME - production
@@ -206,3 +227,4 @@ Add these variables:
 ##### Deploy
 
 Run the trigger to kick of a deploy.
+

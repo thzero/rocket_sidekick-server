@@ -1,10 +1,10 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.1.44",
+  "version": "0.1.45",
   "version_major": 0,
   "version_minor": 1,
-  "version_patch": 44,
+  "version_patch": 45,
   "version_date": "01/22/2024",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
@@ -41,7 +41,7 @@
     "cbor-x": "^1.5.8",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.3.1",
-    "rocket_sidekick_common": "^0.0.73",
+    "rocket_sidekick_common": "^0.0.74",
     "snappyjs": "^0.7.0"
   }
 }

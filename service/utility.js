@@ -181,9 +181,9 @@ class AppUtilityService extends UtilityService {
 				return response;
 
 			const now = LibraryMomentUtility.getTimestamp();
-			response.results.info = response.results ? response.results.info.filter(l => this._contentListingFilter(l, now)) : [];
-			response.results.links = response.results ? response.results.links.filter(l => this._contentListingFilter(l, now)) : [];
-			response.results.tools = response.results ? response.results.tools.filter(l => this._contentListingFilter(l, now)) : [];
+			response.results.info = response.results && response.results.info ? response.results.info.filter(l => this._contentListingFilter(l, now)) : [];
+			response.results.links = response.results && response.results.links ? response.results.links.filter(l => this._contentListingFilter(l, now)) : [];
+			response.results.tools = response.results && response.results.tools ? response.results.tools.filter(l => this._contentListingFilter(l, now)) : [];
 
 			this._cacheContentListing = response.results;
 			this._ttlContentListing = LibraryMomentUtility.getTimestamp();

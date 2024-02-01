@@ -54,7 +54,7 @@ class ChecklistsService extends AppService {
 			this._clearChecklist(correlationId, results);
 			results.name = params.name;
 	
-			return await this._repositoryChecklists.updateUser(correlationId, user.id, results);
+			return await this._repositoryChecklists.update(correlationId, user.id, results);
 		}
 		catch (err) {
 			return this._error('ChecklistsService', 'copy', null, err, null, null, correlationId);

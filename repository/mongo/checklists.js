@@ -48,13 +48,11 @@ class ChecklistsRepository extends AppMongoRepository {
 	}
 
 	async hasLaunch(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionChecklists(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the launch - associated with a checklist.');
 				return this._errorResponse('ChecklistsRepository', 'hasLaunch', {
 						found: results.length,
 						results: results
@@ -71,13 +69,11 @@ class ChecklistsRepository extends AppMongoRepository {
 	}
 
 	async hasLocation(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionChecklists(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the location - associated with a checklist.');
 				return this._errorResponse('ChecklistsRepository', 'hasLocation', {
 						found: results.length,
 						results: results
@@ -117,13 +113,11 @@ class ChecklistsRepository extends AppMongoRepository {
 	}
 
 	async hasRocketSetup(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionChecklists(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketSetupId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - associated with a checklist.');
 				return this._errorResponse('ChecklistsRepository', 'hasRocketSetup', {
 						found: results.length,
 						results: results
@@ -392,13 +386,24 @@ class ChecklistsRepository extends AppMongoRepository {
 				defaultFilterOwner.push({ 'isDefault': true });
 			if (params.shared)
 				defaultFilterOwner.push({ 'shared': true });
-				
+
 			const defaultFilterAnd = [
 				{ 
 					$or: defaultFilterOwner
 				},
 				{ 'deleted': { $ne: true } }
 			];
+
+			const defaultFilterStatus = [];
+			if (params.isCompleted)
+				defaultFilterOwner.push({ 'status': AppSharedConstants.Checklists.ChecklistStatus.completed });
+			if (params.isInProgress)
+				defaultFilterOwner.push({ 'status': AppSharedConstants.Checklists.ChecklistStatus.inProgress });
+
+			if (defaultFilterStatus.length > 0)
+				defaultFilterAnd.push({
+					$and: defaultFilterStatus
+				});
 
 			const defaultFilter = { 
 				$and: defaultFilterAnd

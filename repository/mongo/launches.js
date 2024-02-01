@@ -70,13 +70,11 @@ class LaunchesRepository extends AppMongoRepository {
 	}
 
 	async hasLocation(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionLaunches(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the location - associated with a launch.');
 				return this._errorResponse('LaunchesRepository', 'hasLocation', {
 						found: results.length,
 						results: results
@@ -93,13 +91,11 @@ class LaunchesRepository extends AppMongoRepository {
 	}
 
 	async hasRocket(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionLaunches(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - associated with a launch.');
 				return this._errorResponse('LaunchesRepository', 'hasRocket', {
 						found: results.length,
 						results: results
@@ -116,13 +112,11 @@ class LaunchesRepository extends AppMongoRepository {
 	}
 
 	async hasRocketSetup(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionLaunches(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketSetupId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket setup - associated with a launch.');
 				return this._errorResponse('LaunchesRepository', 'hasRocketSetup', {
 						found: results.length,
 						results: results

@@ -37,16 +37,20 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionManufacturers);
 	}
 
-	getCollectionParts(correlationId) {
-		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionParts);
-	}
-
 	getCollectionNews(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionNews);
 	}
 
+	getCollectionParts(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionParts);
+	}
+
 	getCollectionPlans(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionPlans);
+	}
+
+	getCollectionPubSub(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionPubSub);
 	}
 
 	getCollectionRockets(correlationId) {
@@ -73,9 +77,10 @@ class AppCollectionsService extends ApiCollectionsService {
 	static CollectionLaunches = 'launches';
 	static CollectionLocations = 'locations';
 	static CollectionManufacturers = 'manufacturers';
-	static CollectionParts = 'parts';
 	static CollectionNews = 'news';
+	static CollectionParts = 'parts';
 	static CollectionPlans = 'plans';
+	static CollectionPubSub = 'pubsub';
 	static CollectionRockets = 'rockets';
 	static CollectionRocketSetups = 'rocketSetups';
 	static CollectionUsageMetrics = 'usageMetrics';

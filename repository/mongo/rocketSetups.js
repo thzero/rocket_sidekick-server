@@ -91,13 +91,11 @@ class RocketSetupsRepository extends AppMongoRepository {
 	}
 
 	async hasRocket(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			const collection = await this._getCollectionChecklists(correlationId);
 
 			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'rocketId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
 			if (results && results.length > 0) {
-				await this._transactionAbort(correlationId, session, 'Unable to delete the rocket - associated with a rocket setup.');
 				return this._errorResponse('RocketSetupsRepository', 'hasRocket', {
 						found: results.length,
 						results: results

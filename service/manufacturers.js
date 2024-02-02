@@ -26,19 +26,26 @@ class ManufacturersService extends Service {
 
 	async listing(correlationId, user, params) {
 		try {
-			const now = LibraryMomentUtility.getTimestamp();
-			const ttl = this._ttlCache ? this._ttlCache : 0;
-			const delta = now - ttl;
+			let now = LibraryMomentUtility.getTimestamp();
+			let ttl = this._ttlCache ? this._ttlCache : 0;
+			let delta = now - ttl;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
 	
 			if (this._cache && (delta <= this._ttlCache))
 				return this._successResponse(this._cache, correlationId);
 	
-			let release = await this._mutexCache.acquire();
+			const release = await this._mutexCache.acquire();
 			try {
-				const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.manufacturersParams, params);
-				if (this._hasFailed(validationResponse))
-					return validationResponse;
-		
+				now = LibraryMomentUtility.getTimestamp();
+				ttl = this._ttlCache ? this._ttlCache : 0;
+				delta = now - ttl;
+	
+				if (this._cache && (delta <= this._ttlCache))
+					return this._successResponse(this._cache, correlationId);
+
 				const response = await this._repositoryManufacturers.listing(correlationId, params);
 				if (this._hasFailed(response))
 					return response;

@@ -41,6 +41,12 @@ class AppBootMain extends BootMain {
 	_initServicesLoggers() {
 		this._registerServicesLogger(AppConstants.InjectorKeys.SERVICE_LOGGER_PINO, new pinoLoggerService());
 	}
+
+	async _initServerStart(injector) {
+		const pubSubService = injector.getService(AppConstants.InjectorKeys.SERVICE_PUBSUB);
+		pubSubService.initialize(null);
+	}
+
 }
 
 (async function() {

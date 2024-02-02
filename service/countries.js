@@ -98,7 +98,7 @@ class CountriesService extends Service {
 		}
 	}
 
-	async _get (correlationId, url) {
+	async _get(correlationId, url) {
 		let promise = new Promise((resolve, reject) => {
 			var data = '';
 			https.get(url, res => {

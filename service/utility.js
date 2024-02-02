@@ -2,7 +2,7 @@ import { Mutex as asyncMutex } from 'async-mutex';
 import SnappyJS from 'snappyjs';
 import { decode, encode } from 'cbor-x';
 
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
@@ -15,6 +15,8 @@ class AppUtilityService extends UtilityService {
 
 		this._repositoryContent = null;
 		this._repositorySync = null;
+
+		this._servicePubSub = null;
 		
 		this._cacheContentListing = null;
 		this._cacheContentListingLocales = {};
@@ -38,8 +40,12 @@ class AppUtilityService extends UtilityService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryContent = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CONTENT);
-		this._repositorySync = this._injector.getService(Constants.InjectorKeys.REPOSITORY_SYNC);
+		this._repositoryContent = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_CONTENT);
+		this._repositorySync = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_SYNC);
+		
+		this._servicePubSub = this._injector.getService(AppConstants.InjectorKeys.SERVICE_PUBSUB);
+		
+		this._servicePubSub.registerHook(null, 'contentReset', this, this.contentResetPerform);
 	}
 
 	async contentListing(correlationId, body) {
@@ -79,12 +85,13 @@ class AppUtilityService extends UtilityService {
 	async contentReset(correlationId, body) {
 		this._enforceNotNull('AppUtilityService', 'contentReset', 'body', body, correlationId);
 
+		return this._servicePubSub.send(correlationId, 'contentReset');
+	}
+
+	async contentResetPerform(correlationId, body) {
+		this._enforceNotNull('AppUtilityService', 'contentResetPerform', 'body', body, correlationId);
+
 		try {
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentReset, body, null, 'sdfsdf');
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-			// TODO: ContentId based resetting..
-			
 			this._cacheContentListing = null;
 			this._cacheContentListingLocales = {};
 			this._cacheContentListingLocalesTitlesDescriptions = null;
@@ -98,7 +105,7 @@ class AppUtilityService extends UtilityService {
 			return this._success(correlationId);
 		}
 		catch (err) {
-			return this._error('AppUtilityService', 'contentReset', null, err, null, null, correlationId);
+			return this._error('AppUtilityService', 'contentResetPerform', null, err, null, null, correlationId);
 		}
 	}
 

@@ -1,4 +1,4 @@
-import Constants from '../../../constants.js';
+import AppConstants from '../../../constants.js';
 import RepositoryConstants from '@thzero/library_server_repository_mongo/constants.js';
 
 import FrontApiBootPlugin from '@thzero/library_server_fastify/boot/plugins/apiFront.js';
@@ -11,6 +11,7 @@ import locationsRepository from '../../../repository/mongo/locations.js';
 import manufacturersRepository from '../../../repository/mongo/manufacturers.js';
 import motorsRepository from '../../../repository/mongo/motors.js';
 import partsRepository from '../../../repository/mongo/parts.js';
+import pubSubRepository from '../../../repository/mongo/pubSub.js';
 import rocketsRepository from '../../../repository/mongo/rockets.js';
 import rocketSetupsRepository from '../../../repository/mongo/rocketSetups.js';
 import syncRepository from '../../../repository/mongo/sync.js';
@@ -39,6 +40,7 @@ import locationsService from '../../../service/locations.js';
 import manufacturersService from '../../../service/manufacturers.js';
 import motorsService from '../../../service/motors.js';
 import partsService from '../../../service/parts.js';
+import pubSubService from '../../../service/pubSub.js';
 import rocketsService from '../../../service/rockets.js';
 import rocketSetupsService from '../../../service/rocketSetups.js';
 import securityService from '../../../service/security.js';
@@ -51,17 +53,18 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 	async _initRepositories() {
 		await super._initRepositories();
 
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CHECKLISTS, new checklistsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_CONTENT, new contentRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_COUNTRIES, new countriesRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_LAUNCHES, new launchesRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_LOCATIONS, new locationsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS, new manufacturersRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_MOTORS, new motorsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_PARTS, new partsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETS, new rocketsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_ROCKETSETUPS, new rocketSetupsRepository());
-		this._injectRepository(Constants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_CHECKLISTS, new checklistsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_CONTENT, new contentRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_COUNTRIES, new countriesRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_LAUNCHES, new launchesRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_LOCATIONS, new locationsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_MANUFACTURERS, new manufacturersRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_MOTORS, new motorsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_PARTS, new partsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_PUBSUB, new pubSubRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_ROCKETS, new rocketsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_ROCKETSETUPS, new rocketSetupsRepository());
+		this._injectRepository(AppConstants.InjectorKeys.REPOSITORY_SYNC, new syncRepository());
 	}
 
 	async _initRoutes() {
@@ -87,33 +90,35 @@ class AppApiBootPlugin extends FrontApiBootPlugin {
 	async _initServices() {
 		await super._initServices();
 
-		this._injectService(Constants.InjectorKeys.SERVICE_API, new apiService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_API, new apiService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_CHECKLISTS, new checklistsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS, new checklistsService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_COMMUNICATION_REST, new communicationRestService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_COMMUNICATION_REST, new communicationRestService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_COUNTRIES, new countriesService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_COUNTRIES, new countriesService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH, new externalMotorSearchService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH, new externalMotorSearchService());
 
 		this._injectService(RepositoryConstants.InjectorKeys.SERVICE_REPOSITORY_COLLECTIONS, new repositoryCollectionsService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_LAUNCHES, new launchesService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_LAUNCHES, new launchesService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_LOCATIONS, new locationsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_LOCATIONS, new locationsService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_MANUFACTURERS, new manufacturersService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS, new manufacturersService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_MOTORS, new motorsService());
-		this._injectService(Constants.InjectorKeys.SERVICE_PARTS, new partsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_MOTORS, new motorsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_PARTS, new partsService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETS, new rocketsService());
-		this._injectService(Constants.InjectorKeys.SERVICE_ROCKETSETUPS, new rocketSetupsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_PUBSUB, new pubSubService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_SYNC, new syncService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_ROCKETS, new rocketsService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_ROCKETSETUPS, new rocketSetupsService());
 
-		this._injectService(Constants.InjectorKeys.SERVICE_VALIDATION, new validationService());
+		this._injectService(AppConstants.InjectorKeys.SERVICE_SYNC, new syncService());
+
+		this._injectService(AppConstants.InjectorKeys.SERVICE_VALIDATION, new validationService());
 	}
 
 	_initServicesSecurity() {

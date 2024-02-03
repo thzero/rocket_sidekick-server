@@ -380,6 +380,9 @@ class LaunchesRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 
+			if (!String.isNullOrEmpty(params.launchId))
+				where.push({ 'id': params.launchId });
+
 			const defaultFilter = { 
 				$and: [
 					{ 'ownerId': userId },

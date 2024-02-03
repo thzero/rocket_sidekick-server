@@ -400,6 +400,9 @@ class RocketSetupsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.rocketId))
 				where.push({ 'rocketId': params.rocketId });
 
+			if (!String.isNullOrEmpty(params.rocketSetupId))
+				where.push({ 'id': params.rocketSetupId });
+
 			const defaultFilter = { 
 				$and: [
 					{ 'ownerId': userId },

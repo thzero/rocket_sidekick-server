@@ -405,8 +405,16 @@ class ChecklistsRepository extends AppMongoRepository {
 					$and: defaultFilterStatus
 				});
 
+			const where = [];
+
+			if (!String.isNullOrEmpty(params.checklistId))
+				where.push({ 'id': params.checklistId });
+
 			const defaultFilter = { 
-				$and: defaultFilterAnd
+				$and: [
+					...defaultFilterAnd,
+					...where
+				]
 			};
 			
 			queryA.push({

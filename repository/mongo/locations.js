@@ -144,6 +144,9 @@ class LocationsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 
+			if (!String.isNullOrEmpty(params.locationId))
+				where.push({ 'id': params.locationId });
+
 			const defaultFilter = { 
 				$and: [
 					{ 'ownerId': userId },

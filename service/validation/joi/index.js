@@ -38,6 +38,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		.min(1)
 		.max(10);
 
+	_partsName = Joi.string()
+		.trim()
+		//.alphanum()
+		.regex(/^[a-zA-Z0-9]+(['"._\-a-zA-Z0-9 :;,\/\(\\+)@]*)*$/)
+		.min(3)
+		.max(50);
+
 	_type = Joi.string()
 		.trim()
 		.alphanum()
@@ -89,8 +96,8 @@ class JoiValidationService extends GamerJoiValidationService {
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
-	
-	rocketType = Joi.string()
+
+	rocketStageId = Joi.string()
 		.trim()
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
@@ -99,66 +106,6 @@ class JoiValidationService extends GamerJoiValidationService {
 		name: this._extendedName,
 		type: Joi.string(),
 		link: this._url
-	});
-
-	checklistStep = Joi.object({
-		id: this.checklistId,
-		checklistId: this.checklistId,
-		parentId: this.checklistId,
-		typeId: this._type,
-		description: this._description.allow(null),
-		altimeterRecoveryTypeId: Joi.string().allow(null),
-		altimeterTypeId: this._type,
-		chuteRelease: Joi.boolean().allow(null),
-		completedDateTime: this._timestamp.allow(null),
-		description: this._description,
-		motorLocationTypeId: this._type,
-		order: this._number.allow(null),
-		trail: Joi.array().items(Joi.string()).allow(null),
-		rootName: this._extendedName.allow(null),
-		stage: Joi.object().allow(null),
-		statusId: this._type,
-		steps: Joi.array().items(Joi.any()).allow(null)
-	});
-	
-	checklist = Joi.object({
-		id: this.checklistId,
-		createdTimestamp: Joi.number(),
-		createdUserId: this._id.allow(null),
-		typeId: this._type,
-		date: Joi.number().required(),
-		deleted: Joi.boolean().allow(null),
-		deletedTimestamp: Joi.number().allow(null),
-		deletedUserId: this._id.allow(null),
-		description: this._description.allow(null).allow(''),
-		launchTypeId: this._type,
-		locationId: this.locationId.allow(null),
-		locationIterationId: this.locationId.allow(null),
-		name: this._extendedName,
-		ownerId: this.ownerId.allow(null),
-		rocketId: this.rocketId.allow(null),
-		rocketSetupId: this.rocketSetupId.allow(null),
-		searchName: this._extendedNameBase.allow(null).allow(''),
-		statusId: this._type,
-		steps: Joi.array().items(Joi.any()).allow(null),
-		syncTimestamp: Joi.number().allow(null),
-		updatedTimestamp: Joi.number(),
-		updatedUserId: this._id.allow(null)
-	});
-	
-	checklistCopyParams = Joi.object({
-		id: this.checklistId,
-		name: this._extendedName
-	});
-	
-	checklistsParams = Joi.object({
-		isCompleted: Joi.boolean().allow(null),
-		isDefault: Joi.boolean().allow(null),
-		isInProgress: Joi.boolean().allow(null),
-		name: this._extendedName.allow(null).allow(''),
-		shared: Joi.boolean().allow(null),
-		yours: Joi.boolean().allow(null),
-		isUser: Joi.boolean().allow(null)
 	});
 
 	contentLicenses() {
@@ -209,6 +156,42 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	countriesParams = Joi.object({
 	});
+
+	launchReasonsFailure() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Reasons.Failure).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
+
+	launchResultsReasonsSuccess() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Reasons.Success).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
+
+	launchWeather() {
+		const reasons = [];
+		Object.entries(Constants.Rocketry.Launches.Weather).map(entry => {
+			reasons.push(entry[1]);
+		});
+		return reasons;
+	}
+	
+	locationsIterationNumber = Joi.string()
+		.trim()
+		.regex(/^[0-9]{0,4}$/)
+		.min(1)
+		.max(4);
+	
+	locationsIterationYear = Joi.string()
+		.trim()
+		.regex(/^[0-9]{0,4}$/)
+		.min(4)
+		.max(4);
 	
 	// manufacturersId = this._id.required();
 	manufacturersId = Joi.string()
@@ -217,6 +200,78 @@ class JoiValidationService extends GamerJoiValidationService {
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
 	manufacturersParams = Joi.object({
+	});
+	
+	rocketryOrganizations = Joi.string()
+		.trim()
+		.regex(/^[A-Z]{0,4}$/)
+		.min(3)
+		.max(4);
+	
+	rocketType = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+
+	checklistStep = Joi.object({
+		id: this.checklistId,
+		checklistId: this.checklistId,
+		parentId: this.checklistId,
+		typeId: this._type,
+		description: this._description.allow(null),
+		altimeterRecoveryTypeId: Joi.string().allow(null),
+		altimeterTypeId: this._type,
+		chuteRelease: Joi.boolean().allow(null),
+		completedDateTime: this._timestamp.allow(null),
+		description: this._description,
+		motorLocationTypeId: this._type,
+		order: this._number.allow(null),
+		trail: Joi.array().items(Joi.string()).allow(null),
+		rootName: this._extendedName.allow(null),
+		stage: Joi.object().allow(null),
+		statusId: this._type,
+		steps: Joi.array().items(Joi.any()).allow(null)
+	});
+	
+	checklist = Joi.object({
+		id: this.checklistId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		typeId: this._type,
+		date: Joi.number().required(),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		description: this._description.allow(null).allow(''),
+		launchTypeId: this._type,
+		locationId: this.locationId.allow(null),
+		locationIterationId: this.locationId.allow(null),
+		name: this._extendedName,
+		ownerId: this.ownerId.allow(null),
+		rocketId: this.rocketId.allow(null),
+		rocketSetupId: this.rocketSetupId.allow(null).allow(''),
+		searchName: this._extendedNameBase.allow(null).allow(''),
+		statusId: this._type,
+		steps: Joi.array().items(Joi.any()).allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	checklistCopyParams = Joi.object({
+		id: this.checklistId,
+		name: this._extendedName
+	});
+	
+	checklistsParams = Joi.object({
+		checklistId: this.checklistId.allow(null).allow(''),
+		isCompleted: Joi.boolean().allow(null),
+		isDefault: Joi.boolean().allow(null),
+		isInProgress: Joi.boolean().allow(null),
+		name: this._extendedName.allow(null).allow(''),
+		shared: Joi.boolean().allow(null),
+		yours: Joi.boolean().allow(null),
+		isUser: Joi.boolean().allow(null)
 	});
 	
 	launchResults = Joi.object({
@@ -243,30 +298,6 @@ class JoiValidationService extends GamerJoiValidationService {
 		velocityMaxMeasurementUnitId: this._measurementId.allow(null),
 		velocityMaxMeasurementUnitsId: this._measurementId.allow(null)
 	});
-
-	launchResultsReasonsFailure() {
-		const reasons = [];
-		Object.entries(Constants.Rocketry.Launches.Reasons.Failure).map(entry => {
-			reasons.push(entry[1]);
-		});
-		return reasons;
-	}
-
-	launchResultsReasonsSuccess() {
-		const reasons = [];
-		Object.entries(Constants.Rocketry.Launches.Reasons.Success).map(entry => {
-			reasons.push(entry[1]);
-		});
-		return reasons;
-	}
-
-	launchWeather() {
-		const reasons = [];
-		Object.entries(Constants.Rocketry.Launches.Weather).map(entry => {
-			reasons.push(entry[1]);
-		});
-		return reasons;
-	}
 	
 	launches = Joi.object({
 		id: this.launchId,
@@ -281,7 +312,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
-		failureReasons: Joi.array().items(Joi.string().valid(...this.launchResultsReasonsFailure())).allow(null),
+		failureReasons: Joi.array().items(Joi.string().valid(...this.launchReasonsFailure())).allow(null),
 		locationId: this.locationId.allow(null),
 		locationIterationId: this.locationId.allow(null),
 		name: this._extendedName.allow(null).allow(''),
@@ -290,7 +321,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		public: Joi.boolean().required(),
 		results: this.launchResults.allow(null),
 		rocketId: this.rocketId,
-		rocketSetupId: this.rocketSetupId.allow(null),
+		rocketSetupId: this.rocketSetupId.allow(null).allow(''),
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
@@ -313,24 +344,6 @@ class JoiValidationService extends GamerJoiValidationService {
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});
-	
-	locationsIterationNumber = Joi.string()
-		.trim()
-		.regex(/^[0-9]{0,4}$/)
-		.min(1)
-		.max(4);
-	
-	locationsIterationYear = Joi.string()
-		.trim()
-		.regex(/^[0-9]{0,4}$/)
-		.min(4)
-		.max(4);
-	
-	rocketryOrganizations = Joi.string()
-		.trim()
-		.regex(/^[A-Z]{0,4}$/)
-		.min(3)
-		.max(4);
 	
 	locationsAddress = Joi.object({
 		city: this._city.allow(null).allow(''),
@@ -368,6 +381,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		description: this._description.allow(null).allow(''),
 		experimental: Joi.boolean().allow(null),
 		iterations: Joi.array().items(this.locationsIterations).allow(null),
+		launchId: this.launchId.allow(null).allow(''),
 		link: this._url.allow(null).allow(''),
 		name: this._extendedName,
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
@@ -384,19 +398,13 @@ class JoiValidationService extends GamerJoiValidationService {
 	locationsParams = Joi.object({
 		city: this._city.allow(null).allow(''),
 		country: this._country.allow(null).allow(''),
+		locationId: this.locationId.allow(null).allow(''),
 		name: this._extendedName.allow('').allow(null),
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		postalCode: this._postalCode.allow(null).allow(''),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		stateProvince: this._stateProvince.allow(null).allow('')
 	});
-
-	_partsName = Joi.string()
-		.trim()
-		//.alphanum()
-		.regex(/^[a-zA-Z0-9]+(['"._\-a-zA-Z0-9 :;,\/\(\\+)@]*)*$/)
-		.min(3)
-		.max(50);
 	
 	parts = Joi.object({
 		id: this.partId,
@@ -489,6 +497,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._partsName.allow('').allow(null),
+		partId: this.partId.allow(null).allow(''),
 		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
 		weight: Joi.number().allow(null),
@@ -600,8 +609,8 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 
 	rocketStage = Joi.object({
-		id: this.rocketId,
-		rocketId: this.rocketId.allow(null).allow(''), // TODO: remove
+		id: this.rocketStageId,
+		rocketId: this.rocketId.allow(null),
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
@@ -686,6 +695,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
+		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
@@ -700,9 +710,9 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 
 	rocketSetupStage = Joi.object({
-		id: this.rocketId,
-		rocketStageId: this.rocketId,
-		rocketSetupId: this.rocketSetupId.allow(null).allow(''), // TODO: remove
+		id: this.rocketSetupId,
+		rocketStageId: this.rocketStageId,
+		rocketSetupId: this.rocketSetupId,
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
@@ -732,7 +742,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	rocketSetup = Joi.object({
-		id: this.rocketId,
+		id: this.rocketSetupId,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		deleted: Joi.boolean().allow(null),
@@ -766,6 +776,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
+		rocketSetupId: this.rocketSetupId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});
 	

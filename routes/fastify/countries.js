@@ -1,4 +1,4 @@
-import Constants from '../../constants.js';
+import AppConstants from '../../constants.js';
 
 import BaseRoute from '@thzero/library_server_fastify/routes/index.js';
 
@@ -10,7 +10,7 @@ class ManufacturersRoute extends BaseRoute {
 	async init(injector, app, config) {
 		await super.init(injector, app, config);
 		
-		this._inject(app, injector, Constants.InjectorKeys.SERVICE_COUNTRIES, Constants.InjectorKeys.SERVICE_COUNTRIES);
+		this._inject(app, injector, AppConstants.InjectorKeys.SERVICE_COUNTRIES, AppConstants.InjectorKeys.SERVICE_COUNTRIES);
 	}
 
 	_initializeRoutes(router) {

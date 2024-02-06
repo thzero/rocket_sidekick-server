@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
@@ -18,10 +18,10 @@ class MotorsService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryMotors = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MOTORS);
-		this._repositoryParts = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PARTS);
-		this._serviceExternalMotorSearch = this._injector.getService(Constants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH);
-		this._servicManufacturers = this._injector.getService(Constants.InjectorKeys.SERVICE_MANUFACTURERS);
+		this._repositoryMotors = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_MOTORS);
+		this._repositoryParts = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_PARTS);
+		this._serviceExternalMotorSearch = this._injector.getService(AppConstants.InjectorKeys.SERVICE_EXTERNAL_MOTOR_SEARCH);
+		this._servicManufacturers = this._injector.getService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 	
 	async retrieve(correlationId, user, id) {

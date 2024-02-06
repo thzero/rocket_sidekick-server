@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
@@ -15,10 +15,10 @@ class RocketsService extends AppService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryRockets = this._injector.getService(Constants.InjectorKeys.REPOSITORY_ROCKETS);
+		this._repositoryRockets = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_ROCKETS);
 		
-		this._serviceChecklists = this._injector.getService(Constants.InjectorKeys.SERVICE_CHECKLISTS);
-		this._serviceLaunches = this._injector.getService(Constants.InjectorKeys.SERVICE_LAUNCHES);
+		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceLaunches = this._injector.getService(AppConstants.InjectorKeys.SERVICE_LAUNCHES);
 	}
 
 	async copy(correlationId, user, params) {

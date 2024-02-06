@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
@@ -16,10 +16,10 @@ class PartsService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryParts = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PARTS);
+		this._repositoryParts = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_PARTS);
 		
-		this._serviceRockets = this._injector.getService(Constants.InjectorKeys.SERVICE_ROCKETS);
-		this._serviceRocketSetups = this._injector.getService(Constants.InjectorKeys.SERVICE_ROCKETSETUPS);
+		this._serviceRockets = this._injector.getService(AppConstants.InjectorKeys.SERVICE_ROCKETS);
+		this._serviceRocketSetups = this._injector.getService(AppConstants.InjectorKeys.SERVICE_ROCKETSETUPS);
 	}
 
 	async copy(correlationId, user, params) {

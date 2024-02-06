@@ -1,4 +1,4 @@
-import Constants from '../../constants.js';
+import AppConstants from '../../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
@@ -18,7 +18,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
-		this._serviceManufacturers = this._injector.getService(Constants.InjectorKeys.SERVICE_MANUFACTURERS);
+		this._serviceManufacturers = this._injector.getService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 
 	async delete(correlationId, userId, id) {

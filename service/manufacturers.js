@@ -1,6 +1,6 @@
 import { Mutex as asyncMutex } from 'async-mutex';
 
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
@@ -21,7 +21,7 @@ class ManufacturersService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryManufacturers = this._injector.getService(Constants.InjectorKeys.REPOSITORY_MANUFACTURERS);
+		this._repositoryManufacturers = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_MANUFACTURERS);
 	}
 
 	async listing(correlationId, user, params) {

@@ -1,4 +1,4 @@
-import Constants from '../../constants.js';
+import AppConstants from '../../constants.js';
 
 import NotImplementedError from '@thzero/library_common/errors/notImplemented.js';
 
@@ -14,7 +14,7 @@ class MotorSearchExternalService extends BaseService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._serviceCommunicationRest = injector.getService(Constants.InjectorKeys.SERVICE_COMMUNICATION_REST);
+		this._serviceCommunicationRest = injector.getService(AppConstants.InjectorKeys.SERVICE_COMMUNICATION_REST);
 	}
 
 	nameLocale() {

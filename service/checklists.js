@@ -1,4 +1,5 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
@@ -15,7 +16,7 @@ class ChecklistsService extends AppService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryChecklists = this._injector.getService(Constants.InjectorKeys.REPOSITORY_CHECKLISTS);
+		this._repositoryChecklists = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_CHECKLISTS);
 	}
 
 	async copy(correlationId, user, params) {
@@ -208,6 +209,45 @@ class ChecklistsService extends AppService {
 		}
 		catch (err) {
 			return this._error('ChecklistsService', 'search', null, err, null, null, correlationId);
+		}
+	}
+
+	async start(correlationId, user, params) {
+		this._enforceNotNull('ChecklistsService', 'start', 'user', user, correlationId);
+
+		try {
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
+			
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistStartParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, params.id);
+			if (this._hasFailed(responseLookup))
+				return responseLookup;
+
+			if (!this._isDefault(correlationId, user, responseLookup.results) && !this._isPublic(correlationId, user, responseLookup.results)) {
+				// SECURITY: Check is the owner
+				if (!this._isOwner(correlationId, user, responseLookup.results))
+					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'copy');
+			}
+	
+			const response = await this._repositoryChecklists.retrieve(correlationId, user.id, params.id);
+			if (this._hasFailed(validationResponse))
+				return response;
+	
+			const results = response.results;
+			results.id = LibraryCommonUtility.generateId();
+			delete results.startTimestamp;
+			delete results.startUserId;
+			results.statusId = AppSharedConstants.Checklists.ChecklistStatus.inProgress;
+	
+			return await this._repositoryChecklists.update(correlationId, user.id, results);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', 'start', null, err, null, null, correlationId);
 		}
 	}
 

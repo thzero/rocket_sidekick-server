@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import AppService from './index.js';
 
@@ -12,10 +12,10 @@ class LocationsService extends AppService {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryLocations = this._injector.getService(Constants.InjectorKeys.REPOSITORY_LOCATIONS);
+		this._repositoryLocations = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_LOCATIONS);
 		
-		this._serviceChecklists = this._injector.getService(Constants.InjectorKeys.SERVICE_CHECKLISTS);
-		this._serviceLaunches = this._injector.getService(Constants.InjectorKeys.SERVICE_LAUNCHES);
+		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceLaunches = this._injector.getService(AppConstants.InjectorKeys.SERVICE_LAUNCHES);
 	}
 
 	async delete(correlationId, user, id) {

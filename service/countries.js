@@ -2,7 +2,7 @@ import * as https from 'https';
 
 import { Mutex as asyncMutex } from 'async-mutex';
 
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
@@ -22,7 +22,7 @@ class CountriesService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositoryCountries = this._injector.getService(Constants.InjectorKeys.REPOSITORY_COUNTRIES);
+		this._repositoryCountries = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_COUNTRIES);
 	}
 
 	async listing(correlationId, user, params) {

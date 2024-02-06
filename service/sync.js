@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
@@ -16,7 +16,7 @@ class SyncService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositorySync = this._injector.getService(Constants.InjectorKeys.REPOSITORY_SYNC);
+		this._repositorySync = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_SYNC);
 
 		this._serviceUsers = this._injector.getService(LibraryServerConstants.InjectorKeys.SERVICE_USERS);
 	}

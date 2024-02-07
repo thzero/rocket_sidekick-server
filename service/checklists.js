@@ -1,7 +1,9 @@
 import AppConstants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
+
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
+import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppService from './index.js';
 
@@ -212,7 +214,7 @@ class ChecklistsService extends AppService {
 		}
 	}
 
-	async start(correlationId, user, params) {
+	async start(correlationId, user, id) {
 		this._enforceNotNull('ChecklistsService', 'start', 'user', user, correlationId);
 
 		try {
@@ -220,11 +222,11 @@ class ChecklistsService extends AppService {
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistStartParams, params);
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.checklistStartParams, id);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 
-			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, params.id);
+			const responseLookup = await this._repositoryChecklists.retrieveSecurity(correlationId, user.id, id);
 			if (this._hasFailed(responseLookup))
 				return responseLookup;
 
@@ -234,14 +236,13 @@ class ChecklistsService extends AppService {
 					return this._securityErrorResponse(correlationId, 'ChecklistsService', 'copy');
 			}
 	
-			const response = await this._repositoryChecklists.retrieve(correlationId, user.id, params.id);
+			const response = await this._repositoryChecklists.retrieve(correlationId, user.id, id);
 			if (this._hasFailed(validationResponse))
 				return response;
 	
 			const results = response.results;
-			results.id = LibraryCommonUtility.generateId();
-			delete results.startTimestamp;
-			delete results.startUserId;
+			results.startTimestamp = LibraryMomentUtility.getTimestamp();
+			results.startUserId = user.id;
 			results.statusId = AppSharedConstants.Checklists.ChecklistStatus.inProgress;
 	
 			return await this._repositoryChecklists.update(correlationId, user.id, results);
@@ -283,6 +284,13 @@ class ChecklistsService extends AppService {
 				const validResponse = this._checkUpdatedTimestamp(correlationId, checklistUpdate, checklist, 'checklist');
 				if (this._hasFailed(validResponse))
 					return validResponse;
+			}
+
+			if (checklistUpdate.statusId === AppSharedConstants.Checklists.ChecklistStatus.completed) {
+				if (!checklistUpdate.completeTimestamp) {
+					checklistUpdate.completeTimestamp = LibraryMomentUtility.getTimestamp();
+					checklistUpdate.completedUserId = user.id;
+				}
 			}
 			
 			return await this._repositoryChecklists.update(correlationId, user.id, checklistUpdate);

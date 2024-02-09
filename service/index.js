@@ -12,7 +12,7 @@ class AppService extends Service {
 	_isOwner(correlationId, user, item) {
 		this._enforceNotNull('LocationsService', '_isOwner', 'user', user, correlationId);
 		if (!item)
-			return false;
+			return true;
 
 		return item.ownerId === user.id;
 	}

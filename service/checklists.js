@@ -1,9 +1,10 @@
 import AppConstants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
-
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
+
+import LaunchData from 'rocket_sidekick_common/data/launches/index.js';
 
 import AppService from './index.js';
 
@@ -12,13 +13,14 @@ class ChecklistsService extends AppService {
 		super();
 
 		this._repositoryChecklists = null;
-		this._serviceUsers = null;
+		this._serviceLaunches = null;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
 		this._repositoryChecklists = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_CHECKLISTS);
+		this._serviceLaunches = this._injector.getService(AppConstants.InjectorKeys.SERVICE_LAUNCHES);
 	}
 
 	async copy(correlationId, user, params) {
@@ -286,14 +288,28 @@ class ChecklistsService extends AppService {
 					return validResponse;
 			}
 
+			let initializeLaunch = false;
 			if (checklistUpdate.statusId === AppSharedConstants.Checklists.ChecklistStatus.completed) {
 				if (!checklistUpdate.completeTimestamp) {
 					checklistUpdate.completeTimestamp = LibraryMomentUtility.getTimestamp();
 					checklistUpdate.completedUserId = user.id;
+
+					if (checklistUpdate.locationId && checklistUpdate.rocketId)
+						initializeLaunch = true;
 				}
 			}
 			
-			return await this._repositoryChecklists.update(correlationId, user.id, checklistUpdate);
+			const responseUpdate = await this._repositoryChecklists.update(correlationId, user.id, checklistUpdate);
+			if (this._hasFailed(responseUpdate))
+				return responseUpdate;
+
+			if (initializeLaunch) {
+				const responseLaunch = await this._initializeLaunch(correlationId, user, checklistUpdate);
+				if (this._hasFailed(responseLaunch))
+					return responseLaunch;
+			}
+
+			return responseUpdate;
 		}
 		catch (err) {
 			return this._error('ChecklistsService', 'update', null, err, null, null, correlationId);
@@ -307,6 +323,24 @@ class ChecklistsService extends AppService {
 			delete item.completedUserId;
 
 			this._clearChecklist(correlationId, item);
+		}
+	}
+
+	async _initializeLaunch(correlationId, user, checklist) {
+		try {
+			const launch = new LaunchData();
+			launch.checklistId = checklist.id;
+			launch.date = checklist.date;
+			launch.locationId = checklist.locationId;
+			launch.locationIterationId = checklist.locationIterationId;
+			launch.rocketId = checklist.rocketId;
+			launch.rocketSetupId = checklist.rocketSetupId;
+			launch.ownerId = user.id;
+
+			return this._serviceLaunches.update(correlationId, user, launch);
+		}
+		catch (err) {
+			return this._error('ChecklistsService', '_initializeLaunch', null, err, null, null, correlationId);
 		}
 	}
 }

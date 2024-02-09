@@ -315,6 +315,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ceiling: Joi.number().allow(null),
 		ceilingMeasurementUnitId: this._measurementId.allow(null),
 		ceilingMeasurementUnitsId: this._measurementId.allow(null),
+		checklistId: this.checklistId.allow(null),
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		date: Joi.number().required(),

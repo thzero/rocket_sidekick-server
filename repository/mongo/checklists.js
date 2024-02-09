@@ -425,6 +425,7 @@ class ChecklistsRepository extends AppMongoRepository {
 					'_id': 0,
 					'id': 1,
 					'name': 1,
+					'date': 1,
 					'description': 1,
 					'typeId': 1,
 					'isDefault': 1,

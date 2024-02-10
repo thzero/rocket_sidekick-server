@@ -178,12 +178,12 @@ class LaunchesRepository extends AppMongoRepository {
 								'id': 1,
 								'name': 1,
 								'rocketTypes': 1,
-								// 'stages': 1
-								'stages.id': 1,
-								'stages.description': 1,
-								'stages.index': 1,
-								'stages.motors': 1,
-								'stages.name': 1
+								'stages': 1
+								// 'stages.id': 1,
+								// 'stages.description': 1,
+								// 'stages.index': 1,
+								// 'stages.motors': 1,
+								// 'stages.name': 1
 							}
 						}
 					],
@@ -200,12 +200,12 @@ class LaunchesRepository extends AppMongoRepository {
 								'_id': 0,
 								'id': 1,
 								'name': 1,
-								// 'stages': 1,
-								'stages.id': 1,
-								'stages.description': 1,
-								'stages.index': 1,
-								'stages.motors': 1,
-								'stages.name': 1
+								'stages': 1
+								// 'stages.id': 1,
+								// 'stages.description': 1,
+								// 'stages.index': 1,
+								// 'stages.motors': 1,
+								// 'stages.name': 1
 							}
 						}
 					],
@@ -442,12 +442,12 @@ class LaunchesRepository extends AppMongoRepository {
 								'_id': 0,
 								'id': 1,
 								'name': 1,
-								// 'stages': 1,
-								'stages.id': 1,
-								'stages.description': 1,
-								'stages.index': 1,
-								'stages.motors': 1,
-								'stages.name': 1
+								'stages': 1,
+								// 'stages.id': 1,
+								// 'stages.description': 1,
+								// 'stages.index': 1,
+								// 'stages.motors': 1,
+								// 'stages.name': 1
 							}
 						}
 					],

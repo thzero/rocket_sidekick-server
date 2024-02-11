@@ -82,11 +82,11 @@ class RocketsService extends AppService {
 				return this._securityErrorResponse(correlationId, 'RocketsService', 'delete');
 
 			// See if its used in a checklist
-			const checklistResponse = this._serviceChecklists.hasRocket(correlationId, user, id);
+			const checklistResponse = await this._serviceChecklists.hasRocket(correlationId, user, id);
 			if (this._hasFailed(checklistResponse))
 				return checklistResponse;
 			// See if its used in a launch
-			const launchResponse = this._serviceLaunches.hasRocket(correlationId, user, id);
+			const launchResponse = await this._serviceLaunches.hasRocket(correlationId, user, id);
 			if (this._hasFailed(launchResponse))
 				return launchResponse;
 	

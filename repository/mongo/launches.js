@@ -426,6 +426,15 @@ class LaunchesRepository extends AppMongoRepository {
 								'name': 1,
 								'rocketTypes': 1,
 								'stages': 1
+							},
+							$project: {
+								'stages.chuteProtectors': 0,
+								'stages.chuteReleases': 0,
+								'stages.deploymentBags': 0,
+								// 'stages.motors': 0,
+								'stages.parachutes': 0,
+								'stages.streamers': 0,
+								'stages.trackers': 0
 							}
 						}
 					],
@@ -448,6 +457,15 @@ class LaunchesRepository extends AppMongoRepository {
 								// 'stages.index': 1,
 								// 'stages.motors': 1,
 								// 'stages.name': 1
+							},
+							$project: {
+								'stages.chuteProtectors': 0,
+								'stages.chuteReleases': 0,
+								'stages.deploymentBags': 0,
+								// 'stages.motors': 0,
+								'stages.parachutes': 0,
+								'stages.streamers': 0,
+								'stages.trackers': 0
 							}
 						}
 					],

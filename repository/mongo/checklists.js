@@ -47,26 +47,25 @@ class ChecklistsRepository extends AppMongoRepository {
 		}
 	}
 
-	async hasLaunch(correlationId, userId, id) {
-		try {
-			const collection = await this._getCollectionChecklists(correlationId);
+	// async hasLaunch(correlationId, userId, id) {
+	// 	try {
+	// 		const collection = await this._getCollectionChecklists(correlationId);
 
-			const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'locationId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
-			if (results && results.length > 0) {
-				return this._errorResponse('ChecklistsRepository', 'hasLaunch', {
-						found: results.length,
-						results: results
-					},
-					AppSharedConstants.ErrorCodes.Launches.IncludedInChecklist,
-					correlationId);
-			}
+	// 		const results = await this._find(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'launchId': id }, { $expr: { $ne: [ 'deleted', true ] } } ] });
+	// 		if (results && results.length > 0) {
+	// 			return this._errorResponse('ChecklistsRepository', 'hasLaunch', {
+	// 					found: results.length,
+	// 					results: results
+	// 				},
+	// 				AppSharedConstants.ErrorCodes.Launches.IncludedInChecklist, correlationId);
+	// 		}
 
-			return this._success(correlationId);
-		}
-		catch (err) {
-			return this._error('ChecklistsRepository', 'hasLaunch', null, err, null, null, correlationId);
-		}
-	}
+	// 		return this._success(correlationId);
+	// 	}
+	// 	catch (err) {
+	// 		return this._error('ChecklistsRepository', 'hasLaunch', null, err, null, null, correlationId);
+	// 	}
+	// }
 
 	async hasLocation(correlationId, userId, id) {
 		try {

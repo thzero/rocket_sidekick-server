@@ -98,24 +98,24 @@ class ChecklistsService extends AppService {
 		}
 	}
 
-	async hasLaunch(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'hasLaunch', 'user', user, correlationId);
+	// async hasLaunch(correlationId, user, id) {
+	// 	this._enforceNotNull('ChecklistsService', 'hasLaunch', 'user', user, correlationId);
 
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
+	// 	try {
+	// 		const validationResponsUser = this._validateUser(correlationId, user);
+	// 		if (this._hasFailed(validationResponsUser))
+	// 			return validationResponsUser;
 			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launchId, id);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
+	// 		const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launchId, id);
+	// 		if (this._hasFailed(validationResponse))
+	// 			return validationResponse;
 
-			return await this._repositoryChecklists.hasLaunch(correlationId, user.id, id);
-		}
-		catch (err) {
-			return this._error('ChecklistsService', 'hasLaunch', null, err, null, null, correlationId);
-		}
-	}
+	// 		return await this._repositoryChecklists.hasLaunch(correlationId, user.id, id);
+	// 	}
+	// 	catch (err) {
+	// 		return this._error('ChecklistsService', 'hasLaunch', null, err, null, null, correlationId);
+	// 	}
+	// }
 
 	async hasLocation(correlationId, user, id) {
 		this._enforceNotNull('ChecklistsService', 'hasLocation', 'user', user, correlationId);

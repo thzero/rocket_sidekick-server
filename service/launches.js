@@ -37,10 +37,10 @@ class LaunchesService extends AppService {
 			if (!this._isOwner(correlationId, user, responseLookup.results))
 				return this._securityErrorResponse(correlationId, 'LaunchesService', 'delete');
 
-			// See if its used in a checklist
-			const checklistResponse = this._serviceChecklists.hasLaunch(correlationId, user, id);
-			if (this._hasFailed(checklistResponse))
-				return checklistResponse;
+			// // See if its used in a checklist
+			// const checklistResponse = await this._serviceChecklists.hasLaunch(correlationId, user, id);
+			// if (this._hasFailed(checklistResponse))
+			// 	return checklistResponse;
 	
 			return await this._repositoryLaunches.delete(correlationId, user.id, id);
 		}
@@ -50,7 +50,7 @@ class LaunchesService extends AppService {
 	}
 
 	async hasLocation(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'hasLaunch', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'hasLocation', 'user', user, correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

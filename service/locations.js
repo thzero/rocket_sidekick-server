@@ -44,11 +44,11 @@ class LocationsService extends AppService {
 			}
 
 			// See if its used in a checklist
-			const checklistResponse = this._serviceChecklists.hasLocation(correlationId, user, id);
+			const checklistResponse = await this._serviceChecklists.hasLocation(correlationId, user, id);
 			if (this._hasFailed(checklistResponse))
 				return checklistResponse;
 			// See if its used in a launch
-			const launchResponse = this._serviceLaunches.hasLocation(correlationId, user, id);
+			const launchResponse = await this._serviceLaunches.hasLocation(correlationId, user, id);
 			if (this._hasFailed(launchResponse))
 				return launchResponse;
 	

@@ -97,11 +97,11 @@ class PartsService extends Service {
 				return fetchRespositoryResponse;
 				
 			// See if its used in a rocket
-			const checklistResponse = this._serviceRockets.hasPart(correlationId, user, id);
+			const checklistResponse = await this._serviceRockets.hasPart(correlationId, user, id);
 			if (this._hasFailed(checklistResponse))
 				return checklistResponse;
 			// See if its used in a rocket setup
-			const launchResponse = this._serviceRocketSetups.hasPart(correlationId, user, id);
+			const launchResponse = await this._serviceRocketSetups.hasPart(correlationId, user, id);
 			if (this._hasFailed(launchResponse))
 				return launchResponse;
 	

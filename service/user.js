@@ -1,6 +1,6 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 import LibraryServerConstants from '@thzero/library_server/constants.js';
-import SharedConstants from 'rocket_sidekick_common/constants.js';
 
 import AppUtility from '../utility/app.js'
 
@@ -22,11 +22,11 @@ class UserService extends BaseUserService {
 	}
 
 	_getDefaultPlan() {
-		return Constants.Plans.BASIC;
+		return AppConstants.Plans.BASIC;
 	}
 
 	_getDefaultUserRole() {
-		return SharedConstants.Roles.User;
+		return AppSharedConstants.Roles.User;
 	}
 
 	_initiateUser() {

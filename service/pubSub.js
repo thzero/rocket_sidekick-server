@@ -1,4 +1,4 @@
-import Constants from '../constants.js';
+import AppConstants from '../constants.js';
 
 import Service from '@thzero/library_server/service/index.js';
 
@@ -14,7 +14,7 @@ class PubSubService extends Service {
 	async init(injector) {
 		await super.init(injector);
 
-		this._repositorPubSub = this._injector.getService(Constants.InjectorKeys.REPOSITORY_PUBSUB);
+		this._repositorPubSub = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_PUBSUB);
 	}
 
 	async initialize(correlationId) {

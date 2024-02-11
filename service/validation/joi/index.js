@@ -238,19 +238,27 @@ class JoiValidationService extends GamerJoiValidationService {
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		typeId: this._type,
-		date: Joi.number().required(),
+		canLaunch: Joi.boolean().allow(null),
+		completeTimestamp: Joi.number(),
+		completedUserId: this._id.allow(null),
+		statusId: this._type,
+		date: Joi.number().allow(null),
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		description: this._description.allow(null).allow(''),
+		isTemplate: Joi.boolean().allow(null),
+		launched: Joi.boolean().allow(null),
 		launchTypeId: this._type,
-		locationId: this.locationId.allow(null),
+		locationId: this.locationId.allow(null).allow(''),
 		locationIterationId: this.locationId.allow(null),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
-		rocketId: this.rocketId.allow(null),
+		rocketId: this.rocketId.allow(null).allow(''),
 		rocketSetupId: this.rocketSetupId.allow(null).allow(''),
 		searchName: this._extendedNameBase.allow(null).allow(''),
+		startTimestamp: Joi.number(),
+		startUserId: this._id.allow(null),
 		statusId: this._type,
 		steps: Joi.array().items(Joi.any()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
@@ -273,6 +281,8 @@ class JoiValidationService extends GamerJoiValidationService {
 		yours: Joi.boolean().allow(null),
 		isUser: Joi.boolean().allow(null)
 	});
+	
+	checklistStartParams = this.checklistId;
 	
 	launchResults = Joi.object({
 		accelerationMax: Joi.number().allow(null),
@@ -305,6 +315,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		ceiling: Joi.number().allow(null),
 		ceilingMeasurementUnitId: this._measurementId.allow(null),
 		ceilingMeasurementUnitsId: this._measurementId.allow(null),
+		checklistId: this.checklistId.allow(null),
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
 		date: Joi.number().required(),

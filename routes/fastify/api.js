@@ -1,4 +1,4 @@
-import Constants from '../../constants.js';
+import AppConstants from '../../constants.js';
 // import LibraryServerUtility from '@thzero/library_server/constants.js';
 
 import BaseRoute from '@thzero/library_server_fastify/routes/index.js';
@@ -11,7 +11,7 @@ class ApiRoute extends BaseRoute {
 	async init(injector, app, config) {
 		await super.init(injector, app, config);
 		
-		this._inject(app, injector, Constants.InjectorKeys.SERVICE_API, Constants.InjectorKeys.SERVICE_API);
+		this._inject(app, injector, AppConstants.InjectorKeys.SERVICE_API, AppConstants.InjectorKeys.SERVICE_API);
 		// this._inject(app, injector, LibraryServerUtility.InjectorKeys.SERVICE_UTILITY, LibraryServerUtility.InjectorKeys.SERVICE_UTILITY);
 	}
 

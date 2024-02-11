@@ -1,11 +1,11 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.1.47",
+  "version": "0.1.48",
   "version_major": 0,
   "version_minor": 1,
-  "version_patch": 47,
-  "version_date": "02/04/2024",
+  "version_patch": 48,
+  "version_date": "02/11/2024",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
   "license": "MIT",
@@ -41,7 +41,7 @@
     "cbor-x": "^1.5.8",
     "decimal.js-light": "^2.5.1",
     "pino-pretty": "^10.3.1",
-    "rocket_sidekick_common": "^0.0.74",
+    "rocket_sidekick_common": "^0.0.75",
     "snappyjs": "^0.7.0"
   }
 }

@@ -429,7 +429,7 @@ class ChecklistsRepository extends AppMongoRepository {
 					'typeId': 1,
 					'isDefault': 1,
 					'launched': 1,
-					'launchTypeId': 1,
+					'launchTypes': 1,
 					'locationId': 1,
 					'locationIterationId': 1,
 					'rocketId': 1,

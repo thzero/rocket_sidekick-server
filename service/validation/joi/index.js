@@ -249,7 +249,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		description: this._description.allow(null).allow(''),
 		isTemplate: Joi.boolean().allow(null),
 		launched: Joi.boolean().allow(null),
-		launchTypeId: this._type,
+		launchTypes: Joi.array().items(this.rocketType).allow(null),
 		locationId: this.locationId.allow(null).allow(''),
 		locationIterationId: this.locationId.allow(null),
 		name: this._extendedName,
@@ -351,7 +351,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	launchesParams = Joi.object({
 		locationId: this.locationId.allow('').allow(null),
 		name: this._extendedName.allow('').allow(null),
-		organizations: Joi.array().items(this.rocketType).allow(null),
+		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});

@@ -25,6 +25,10 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionCountries);
 	}
 
+	getCollectionInventory(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionInventory);
+	}
+
 	getCollectionLaunches(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionLaunches);
 	}
@@ -74,6 +78,7 @@ class AppCollectionsService extends ApiCollectionsService {
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';
 	static CollectionCountries = 'countries';
+	static CollectionInventory = 'inventory';
 	static CollectionLaunches = 'launches';
 	static CollectionLocations = 'locations';
 	static CollectionManufacturers = 'manufacturers';

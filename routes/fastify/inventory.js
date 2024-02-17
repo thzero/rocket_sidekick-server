@@ -17,7 +17,7 @@ class InventoryRoute extends BaseRoute {
 	_initializeRoutes(router) {
 		super._initializeRoutes(router);
 
-		router.delete(this._join('/inventory/:id'),
+		router.get(this._join('/inventory'),
 			{
 				preHandler: router.auth([
 					router.authenticationDefault,
@@ -30,43 +30,7 @@ class InventoryRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].delete(request.correlationId, request.user, request.params.id)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.get(this._join('/inventory/:id'),
-			{
-				preHandler: router.auth([
-					router.authenticationDefault,
-					router.authorizationDefault
-				], 
-				{ 
-					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
-				}),
-			},
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].retrieve(request.correlationId, request.user, request.params.id)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.post(this._join('/inventory/search'),
-			{
-				preHandler: router.auth([
-					router.authenticationDefault,
-					router.authorizationDefault
-				], 
-				{ 
-					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
-				}),
-			},
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].search(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].retrieve(request.correlationId, request.user)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -85,24 +49,6 @@ class InventoryRoute extends BaseRoute {
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].update(request.correlationId, request.user, request.body)).check(request);
-				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
-				return this._jsonResponse(reply, response);
-			}
-		);
-		router.get(this._join('/inventory/refresh'),
-		// 	{
-		// 		preHandler: router.auth([
-		// 			router.authenticationDefault,
-		// 			router.authorizationDefault
-		// 		], 
-		// 		{ 
-		// 			relation: LibraryCommonnConstants.Security.logicalAnd,
-		// 			roles: [ 'rockets' ]
-		// 		}),
-		// 	},
-			// eslint-disable-next-line
-			async (request, reply) => {
-				const response = (await router[AppConstants.InjectorKeys.SERVICE_INVENTORY].refreshSearchName(request.correlationId)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

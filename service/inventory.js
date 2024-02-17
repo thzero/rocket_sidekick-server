@@ -17,37 +17,6 @@ class InventoryService extends AppService {
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
 	}
 
-	async delete(correlationId, user, id) {
-		this._enforceNotNull('InventoryService', 'delete', 'user', user, correlationId);
-
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketId, id);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-
-			const responseLookup = await this._repositoryInventory.retrieveSecurity(correlationId, user.id, id);
-			if (this._hasFailed(responseLookup))
-				return responseLookup;
-
-			// SECURITY: Check is the owner
-			if (!this._isOwner(correlationId, user, responseLookup.results))
-				return this._securityErrorResponse(correlationId, 'InventoryService', 'delete');
-	
-			return await this._repositoryInventory.delete(correlationId, user.id, id);
-		}
-		catch (err) {
-			return this._error('InventoryService', 'delete', null, err, null, null, correlationId);
-		}
-	}
-
-	async refreshSearchName(correlationId) {
-		return await this._repositoryInventory.refreshSearchName(correlationId);
-	}
-
 	async retrieve(correlationId, user, id) {
 		this._enforceNotNull('InventoryService', 'retrieve', 'user', user, correlationId);
 
@@ -64,25 +33,6 @@ class InventoryService extends AppService {
 		}
 		catch (err) {
 			return this._error('InventoryService', 'retrieve', null, err, null, null, correlationId);
-		}
-	}
-
-	async search(correlationId, user, params) {
-		this._enforceNotNull('InventoryService', 'search', 'user', user, correlationId);
-		
-		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-			
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.inventoryParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-	
-			return await this._repositoryInventory.search(correlationId, user.id, params);
-		}
-		catch (err) {
-			return this._error('InventoryService', 'search', null, err, null, null, correlationId);
 		}
 	}
 

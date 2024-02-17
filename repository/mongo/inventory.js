@@ -1,8 +1,6 @@
-import AppSharedConstants from 'rocket_sidekick_common/constants.js';
-
-import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
-
 import AppMongoRepository from './app.js';
+
+import InventoryData from 'rocket_sidekick_common/data/inventory/index.js';
 
 class InventoryRepository extends AppMongoRepository {
 	constructor() {
@@ -16,50 +14,11 @@ class InventoryRepository extends AppMongoRepository {
 
 		this._ownerId = this._config.get('ownerId');
 	}
-
-	async delete(correlationId, userId, id) {
-		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
-		try {
-			await this._transactionStart(correlationId, session);
-
-			const collection = await this._getCollectionInventory(correlationId);
-
-			const inventory = await this._findOne(correlationId, collection, { $and: [ { 'ownerId' : userId }, { 'id': id } ] });
-			if (!inventory)
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the inventory - not found.');
-
-			inventory.deleted = true;
-			inventory.deletedUserId = userId;
-			inventory.deletedTimestamp = LibraryMomentUtility.getTimestamp();
-			const response = await this._update(correlationId, collection, userId, inventory.id, inventory);
-			if (this._hasFailed(response))
-				return await this._transactionAbort(correlationId, session, 'Unable to delete the inventory.');
-
-			await this._transactionCommit(correlationId, session);
-			return response;
-		}
-		catch (err) {
-			return await this._transactionAbort(correlationId, session, null, err, 'InventoryRepository', 'delete');
-		}
-		finally {
-			await this._transactionEnd(correlationId, session);
-		}
-	}
-
-	async refreshSearchName(correlationId) {
-		return await this._refreshSearchName(correlationId, await this._getCollectionInventory(correlationId));
-	}
 	
 	async retrieve(correlationId, userId, id) {
 		try {
 			const queryA = [ { 
-					$match: {
-						$and: [
-							{ 'id': id },
-							{ 'ownerId': userId },
-							{ 'deleted': { $ne: true } }
-						]
-					}
+					$match: { 'ownerId': userId }
 				}
 			];
 
@@ -67,7 +26,7 @@ class InventoryRepository extends AppMongoRepository {
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
 			if (results.length === 0)
-				return this._success(correlationId);
+				return this._successResponse(new InventoryData(), correlationId);
 			
 			results = results[0];
 
@@ -83,9 +42,7 @@ class InventoryRepository extends AppMongoRepository {
 			const queryA = [ { 
 					$match: {
 						$and: [
-							{ 'id': id },
-							{ 'ownerId': userId },
-							{ 'deleted': { $ne: true } }
+							{ 'ownerId': userId }
 						]
 					}
 				}
@@ -93,7 +50,6 @@ class InventoryRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					'id': 1,
 					'ownerId': 1,
 					'name': 1
 				}
@@ -103,7 +59,7 @@ class InventoryRepository extends AppMongoRepository {
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
 			if (results.length === 0)
-				return this._success(correlationId);
+				return this._successResponse(new InventoryData(), correlationId);
 			
 			results = results[0];
 
@@ -111,39 +67,6 @@ class InventoryRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return this._error('InventoryRepository', 'retrieveSecurity', null, err, null, null, correlationId);
-		}
-	}
-
-	async search(correlationId, userId, params) {
-		try {
-			const queryA = [];
-
-			if (!String.isNullOrEmpty(params.name)) {
-				queryA.push(
-					this._searchFilterText(correlationId, params.name),
-				);
-			}
-
-			const where = [];
-
-			const defaultFilter = { 
-				$and: [
-					{ 'ownerId': userId },
-					{ 'deleted': { $ne: true } },
-					...where
-				]
-			};
-			
-			queryA.push({
-				$match: defaultFilter
-			});
-	
-			const collection = await this._getCollectionInventory(correlationId);
-			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
-			return this._successResponse(results, correlationId);
-		}
-		catch (err) {
-			return this._error('InventoryRepository', 'search', null, err, null, null, correlationId);
 		}
 	}
 
@@ -156,7 +79,6 @@ class InventoryRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			inventory.ownerId = userId;
-			inventory.searchName = this._createEdgeNGrams(correlationId, inventory.name);
 			await this._update(correlationId, collection, userId, inventory.id, inventory);
 
 			const responseRetrieve = await this.retrieve(correlationId, userId, inventory.id);

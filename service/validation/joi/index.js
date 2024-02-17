@@ -61,6 +61,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[ABCDEFGHIJKLMNOP]*$/);
 	
+	inventoryId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
 	launchId = Joi.string()
 		.trim()
 		// .alphanum()
@@ -283,6 +288,23 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	checklistStartParams = this.checklistId;
+	
+	inventory = Joi.object({
+		id: this.inventoryId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		ownerId: this.ownerId.allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	inventoryParams = Joi.object({
+		// name: this._extendedName.allow('').allow(null),
+		// organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
+		// rocketId: this.rocketId.allow('').allow(null),
+		// rocketTypes: Joi.array().items(this.rocketType).allow(null)
+	});
 	
 	launchResults = Joi.object({
 		accelerationMax: Joi.number().allow(null),

@@ -25,7 +25,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line
@@ -43,7 +43,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line
@@ -61,7 +61,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line
@@ -79,7 +79,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line
@@ -97,7 +97,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line
@@ -115,7 +115,7 @@ class PartsRoute extends BaseRoute {
 				], 
 				{ 
 					relation: LibraryCommonnConstants.Security.logicalAnd,
-					roles: [ 'rockets' ]
+					roles: [ 'parts' ]
 				}),
 			},
 			// eslint-disable-next-line

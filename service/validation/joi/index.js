@@ -61,6 +61,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[ABCDEFGHIJKLMNOP]*$/);
 	
+	inventoryId = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
 	launchId = Joi.string()
 		.trim()
 		// .alphanum()
@@ -249,13 +254,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		description: this._description.allow(null).allow(''),
 		isTemplate: Joi.boolean().allow(null),
 		launched: Joi.boolean().allow(null),
-		launchTypeId: this._type,
 		locationId: this.locationId.allow(null).allow(''),
 		locationIterationId: this.locationId.allow(null),
 		name: this._extendedName,
 		ownerId: this.ownerId.allow(null),
 		rocketId: this.rocketId.allow(null).allow(''),
 		rocketSetupId: this.rocketSetupId.allow(null).allow(''),
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		startTimestamp: Joi.number(),
 		startUserId: this._id.allow(null),
@@ -283,6 +288,23 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 	
 	checklistStartParams = this.checklistId;
+	
+	inventory = Joi.object({
+		id: this.inventoryId,
+		createdTimestamp: Joi.number(),
+		createdUserId: this._id.allow(null),
+		ownerId: this.ownerId.allow(null),
+		syncTimestamp: Joi.number().allow(null),
+		updatedTimestamp: Joi.number(),
+		updatedUserId: this._id.allow(null)
+	});
+	
+	inventoryParams = Joi.object({
+		// name: this._extendedName.allow('').allow(null),
+		// organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
+		// rocketId: this.rocketId.allow('').allow(null),
+		// rocketTypes: Joi.array().items(this.rocketType).allow(null)
+	});
 	
 	launchResults = Joi.object({
 		accelerationMax: Joi.number().allow(null),
@@ -351,7 +373,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	launchesParams = Joi.object({
 		locationId: this.locationId.allow('').allow(null),
 		name: this._extendedName.allow('').allow(null),
-		organizations: Joi.array().items(this.rocketType).allow(null),
+		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});

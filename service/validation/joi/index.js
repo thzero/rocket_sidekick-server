@@ -290,7 +290,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	checklistStartParams = this.checklistId;
 	
 	inventoryItem = Joi.object({
-		itemId: this.partId,
+		id: this.partId,
 		quantity: Joi.number().greater(-1).less(3000)
 	});
 	

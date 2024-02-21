@@ -1,3 +1,4 @@
+import AppConstants from '../../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
@@ -9,12 +10,16 @@ class PartsRepository extends AppMongoRepository {
 		super();
 		
 		this._ownerId = null;
+		
+		this._serviceManufacturers = null;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+		
+		this._serviceManufacturers = this._injector.getService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 
 	async delete(correlationId, userId, id) {
@@ -168,9 +173,10 @@ class PartsRepository extends AppMongoRepository {
 			queryA.push({
 				$project: { 
 					'_id': 0,
-					'ownerId': 0,
-					'isDefault': 0,
-					'name': 0
+					'id': 1,
+					'ownerId': 1,
+					'isDefault': 1,
+					'name': 1
 				}
 			});
 
@@ -387,6 +393,12 @@ class PartsRepository extends AppMongoRepository {
 
 	async _searchSets(correlationId, userId, params, types, additional) {
 		try {
+			const responseManufacturers = await this._serviceManufacturers.listing(correlationId);
+			if (this._hasFailed(responseManufacturers))
+				return responseManufacturers;
+
+			const manufacturers = responseManufacturers.results.data;
+
 			const queryA = [];
 
 			if (!String.isNullOrEmpty(params.name)) {
@@ -454,7 +466,15 @@ class PartsRepository extends AppMongoRepository {
 			});
 	
 			const collection = await this._getCollectionParts(correlationId);
-			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));if (results.data.length === 0)
+			return this._successResponse(results, correlationId);
+
+			for (const item of results.data) {
+				item.manufacturer = manufacturers.find(l => l.id === item.manufacturerId);
+				if (item.manufacturer)
+					item.manufacturer = item.manufacturer.name;
+			}
+
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {

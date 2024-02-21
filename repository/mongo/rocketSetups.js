@@ -10,14 +10,16 @@ class RocketSetupsRepository extends AppMongoRepository {
 	constructor() {
 		super();
 		
-		this._serviceManufacturers = null;
 		this._ownerId = null;
+
+		this._serviceManufacturers = null;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+		
 		this._serviceManufacturers = this._injector.getService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 

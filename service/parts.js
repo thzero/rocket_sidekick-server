@@ -3,9 +3,9 @@ import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
-import Service from '@thzero/library_server/service/index.js';
+import AppService from './index.js';
 
-class PartsService extends Service {
+class PartsService extends AppService {
 	constructor() {
 		super();
 

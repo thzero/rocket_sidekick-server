@@ -63,7 +63,6 @@ class InventoryRepository extends AppMongoRepository {
 								'ownerId': 0,
 								'certOrg': 0,
 								'commonName': 0,
-								'diameter': 0,
 								'avgThrustN': 0,
 								'maxThrustN': 0,
 								'totImpulseNs': 0,

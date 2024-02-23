@@ -467,12 +467,35 @@ class PartsRepository extends AppMongoRepository {
 	
 			const collection = await this._getCollectionParts(correlationId);
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));if (results.data.length === 0)
-			return this._successResponse(results, correlationId);
+			if (results.data.length === 0)
+				return this._successResponse(results, correlationId);
+			
+			const queryI = [ { 
+					$match: { 'ownerId': userId }
+				}
+			];
+			const collectionI = await this._getCollectionInventory(correlationId);
+			let resultsI = await this._aggregate(correlationId, collectionI, queryI);
+			resultsI = await resultsI.toArray();
+			let inventory = { types: [] };
+			if (resultsI && resultsI.length > 0)
+				inventory = resultsI[0];
+			inventory.types = inventory.types ?? [];
 
+			let itemI;
+			let typeI;
 			for (const item of results.data) {
 				item.manufacturer = manufacturers.find(l => l.id === item.manufacturerId);
 				if (item.manufacturer)
 					item.manufacturer = item.manufacturer.name;
+
+				typeI = inventory.types.find(l => l.typeId === item.typeId);
+				if (typeI) {
+					typeI.items = typeI.items ?? [];
+					itemI = typeI.items.find(l => l.id === item.id);
+					if (itemI)
+						item.quantity = itemI.quantity;
+				}
 			}
 
 			return this._successResponse(results, correlationId);

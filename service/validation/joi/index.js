@@ -291,7 +291,9 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	inventoryItem = Joi.object({
 		id: this.partId,
-		quantity: Joi.number().greater(-1).less(3000)
+		itemId: this.partId,
+		delay: Joi.number().greater(-1).less(30).allow(null),
+		quantity: Joi.number().greater(-1).less(3000).allow(null)
 	});
 	
 	inventoryType = Joi.object({

@@ -295,8 +295,9 @@ class RocketSetupsRepository extends AppMongoRepository {
 						if (motor.motorId) {
 							temp = results2.find(l => l.id === motor.motorId);
 							if (temp) {
-								motor.motorName = temp.name;
+								motor.motorName = temp.designation;
 								motor.motorCaseInfo = temp.caseInfo;
+								motor.sparky = temp.sparky;
 	
 								fetchManufacturer((id, name, abbrev) => {
 									motor.motorManufacturerId = id;

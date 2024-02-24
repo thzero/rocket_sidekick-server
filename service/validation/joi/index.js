@@ -289,12 +289,29 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	checklistStartParams = this.checklistId;
 	
+	inventoryItem = Joi.object({
+		id: this.partId,
+		itemId: this.partId,
+		delay: Joi.number().greater(-1).less(30).allow(null),
+		quantity: Joi.number().greater(-1).less(3000).allow(null)
+	});
+	
+	inventoryType = Joi.object({
+		items: Joi.array().items(this.inventoryItem).allow(null),
+		typeId: this._type.required(),
+	});
+	
 	inventory = Joi.object({
 		id: this.inventoryId,
 		createdTimestamp: Joi.number(),
 		createdUserId: this._id.allow(null),
+		deleted: Joi.boolean().allow(null),
+		deletedTimestamp: Joi.number().allow(null),
+		deletedUserId: this._id.allow(null),
+		public: Joi.boolean().required(),
 		ownerId: this.ownerId.allow(null),
 		syncTimestamp: Joi.number().allow(null),
+		types: Joi.array().items(this.inventoryType).allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});

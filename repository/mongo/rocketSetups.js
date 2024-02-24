@@ -10,14 +10,16 @@ class RocketSetupsRepository extends AppMongoRepository {
 	constructor() {
 		super();
 		
-		this._serviceManufacturers = null;
 		this._ownerId = null;
+
+		this._serviceManufacturers = null;
 	}
 
 	async init(injector) {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+		
 		this._serviceManufacturers = this._injector.getService(AppConstants.InjectorKeys.SERVICE_MANUFACTURERS);
 	}
 
@@ -293,8 +295,9 @@ class RocketSetupsRepository extends AppMongoRepository {
 						if (motor.motorId) {
 							temp = results2.find(l => l.id === motor.motorId);
 							if (temp) {
-								motor.motorName = temp.name;
+								motor.motorName = temp.designation;
 								motor.motorCaseInfo = temp.caseInfo;
+								motor.sparky = temp.sparky;
 	
 								fetchManufacturer((id, name, abbrev) => {
 									motor.motorManufacturerId = id;

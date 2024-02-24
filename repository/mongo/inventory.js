@@ -15,20 +15,117 @@ class InventoryRepository extends AppMongoRepository {
 		this._ownerId = this._config.get('ownerId');
 	}
 	
-	async retrieve(correlationId, userId, id) {
+	async retrieve(correlationId, userId) {
 		try {
 			const queryA = [ { 
 					$match: { 'ownerId': userId }
 				}
 			];
+			queryA.push({
+				'$addFields': {
+					'items': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$types.items',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.itemId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'items',
+					'foreignField': 'id',
+					'pipeline': [
+						{ 
+							'$project': { 
+								'_id': 0,
+								'createdTimestamp': 0,
+								'createdUserId': 0,
+								'updatedTimestamp': 0,
+								'updatedUserId': 0,
+								'updatedOn': 0,
+								'deleted': 0,
+								'deletedTimestamp': 0,
+								'deletedUserId': 0,
+								'syncTimestamp': 0,
+								'public': 0,
+								'ownerId': 0,
+								'certOrg': 0,
+								'commonName': 0,
+								'avgThrustN': 0,
+								'maxThrustN': 0,
+								'totImpulseNs': 0,
+								'burnTimeS': 0,
+								'certOrg': 0,
+								'data': 0,
+								'dataFiles': 0,
+								'length': 0,
+								'manufacturerId': 0,
+								'motorCaseId': 0,
+								'motorId': 0,
+								'totalWeightG': 0,
+								'propWeightG': 0,
+								'updatedOn': 0,
+								'availability': 0
+							}
+						},
+					],
+					'as': 'items'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					manufacturers: { '$setUnion': '$items.manufacturerId' }
+				  }
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'manufacturers',
+					'localField': 'manufacturers',
+					'foreignField': 'id',
+					'pipeline': [
+						{ 
+							'$project': { 
+								'_id': 0,
+								'id': 1,
+								'name': 1
+							}
+						},
+					],
+					'as': 'manufacturers'
+				}
+			});
 
 			const collection = await this._getCollectionInventory(correlationId);
 			let results = await this._aggregate(correlationId, collection, queryA);
 			results = await results.toArray();
 			if (results.length === 0)
-				return this._successResponse(new InventoryData(), correlationId);
+				return this._success(correlationId);
 			
 			results = results[0];
+
+			let temp;
+			for (const type of results.types) {
+				for (const item of type.items) {
+					item.item = results.items.find(l => l.id === item.itemId);
+					temp = results.manufacturers.find(l => l.id === item.item.manufacturerId);
+					if (temp)
+						item.item.manufacturer = temp.name;
+				}
+			}
+			delete results.items;
+			delete results.manufacturers;
 
 			return this._successResponse(results, correlationId);
 		}

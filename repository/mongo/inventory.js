@@ -76,7 +76,6 @@ class InventoryRepository extends AppMongoRepository {
 								'motorId': 0,
 								'totalWeightG': 0,
 								'propWeightG': 0,
-								'propInfo': 0,
 								'updatedOn': 0,
 								'availability': 0
 							}

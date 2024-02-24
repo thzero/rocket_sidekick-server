@@ -30,7 +30,7 @@ class InventoryRepository extends AppMongoRepository {
 											'input': '$types.items',
 											'initialValue': [],
 											'in': { 
-												'$concatArrays': [ '$$value', '$$this.id' ] 
+												'$concatArrays': [ '$$value', '$$this.itemId' ] 
 											}
 										}
 									}
@@ -119,7 +119,7 @@ class InventoryRepository extends AppMongoRepository {
 			let temp;
 			for (const type of results.types) {
 				for (const item of type.items) {
-					item.item = results.items.find(l => l.id === item.id);
+					item.item = results.items.find(l => l.id === item.itemId);
 					temp = results.manufacturers.find(l => l.id === item.item.manufacturerId);
 					if (temp)
 						item.item.manufacturer = temp.name;

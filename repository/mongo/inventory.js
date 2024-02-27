@@ -72,7 +72,6 @@ class InventoryRepository extends AppMongoRepository {
 								'dataFiles': 0,
 								'length': 0,
 								'manufacturerId': 0,
-								'motorCaseId': 0,
 								'motorId': 0,
 								'totalWeightG': 0,
 								'propWeightG': 0,

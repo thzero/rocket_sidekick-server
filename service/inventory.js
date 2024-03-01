@@ -1,4 +1,5 @@
 import AppConstants from '../constants.js';
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import AppService from './index.js';
 
@@ -15,6 +16,33 @@ class InventoryService extends AppService {
 		this._repositoryInventory = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_INVENTORY);
 		
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
+	}
+
+	async hasPart(correlationId, userId, id) {
+		try {
+			const collection = await this._getCollectionInventory(correlationId);
+
+			const results = await this._find(correlationId, collection, { 
+				$and: [ 
+					{ 'ownerId' : userId }, 
+					{ 'types.items.itemId' : id }, 
+					{ $expr: { $ne: [ 'deleted', true ] } } 
+				] 
+			});
+			if (results && results.length > 0) {
+				return this._errorResponse('RocketSetupsRepository', 'hasPart', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Parts.IncludedInInventory,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('InventoryService', 'hasPart', null, err, null, null, correlationId);
+		}
 	}
 
 	async retrieve(correlationId, user, id) {

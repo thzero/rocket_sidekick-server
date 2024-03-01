@@ -18,6 +18,8 @@ class PartsService extends AppService {
 
 		this._repositoryParts = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_PARTS);
 		
+		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceInventory = this._injector.getService(AppConstants.InjectorKeys.SERVICE_INVENTORY);
 		this._serviceRockets = this._injector.getService(AppConstants.InjectorKeys.SERVICE_ROCKETS);
 		this._serviceRocketSetups = this._injector.getService(AppConstants.InjectorKeys.SERVICE_ROCKETSETUPS);
 	}
@@ -96,10 +98,10 @@ class PartsService extends AppService {
 			if (this._hasFailed(fetchRespositoryResponse))
 				return fetchRespositoryResponse;
 				
-			// See if its used in a rocket
-			const checklistResponse = await this._serviceRockets.hasPart(correlationId, user, id);
-			if (this._hasFailed(checklistResponse))
-				return checklistResponse;
+			// See if its used in an inventory
+			const inventoryResponse = await this._serviceInventory.hasPart(correlationId, user, id);
+			if (this._hasFailed(inventoryResponse))
+				return inventoryResponse;
 			// See if its used in a rocket setup
 			const launchResponse = await this._serviceRocketSetups.hasPart(correlationId, user, id);
 			if (this._hasFailed(launchResponse))

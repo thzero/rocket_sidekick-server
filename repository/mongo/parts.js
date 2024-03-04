@@ -212,8 +212,13 @@ class PartsRepository extends AppMongoRepository {
 			if (params.public !== null && params.public === 3)
 				where.push({ 'public': true });
 			
-			if (!String.isNullOrEmpty(params.impulseClass))
-				where.push({ 'impulseClass': params.impulseClass });
+			if (params.impulseClass) {
+				const arr = [];
+				params.impulseClass.forEach(element => {
+					arr.push({ 'impulseClass': element });
+				});
+				where.push({ $or: arr});
+			}
 			
 			if (params.motorSearch !== true && !String.isNullOrEmpty(params.diameter))
 				where.push({ 'diameter': params.diameter });
@@ -261,6 +266,33 @@ class PartsRepository extends AppMongoRepository {
 	
 			const collection = await this._getCollectionParts(correlationId);
 			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
+			
+			if (userId) {
+				const queryI = [ { 
+						$match: { 'ownerId': userId }
+					}
+				];
+				const collectionI = await this._getCollectionInventory(correlationId);
+				let resultsI = await this._aggregate(correlationId, collectionI, queryI);
+				resultsI = await resultsI.toArray();
+				let inventory = { types: [] };
+				if (resultsI && resultsI.length > 0)
+					inventory = resultsI[0];
+				inventory.types = inventory.types ?? [];
+	
+				let itemI;
+				let typeI;
+				for (const item of results.data) {
+					typeI = inventory.types.find(l => l.typeId === item.typeId);
+					if (typeI) {
+						typeI.items = typeI.items ?? [];
+						itemI = typeI.items.find(l => l.itemId === item.id);
+						if (itemI)
+							item.quantity = itemI.quantity;
+					}
+				}
+			}
+
 			return this._successResponse(results, correlationId);
 		}
 		catch (err) {
@@ -434,11 +466,21 @@ class PartsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 			
-			if (!String.isNullOrEmpty(params.motorDiameter))
-				where.push({ 'diameter': Number(params.motorDiameter) });
+			if (!String.isNullOrEmpty(params.motorDiameter)) {
+				const arr = [];
+				params.motorDiameter.forEach(element => {
+					arr.push({ 'diameter': Number(element) });
+				});
+				where.push({ $or: arr});
+			}
 			
-			if (!String.isNullOrEmpty(params.motorImpulseClass))
-				where.push({ 'impulseClass': params.motorImpulseClass });
+			if (!String.isNullOrEmpty(params.motorImpulseClass)) {
+				const arr = [];
+				params.motorImpulseClass.forEach(element => {
+					arr.push({ 'impulseClass': element });
+				});
+				where.push({ $or: arr});
+			}
 
 			if (additional)
 				additional(correlationId, params, where);

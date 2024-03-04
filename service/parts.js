@@ -166,34 +166,6 @@ class PartsService extends AppService {
 		this._enforceNotEmpty('PartsService', 'search', params.typeId, 'params.typeId', correlationId);
 		
 		try {
-			const validationResponsUser = this._validateUser(correlationId, user);
-			if (this._hasFailed(validationResponsUser))
-				return validationResponsUser;
-				
-			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParams, params);
-			if (this._hasFailed(validationResponse))
-				return validationResponse;
-			
-			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidationParams(correlationId, params.typeId), params);
-			if (this._hasFailed(validationChecklistResponse2))
-				return validationChecklistResponse2;
-
-			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
-			// from the stored measurement unit (which could vary by part) to the user provided search...
-	
-			const response = await this._repositoryParts.search(correlationId, user.id, params);
-			return response;
-		}
-		catch (err) {
-			return this._error('PartsService', 'search', null, err, null, null, correlationId);
-		}
-	}
-
-	async searchMotor(correlationId, user, params) {
-		this._enforceNotNull('PartsService', 'search', params, 'params', correlationId);
-		this._enforceNotEmpty('PartsService', 'search', params.typeId, 'params.typeId', correlationId);
-		
-		try {
 			if (user) {
 				const validationResponsUser = this._validateUser(correlationId, user);
 				if (this._hasFailed(validationResponsUser))
@@ -215,7 +187,7 @@ class PartsService extends AppService {
 			return response;
 		}
 		catch (err) {
-			return this._error('PartsService', 'searchMotor', null, err, null, null, correlationId);
+			return this._error('PartsService', 'search', null, err, null, null, correlationId);
 		}
 	}
 

@@ -1,5 +1,6 @@
 import AppConstants from '../constants.js';
 
+import ConvertUtility from 'rocket_sidekick_common/utility/convert.js';
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppService from './index.js';
@@ -237,6 +238,9 @@ class RocketSetupsService extends AppService {
 				if (this._hasFailed(validResponse))
 					return validResponse;
 			}
+
+			for (const stage of rocketSetupUpdate.stages)
+				ConvertUtility.convertMeasurementsForComparisonPart(correlationId, stage);
 			
 			const responseU = await this._repositoryRocketSetups.update(correlationId, user.id, rocketSetupUpdate);
 			if (this._hasFailed(responseU))
@@ -247,6 +251,15 @@ class RocketSetupsService extends AppService {
 		}
 		catch (err) {
 			return this._error('RocketSetupsService', 'update', null, err, null, null, correlationId);
+		}
+	}
+
+	async updateMeasurementToMetrics(correlationId) {
+		try {
+			return await this._repositoryRocketSetups.updateMeasurementToMetrics(correlationId);
+		}
+		catch (err) {
+			return this._error('RocketSetupsService', 'updateMeasurementToMetrics', null, err, null, null, correlationId);
 		}
 	}
 }

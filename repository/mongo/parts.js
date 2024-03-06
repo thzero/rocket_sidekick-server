@@ -1,6 +1,7 @@
 import AppConstants from '../../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
+import ConvertUtility from 'rocket_sidekick_common/utility/convert.js';
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
 import AppMongoRepository from './app.js';
@@ -219,9 +220,12 @@ class PartsRepository extends AppMongoRepository {
 				});
 				where.push({ $or: arr});
 			}
-			
-			if (params.motorSearch !== true && !String.isNullOrEmpty(params.diameter))
-				where.push({ 'diameter': params.diameter });
+
+			// Convert parameter to metric and then use metric comparisons...
+			if (params.motorSearch !== true && !String.isNullOrEmpty(params.diameter)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.diameter, params.diameterMeasurementUnitId, 'diameter');
+				where.push({ 'diameterMetric': metric });
+			}
 			
 			if (params.motorSearch !== true && params.manufacturers && params.manufacturers.length > 0) {
 				const arr = [];
@@ -387,6 +391,53 @@ class PartsRepository extends AppMongoRepository {
 		}
 	}
 
+	async updateMeasurementToMetrics(correlationId) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionParts(correlationId);
+			const response = this._initResponse(correlationId);
+
+			const queryA = [];
+
+			const defaultFilter = { 
+				$and: [
+					{ 'deleted': { $ne: true } }
+				],
+			};
+	
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));if (results.data.length === 0)
+			if (results.data.length === 0)
+				return this._successResponse(results, correlationId);
+
+			let updated = false;
+			for (const part of results.data) {
+				updated = ConvertUtility.convertMeasurementsForComparisonPart(correlationId, part);
+				if (updated)
+					await this._update(correlationId, collection, this._ownerId, part.id, part);
+			}
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'PartsRepository', 'updateMeasurementToMetrics');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
+		}
+	}
+
 	_partsFiltering(correlationId, params, where) {
 		if (params.typeId === AppSharedConstants.Rocketry.PartTypes.altimeter) {
 			return;
@@ -466,6 +517,40 @@ class PartsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 			
+			// Convert parameter to metric and then use metric comparisons...
+			if (!String.isNullOrEmpty(params.diameterMax) && !String.isNullOrEmpty(params.diameterMin)) {
+				const metricMax = ConvertUtility.convertMeasurementPart(correlationId, params.diameterMax, params.diameterMeasurementUnitId, 'diameter');
+				const metricMin = ConvertUtility.convertMeasurementPart(correlationId, params.diameterMin, params.diameterMeasurementUnitId, 'diameter');
+				where.push({
+					'diameterMetric': { '$gte': metricMin, '$lte': metricMax }
+				});
+			}
+			else if (!String.isNullOrEmpty(params.diameterMax)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.diameterMax, params.diameterMeasurementUnitId, 'diameter');
+				where.push({ 'diameterMetric': { '$lte': metric } });
+			}
+			else if (!String.isNullOrEmpty(params.diameterMin)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.diameterMin, params.diameterMeasurementUnitId, 'diameter');
+				where.push({ 'diameterMetric': { '$gte': metric } });
+			}
+			
+			// Convert parameter to metric and then use metric comparisons...
+			if (!String.isNullOrEmpty(params.lengthMax) && !String.isNullOrEmpty(params.lengthMin)) {
+				const metricMax = ConvertUtility.convertMeasurementPart(correlationId, params.lengthMax, params.lengthMeasurementUnitId, 'length');
+				const metricMin = ConvertUtility.convertMeasurementPart(correlationId, params.lengthMin, params.lengthMeasurementUnitId, 'length');
+				where.push({
+					'lengthMetric': { '$gte': metricMin, '$lte': metricMax }
+				});
+			}
+			else if (!String.isNullOrEmpty(params.lengthMax)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.lengthMax, params.lengthMeasurementUnitId, 'length');
+				where.push({ 'lengthMetric': { '$lte': metric } });
+			}
+			else if (!String.isNullOrEmpty(params.lengthMin)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.lengthMin, params.lengthMeasurementUnitId, 'length');
+				where.push({ 'lengthMetric': { '$gte': metric } });
+			}
+
 			if (!String.isNullOrEmpty(params.motorDiameter)) {
 				const arr = [];
 				params.motorDiameter.forEach(element => {

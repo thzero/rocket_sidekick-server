@@ -475,6 +475,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null),
 		weight: Joi.number().allow(null),
+		weightConvert: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
@@ -483,11 +484,13 @@ class JoiValidationService extends GamerJoiValidationService {
 	})).unknown();
 	
 	partsChuteProtector = this.parts.concat(Joi.object({
-		diameter: Joi.number().allow(null),
-		dimension: Joi.number().required(),
 		cd: Joi.number().allow(null),
+		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		dimension: Joi.number().required(),
+		dimensionConvert: Joi.number().allow(null),
 		dimensionMeasurementUnitId: this._measurementId.allow(null),
 		dimensionMeasurementUnitsId: this._measurementId.allow(null)
 	}));
@@ -502,14 +505,16 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsDeploymentBag = this.parts.concat(Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
+		diameterMeasurementUnitId: this._measurementId.allow(null),
+		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		length: Joi.number().required(),
+		lengthConvert: Joi.number().allow(null),
+		lengthMeasurementUnitId: this._measurementId.allow(null),
+		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		pilotChute: Joi.boolean().required(),
 		pilotChuteCd: Joi.number().allow(null),
 		pilotChuteDiameter: Joi.number().allow(null),
-		diameterMeasurementUnitId: this._measurementId.allow(null),
-		diameterMeasurementUnitsId: this._measurementId.allow(null),
-		lengthnMeasurementUnitId: this._measurementId.allow(null),
-		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		pilotChuteDiameterMeasurementUnitId: this._measurementId.allow(null),
 		pilotChuteDiameterMeasurementUnitsId: this._measurementId.allow(null)
 	}));
@@ -522,25 +527,28 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsParachute = this.parts.concat(Joi.object({
 		diameter: Joi.number().required(),
-		loadMax: Joi.number().allow(null),
-		loadMin: Joi.number().allow(null),
-		thinMill: Joi.boolean().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
+		loadMaxWeight: Joi.number().allow(null),
 		loadMaxWeightMeasurementUnitId: this._measurementId.allow(null),
 		loadMaxWeightMeasurementUnitsId: this._measurementId.allow(null),
+		loadMinWeight: Joi.number().allow(null),
 		loadMinWeightMeasurementUnitId: this._measurementId.allow(null),
-		loadMinWeightMeasurementUnitsId: this._measurementId.allow(null)
+		loadMinWeightMeasurementUnitsId: this._measurementId.allow(null),
+		thinMill: Joi.boolean().allow(null)
 	}));
 	
 	partsParams = Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		dimension: Joi.number().allow(null),
 		dimensionMeasurementUnitId: this._measurementId.allow(null),
 		dimensionMeasurementUnitsId: this._measurementId.allow(null),
 		length: Joi.number().allow(null),
+		lengthConvert: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
@@ -551,6 +559,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		public: Joi.number().max(3).min(0).allow(null),
 		typeId: this._type,
 		weight: Joi.number().allow(null),
+		weightConvert: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	}).unknown();
@@ -560,9 +569,11 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsParamsChuteProtector = this.partsParams.concat(Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		dimension: Joi.number().allow(null),
+		dimensionConvert: Joi.number().allow(null),
 		dimensionMeasurementUnitId: this._measurementId.allow(null),
 		dimensionMeasurementUnitsId: this._measurementId.allow(null)
 	}));
@@ -572,9 +583,11 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsParamsDeploymentBag = this.partsParams.concat(Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		length: Joi.number().allow(null),
+		lengthConvert: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null)
 	}));
@@ -587,6 +600,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsParamsParachute = this.partsParams.concat(Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		thinMill: Joi.boolean().allow(null)
@@ -594,17 +608,22 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsParamsStreamer = this.partsParams.concat(Joi.object({
 		length: Joi.number().allow(null),
+		lengthConvert: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null)
 	}));
 	
 	partsParamsSearchRocket = Joi.object({
 		diameterMax: Joi.number().allow(null),
+		diameterMaxConvert: Joi.number().allow(null),
 		diameterMin: Joi.number().allow(null),
+		diameterMinConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		lengthMax: Joi.number().allow(null),
+		lengthMaxConvert: Joi.number().allow(null),
 		lengthMin: Joi.number().allow(null),
+		lengthMinConvert: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow('').allow(null),
@@ -675,13 +694,16 @@ class JoiValidationService extends GamerJoiValidationService {
 		cpMeasurementUnitsId: this._measurementId.allow(null),
 		description: this._description.allow(null).allow(''),
 		diameterMajor: Joi.number().allow(null),
+		diameterMajorConvert: Joi.number().allow(null),
 		diameterMajorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMajorMeasurementUnitsId: this._measurementId.allow(null),
 		diameterMinor: Joi.number().allow(null),
+		diameterMinorConvert: Joi.number().allow(null),
 		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
 		index: Joi.number().allow(null),
 		length: Joi.number().allow(null),
+		lengthConvert: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow(null).allow(''),
@@ -695,6 +717,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		streamers: Joi.array().items(this.rocketPart).allow(null),
 		trackers: Joi.array().items(this.rocketPart).allow(null),
 		weight: Joi.number().allow(null),
+		weightConvert: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});
@@ -784,9 +807,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		streamers: Joi.array().items(this.rocketPart).allow(null),
 		trackers: Joi.array().items(this.rocketPart).allow(null),
 		weight: Joi.number().allow(null),
+		weightConvert: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null),
 		weightNose: Joi.number().allow(null),
+		weightNoseConvert: Joi.number().allow(null),
 		weightNoseMeasurementUnitId: this._measurementId.allow(null),
 		weightNoseMeasurementUnitsId: this._measurementId.allow(null)
 	});
@@ -819,6 +844,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	rocketSetupsParams = Joi.object({
 		diameter: Joi.number().allow(null),
+		diameterConvert: Joi.number().allow(null),
 		diameterMeasurementUnitId: this._measurementId.allow(null),
 		diameterMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
@@ -843,8 +869,8 @@ class JoiValidationService extends GamerJoiValidationService {
 	_settingsMeasurementUnitsSchema = Joi.object({
 		id: this._measurementId.allow(null).allow(''),
 		acceleration: this._measurementId.allow(null).allow(''),
-		area: this._measurementId.allow(null).allow(''),
 		altitude: this._measurementId.allow(null).allow(''),
+		area: this._measurementId.allow(null).allow(''),
 		distance: this._measurementId.allow(null).allow(''),
 		length: this._measurementId.allow(null).allow(''),
 		temperature: this._measurementId.allow(null).allow(''),

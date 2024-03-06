@@ -1,6 +1,7 @@
 import AppConstants from '../constants.js';
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
+import ConvertUtility from 'rocket_sidekick_common/utility/convert.js';
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 
 import AppService from './index.js';
@@ -179,9 +180,6 @@ class PartsService extends AppService {
 			const validationChecklistResponse2 = this._serviceValidation.check(correlationId, this._determinePartValidationParams(correlationId, params.typeId), params);
 			if (this._hasFailed(validationChecklistResponse2))
 				return validationChecklistResponse2;
-
-			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
-			// from the stored measurement unit (which could vary by part) to the user provided search...
 	
 			const response = await this._repositoryParts.search(correlationId, user ? user.id : null, params);
 			return response;
@@ -202,9 +200,6 @@ class PartsService extends AppService {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partsParamsSearchRocket, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
-
-			// TODO: probably need to do diameter or other types of mesurement filtering here, to be able to translate everything
-			// from the stored measurement unit (which could vary by part) to the user provided search...
 			
 			const response = await this._repositoryParts.searchSetsRocket(correlationId, user.id, params);
 			return response;
@@ -247,16 +242,26 @@ class PartsService extends AppService {
 	
 			const part = fetchRespositoryResponse.results;
 			if (part) {
-	
 				const validResponse = this._checkUpdatedTimestamp(correlationId, partsUpdate, part, 'part');
 				if (this._hasFailed(validResponse))
 					return validResponse;
 			}
+
+			ConvertUtility.convertMeasurementsForComparisonPart(correlationId, partsUpdate);
 			
 			return await this._repositoryParts.update(correlationId, user.id, partsUpdate);
 		}
 		catch (err) {
 			return this._error('PartsService', 'update', null, err, null, null, correlationId);
+		}
+	}
+
+	async updateMeasurementToMetrics(correlationId) {
+		try {
+			return await this._repositoryParts.updateMeasurementToMetrics(correlationId);
+		}
+		catch (err) {
+			return this._error('PartsService', 'updateMeasurementToMetrics', null, err, null, null, correlationId);
 		}
 	}
 

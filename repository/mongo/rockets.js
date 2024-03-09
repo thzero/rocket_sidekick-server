@@ -1,5 +1,6 @@
 import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
+import ConvertUtility from 'rocket_sidekick_common/utility/convert.js';
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
 import LibraryMomentUtility from '@thzero/library_common/utility/moment.js';
 
@@ -300,6 +301,12 @@ class RocketsRepository extends AppMongoRepository {
 				where.push({ $or: arr});
 			}
 
+			// Convert parameter to metric and then use metric comparisons...
+			if (!String.isNullOrEmpty(params.diameterMajor)) {
+				const metric = ConvertUtility.convertMeasurementPart(correlationId, params.diameterMajor, params.diameterMajorMeasurementUnitId, 'diameter');
+				where.push({ 'diameterMajorMetric': metric });
+			}
+
 			if (!String.isNullOrEmpty(params.rocketId))
 				where.push({ 'id': params.rocketId });
 
@@ -322,7 +329,9 @@ class RocketsRepository extends AppMongoRepository {
 					'description': 1,
 					'coverUrl': 1,
 					'diameterMajor': 1,
+					'diameterMajorMetric': 1,
 					'length': 1,
+					'lengthMetric': 1,
 					'ownerId': 1,
 					'rocketTypes': 1,
 					'stages': 1,
@@ -378,7 +387,9 @@ class RocketsRepository extends AppMongoRepository {
 					'description': 1,
 					'coverUrl': 1,
 					'diameterMajor': 1,
+					'diameterMajorMetric': 1,
 					'length': 1,
+					'lengthMetric': 1,
 					'ownerId': 1,
 					'typeId': 1,
 					'weight': 1
@@ -421,6 +432,55 @@ class RocketsRepository extends AppMongoRepository {
 		}
 		catch (err) {
 			return await this._transactionAbort(correlationId, session, null, err, 'RocketsRepository', 'update');
+		}
+		finally {
+			await this._transactionEnd(correlationId, session);
+		}
+	}
+
+	async updateMeasurementToMetrics(correlationId) {
+		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
+		try {
+			await this._transactionStart(correlationId, session);
+
+			const collection = await this._getCollectionRockets(correlationId);
+			const response = this._initResponse(correlationId);
+
+			const queryA = [];
+
+			const defaultFilter = { 
+				$and: [
+					{ 'deleted': { $ne: true } }
+				],
+			};
+	
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0
+				}
+			});
+	
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));if (results.data.length === 0)
+			if (results.data.length === 0)
+				return this._successResponse(results, correlationId);
+
+			let updated = false;
+			for (const rocket of results.data) {
+				for (const stage of rocket.stages)
+					updated = ConvertUtility.convertMeasurementsForComparisonPart(correlationId, stage);
+
+				if (updated)
+					await this._update(correlationId, collection, this._ownerId, rocket.id, rocket);
+			}
+
+			await this._transactionCommit(correlationId, session);
+			return response;
+		}
+		catch (err) {
+			return await this._transactionAbort(correlationId, session, null, err, 'RocketsRepository', 'updateMeasurementToMetrics');
 		}
 		finally {
 			await this._transactionEnd(correlationId, session);

@@ -123,6 +123,20 @@ class AppUtilityService extends UtilityService {
 		});
 		openSource.push({
 			category: 'server',
+			name: 'convert',
+			url: 'https://github.com/jonahsnider/convert',
+			licenseName: 'MIT',
+			licenseUrl: 'https://github.com/jonahsnider/convert/blob/main/LICENSE'
+		});
+		// openSource.push({
+		// 	category: 'server',
+		// 	name: 'convert-units',
+		// 	url: 'https://github.com/convert-units/convert-units',
+		// 	licenseName: 'MIT',
+		// 	licenseUrl: 'https://github.com/convert-units/convert-units/blob/main/LICENSE'
+		// });
+		openSource.push({
+			category: 'server',
 			name: 'countries-states-cities-database',
 			url: 'https://github.com/dr5hn/countries-states-cities-database',
 			licenseName: 'ODC',

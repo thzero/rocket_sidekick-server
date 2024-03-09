@@ -1,4 +1,4 @@
-import Constants from '../../constants.js';
+import AppConstants from '../../constants.js';
 import LibraryCommonnConstants from '@thzero/library_common/constants.js';
 
 import BaseRoute from '@thzero/library_server_fastify/routes/index.js';
@@ -11,7 +11,7 @@ class PartsRoute extends BaseRoute {
 	async init(injector, app, config) {
 		await super.init(injector, app, config);
 		
-		this._inject(app, injector, Constants.InjectorKeys.SERVICE_PARTS, Constants.InjectorKeys.SERVICE_PARTS);
+		this._inject(app, injector, AppConstants.InjectorKeys.SERVICE_PARTS, AppConstants.InjectorKeys.SERVICE_PARTS);
 	}
 
 	_initializeRoutes(router) {
@@ -30,7 +30,7 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].delete(request.correlationId, request.user, request.params.id)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].delete(request.correlationId, request.user, request.params.id)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -48,7 +48,7 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].copy(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].copy(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -66,7 +66,7 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].retrieve(request.correlationId, request.user, request.params.id)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].retrieve(request.correlationId, request.user, request.params.id)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -84,7 +84,7 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].searchRocket(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].searchRocket(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -102,7 +102,7 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].search(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].search(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
@@ -120,12 +120,12 @@ class PartsRoute extends BaseRoute {
 			},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].update(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].update(request.correlationId, request.user, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.get(this._join('/parts/refresh'),
+		router.get(this._join('/parts/refresh/name'),
 		// 	{
 		// 		preHandler: router.auth([
 		// 			router.authenticationDefault,
@@ -138,7 +138,15 @@ class PartsRoute extends BaseRoute {
 		// 	},
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[Constants.InjectorKeys.SERVICE_PARTS].refreshSearchName(request.correlationId)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].refreshSearchName(request.correlationId)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
+		router.get(this._join('/parts/refresh/measurements'),
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_PARTS].updateMeasurementToMetrics(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

@@ -89,7 +89,7 @@ class RocketSetupsRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
-		router.get(this._join('/rocketSetups/refresh'),
+		router.get(this._join('/rocketSetups/refresh/name'),
 		// 	{
 		// 		preHandler: router.auth([
 		// 			router.authenticationDefault,
@@ -103,6 +103,14 @@ class RocketSetupsRoute extends BaseRoute {
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[AppConstants.InjectorKeys.SERVICE_ROCKETSETUPS].refreshSearchName(request.correlationId)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
+		router.get(this._join('/rocketSetups/refresh/measurements'),
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_ROCKETSETUPS].updateMeasurementToMetrics(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

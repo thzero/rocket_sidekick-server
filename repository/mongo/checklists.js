@@ -377,44 +377,37 @@ class ChecklistsRepository extends AppMongoRepository {
 				);
 			}
 
-			const defaultFilterOwner = [];
-
-			if (params.yours)
-				defaultFilterOwner.push({ 'ownerId': userId });
-			if (params.isDefault)
-				defaultFilterOwner.push({ 'isDefault': true });
-			if (params.shared)
-				defaultFilterOwner.push({ 'shared': true });
-
-			const defaultFilterAnd = [
-				{ 
-					$or: defaultFilterOwner
-				},
-				{ 'deleted': { $ne: true } }
-			];
+			let defaultFilter = {};
 
 			const defaultFilterStatus = [];
 			if (params.isCompleted)
-				defaultFilterOwner.push({ 'status': AppSharedConstants.Checklists.ChecklistStatus.completed });
+				defaultFilterStatus.push({ 'statusId': AppSharedConstants.Checklists.ChecklistStatus.completed });
 			if (params.isInProgress)
-				defaultFilterOwner.push({ 'status': AppSharedConstants.Checklists.ChecklistStatus.inProgress });
+				defaultFilterStatus.push({ 'statusId': AppSharedConstants.Checklists.ChecklistStatus.inProgress });
+			if (params.isDraft)
+				defaultFilterStatus.push({ 'status': null });
+			if (params.isTemplate)
+				defaultFilterStatus.push({ 'isTemplate': true });
+			if (params.shared)
+				defaultFilterStatus.push({ 'isShared': true });
+
+			const defaultFilterOwner = { 
+				$and: [
+					{ 'ownerId': userId },
+					{ 'deleted': { $ne: true } },
+				]};
 
 			if (defaultFilterStatus.length > 0)
-				defaultFilterAnd.push({
-					$and: defaultFilterStatus
-				});
+				defaultFilterOwner['$and'].push({ $or: defaultFilterStatus });
 
-			const where = [];
-
-			if (!String.isNullOrEmpty(params.checklistId))
-				where.push({ 'id': params.checklistId });
-
-			const defaultFilter = { 
-				$and: [
-					...defaultFilterAnd,
-					...where
-				]
-			};
+			if (params.isDefault) {
+				defaultFilter = { $or: [
+					defaultFilterOwner,
+					{ 'isDefault': { $eq: true } },
+				]};
+			}
+			else
+				defaultFilter = defaultFilterOwner;
 			
 			queryA.push({
 				$match: defaultFilter
@@ -428,6 +421,7 @@ class ChecklistsRepository extends AppMongoRepository {
 					'description': 1,
 					'typeId': 1,
 					'isDefault': 1,
+					'isTemplate': 1,
 					'launched': 1,
 					'locationId': 1,
 					'locationIterationId': 1,

@@ -69,6 +69,10 @@ class AppCollectionsService extends ApiCollectionsService {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionUsageMetrics);
 	}
 
+	getCollectionUsageMetricsMeasurements(correlationId) {
+		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionUsageMetricsMeasurements);
+	}
+
 	getCollectionUsers(correlationId) {
 		return this._getCollection(correlationId, AppCollectionsService.Client, AppCollectionsService.Database, AppCollectionsService.CollectionUsers);
 	}
@@ -89,6 +93,7 @@ class AppCollectionsService extends ApiCollectionsService {
 	static CollectionRockets = 'rockets';
 	static CollectionRocketSetups = 'rocketSetups';
 	static CollectionUsageMetrics = 'usageMetrics';
+	static CollectionUsageMetricsMeasurements = 'usageMetricsMeasurements';
 	static CollectionUsers = 'users';
 }
 

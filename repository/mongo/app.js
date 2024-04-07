@@ -47,6 +47,10 @@ class AppMongoRepository extends MongoRepository {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionRocketSetups(correlationId));
 	}
 
+	async _getCollectionUsageMetricsMeasurements(correlationId) {
+		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionUsageMetricsMeasurements(correlationId));
+	}
+
 	async _getCollectionUsers(correlationId) {
 		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionUsers(correlationId));
 	}

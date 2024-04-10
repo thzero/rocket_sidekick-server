@@ -54,6 +54,8 @@ class RocketsRoute extends BaseRoute {
 			}
 		);
 		router.get(this._join('/rockets/gallery/:id'),
+			{
+			},
 			// eslint-disable-next-line
 			async (request, reply) => {
 				const response = (await router[AppConstants.InjectorKeys.SERVICE_ROCKETS].retrieveGallery(request.correlationId, request.params.id)).check(request);

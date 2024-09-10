@@ -132,6 +132,8 @@ Using the Menu->Run->Start Debugging will launch the application in debug mode w
 
 ## Hosting
 
+See Google Cloud Hosting.
+
 ## Google Cloud Hosting
 
 Login to Google Cloud hosting, select the same account that was setup for Firebase.

@@ -9,13 +9,15 @@ An API layer to manage RocketSidekick.  The following features are available cur
 * Configuration of content
 * Social login authentication via Google
 
-### Requirements
+## Requirements
 
-#### NodeJs
+The server application is a Fastify server application.  The server application provides the API for use by the companion client application (https://github.com/thzero/rocket_sidekick-client).
+
+### NodeJs
 
 Requires [NodeJs ](https://nodejs.org) version 18+.
 
-#### NodeMon
+### NodeMon
 
 ```
 npm -g i nodemon
@@ -42,8 +44,6 @@ git submodule add https://github.com/thzero/rocket_sidekick-common "common"
 ```
 
 ## Project setup
-
-The server application is a Fastify server application.  The server application provides the API for use by the companion client application (https://github.com/thzero/rocket_sidekick-client).
 
 ### Mongo
 
@@ -112,6 +112,8 @@ Google Firebase (https://firebase.google.com) provides the social based authenti
 }
 ```
 
+## Development
+
 ### Compile and hot-reloads for development
 
 #### NPM CLI
@@ -127,6 +129,10 @@ npm run debug
 Install VisualCode, open the 'server' folder via 'Open Folder'.
 
 Using the Menu->Run->Start Debugging will launch the application in debug mode with hot reloading via Nodemon
+
+## Hosting
+
+See Google Cloud Hosting.
 
 ## Google Cloud Hosting
 

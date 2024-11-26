@@ -211,7 +211,7 @@ class RocketsService extends AppService {
 			}
 
 			for (const stage of rocketUpdate.stages)
-				updated = ConvertUtility.convertMeasurementsForComparisonPart(correlationId, stage);
+				ConvertUtility.convertMeasurementsForComparisonPart(correlationId, stage);
 			
 			return await this._repositoryRockets.update(correlationId, user.id, rocketUpdate);
 		}

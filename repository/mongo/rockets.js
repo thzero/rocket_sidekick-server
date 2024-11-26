@@ -391,6 +391,7 @@ class RocketsRepository extends AppMongoRepository {
 					'length': 1,
 					'lengthMetric': 1,
 					'ownerId': 1,
+					'rocketTypes': 1,
 					'typeId': 1,
 					'weight': 1
 				}

@@ -108,8 +108,9 @@ class JoiValidationService extends GamerJoiValidationService {
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
 	albumOrVideoUrl = Joi.object({
+		id: this.rocketId,
 		name: this._extendedName,
-		type: Joi.string(),
+		type: Joi.string().allow(null).allow(''),
 		link: this._url
 	});
 
@@ -698,15 +699,18 @@ class JoiValidationService extends GamerJoiValidationService {
 		description: this._description.allow(null).allow(''),
 		diameterMajor: Joi.number().allow(null),
 		diameterMajorConvert: Joi.number().allow(null),
+		diameterMajorMetric: Joi.number().allow(null),
 		diameterMajorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMajorMeasurementUnitsId: this._measurementId.allow(null),
 		diameterMinor: Joi.number().allow(null),
 		diameterMinorConvert: Joi.number().allow(null),
+		diameterMinorMetric: Joi.number().allow(null),
 		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
 		index: Joi.number().allow(null),
 		length: Joi.number().allow(null),
 		lengthConvert: Joi.number().allow(null),
+		lengthMetric: Joi.number().allow(null),
 		lengthMeasurementUnitId: this._measurementId.allow(null),
 		lengthMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturerId: this.manufacturersId.allow(null).allow(''),
@@ -721,6 +725,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		trackers: Joi.array().items(this.rocketPart).allow(null),
 		weight: Joi.number().allow(null),
 		weightConvert: Joi.number().allow(null),
+		weightMetric: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)
 	});

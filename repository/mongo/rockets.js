@@ -327,6 +327,7 @@ class RocketsRepository extends AppMongoRepository {
 					'id': 1,
 					'name': 1,
 					'description': 1,
+					'albums': 1,
 					'coverUrl': 1,
 					'diameterMajor': 1,
 					'diameterMajorMetric': 1,
@@ -335,6 +336,7 @@ class RocketsRepository extends AppMongoRepository {
 					'ownerId': 1,
 					'rocketTypes': 1,
 					'stages': 1,
+					'videos': 1,
 					'weight': 1
 				}
 			});

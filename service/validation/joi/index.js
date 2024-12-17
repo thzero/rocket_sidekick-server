@@ -107,7 +107,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		// .alphanum()
 		.regex(/^[a-zA-Z0-9-_]*$/);
 	
-	albumOrVideoUrl = Joi.object({
+	albumDocVideoUrl = Joi.object({
 		id: this.rocketId,
 		name: this._extendedName,
 		type: Joi.string().allow(null).allow(''),
@@ -354,7 +354,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	launches = Joi.object({
 		id: this.launchId,
-		albumUrl: this.albumOrVideoUrl.allow(null).allow(''),
+		albumUrl: this.albumDocVideoUrl.allow(null).allow(''),
 		ceiling: Joi.number().allow(null),
 		ceilingMeasurementUnitId: this._measurementId.allow(null),
 		ceilingMeasurementUnitsId: this._measurementId.allow(null),
@@ -382,7 +382,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		temperature: Joi.number().allow(null),
 		temperatureMeasurementUnitId: this._measurementId.allow(null),
 		temperatureMeasurementUnitsId: this._measurementId.allow(null),
-		videoUrl: this.albumOrVideoUrl.allow(null).allow(''),
+		videoUrl: this.albumDocVideoUrl.allow(null).allow(''),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null),
 		weather: Joi.array().items(Joi.string().valid(...this.launchWeather())).allow(null),
@@ -738,10 +738,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		deleted: Joi.boolean().allow(null),
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
-		albums: Joi.array().items(this.albumOrVideoUrl).allow(null),
+		albums: Joi.array().items(this.albumDocVideoUrl).allow(null),
 		buildLogUrl: this._url.allow(null),
 		coverUrl: this._url.allow(null),
 		description: this._description.allow(null).allow(''),
+		documents: Joi.array().items(this.albumDocVideoUrl).allow(null),
 		manufacturerId: this.manufacturersId.required(),
 		manufacturerStockId: this.partId.allow(null).allow(''),
 		name: this._extendedName,
@@ -752,7 +753,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		searchName: this._extendedNameBase.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
-		videos: Joi.array().items(this.albumOrVideoUrl).allow(null),
+		videos: Joi.array().items(this.albumDocVideoUrl).allow(null),
 		updatedTimestamp: Joi.number(),
 		updatedUserId: this._id.allow(null)
 	});

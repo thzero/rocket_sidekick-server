@@ -331,6 +331,7 @@ class RocketsRepository extends AppMongoRepository {
 					'coverUrl': 1,
 					'diameterMajor': 1,
 					'diameterMajorMetric': 1,
+					'documents': 1,
 					'length': 1,
 					'lengthMetric': 1,
 					'ownerId': 1,

@@ -15,6 +15,9 @@ class ChecklistsRepository extends AppMongoRepository {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+		this._ownerId = this._ownerId ? this._ownerId.trim() : null;
+		if (String.isNullOrEmpty(this._ownerId))
+			throw Error('Missing ownerId or it is blank.'); 
 	}
 
 	async delete(correlationId, userId, id) {

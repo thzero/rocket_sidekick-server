@@ -206,8 +206,13 @@ Add these variables:
 
 * SERVICE_ACCOUNT_KEY - <Firebase servicecAccountKey.json file in local config folder>
 * AUTH_API_KEY - <guid>
-* ALTAS_DB_CONNECTION - <connection string>
-* ALTAS_DB_NAME - production
+* DB_DEFAULT - atla
+* DB_CONNECTION_ALTAS - <connection string>
+* DB_NAME_ALTAS - production
+* DB_CONNECTION_MONGO - <connection string>
+  * optional
+* DB_NAME_MONGO - production
+  * optional
 * LOG_LEVEL - debug
 * IP_ADDRESS - 0.0.0.0
 

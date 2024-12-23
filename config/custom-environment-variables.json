@@ -12,9 +12,14 @@
 			"origin": "ORIGIN"
 		},
 		"db": {
+			"default" : "DB_DEFAULT",
+			"atlas" : {
+				"connection": "DB_CONNECTION_ATLAS",
+				"name": "DB_NAME_ATLAS"
+			},
 			"mongo" : {
-				"connection": "ALTAS_DB_CONNECTION",
-				"name": "ALTAS_DB_NAME"
+				"connection": "DB_CONNECTION_MONGO",
+				"name": "DB_NAME_MONGO"
 			}
 		},
 		"http2": "HTTP2_ENABLED",

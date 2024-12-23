@@ -12,12 +12,12 @@
 			"origin": "ORIGIN"
 		},
 		"db": {
-			"default" : "DB_DEFAULT",
-			"atlas" : {
+			"default": "DB_DEFAULT",
+			"atlas": {
 				"connection": "DB_CONNECTION_ATLAS",
 				"name": "DB_NAME_ATLAS"
 			},
-			"mongo" : {
+			"mongo": {
 				"connection": "DB_CONNECTION_MONGO",
 				"name": "DB_NAME_MONGO"
 			}

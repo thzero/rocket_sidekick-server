@@ -153,6 +153,12 @@ class LaunchesService extends AppService {
 			const validationResponsUser = this._validateUser(correlationId, user);
 			if (this._hasFailed(validationResponsUser))
 				return validationResponsUser;
+
+			if (launchUpdate) {
+				delete launchUpdate.location;
+				delete launchUpdate.rocket;
+				delete launchUpdate.rocketSetup;
+			}
 			
 			const validationChecklistResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launches, launchUpdate);
 			if (this._hasFailed(validationChecklistResponse))

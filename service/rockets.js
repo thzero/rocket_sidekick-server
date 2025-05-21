@@ -9,6 +9,7 @@ class RocketsService extends AppService {
 	constructor() {
 		super();
 
+		this._repositoryLaunches = null;
 		this._repositoryRockets = null;
 		this._serviceUsers = null;
 	}
@@ -16,6 +17,7 @@ class RocketsService extends AppService {
 	async init(injector) {
 		await super.init(injector);
 
+		this._repositoryLaunches = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_LAUNCHES);
 		this._repositoryRockets = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_ROCKETS);
 		
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);

@@ -371,6 +371,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		locationIterationId: this.locationId.allow(null),
 		name: this._extendedName.allow(null).allow(''),
 		//launchStatus: nominal, rapid unscheduled disassembly (rud), deployment failed, lost
+		notes: this._description.allow(null).allow(''),
 		ownerId: this.ownerId.allow(null),
 		public: Joi.boolean().required(),
 		results: this.launchResults.allow(null),

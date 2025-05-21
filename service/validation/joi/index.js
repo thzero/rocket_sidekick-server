@@ -651,7 +651,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
 	
-	rocketRocvery = Joi.object({
+	rocketRecovery = Joi.object({
 		name: this._extendedName,
 		type: Joi.string(),
 		link: this._url
@@ -740,8 +740,8 @@ class JoiValidationService extends GamerJoiValidationService {
 		deletedTimestamp: Joi.number().allow(null),
 		deletedUserId: this._id.allow(null),
 		albums: Joi.array().items(this.albumDocVideoUrl).allow(null),
-		buildLogUrl: this._url.allow(null),
-		coverUrl: this._url.allow(null),
+		buildLogUrl: this._url.allow(null).allow(''),
+		coverUrl: this._url.allow(null).allow(''),
 		description: this._description.allow(null).allow(''),
 		documents: Joi.array().items(this.albumDocVideoUrl).allow(null),
 		manufacturerId: this.manufacturersId.required(),

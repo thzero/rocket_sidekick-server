@@ -776,10 +776,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		diameterMinMeasurementUnitsId: this._measurementId.allow(null),
 		manufacturers: Joi.array().items(this.manufacturersId).allow(null),
 		manufacturerStockId: this.partId.allow(null).allow(''),
+		gamerTag: this._gamerTagFull.allow(null),
 		length: Joi.number().allow(null),
 		name: this._extendedName.allow('').allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		userId: this._id.allow(null),
 		weight: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null)

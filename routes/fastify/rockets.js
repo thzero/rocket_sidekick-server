@@ -84,7 +84,7 @@ class RocketsRoute extends BaseRoute {
 		router.post(this._join('/rockets/search/gallery'),
 			// eslint-disable-next-line
 			async (request, reply) => {
-				const response = (await router[AppConstants.InjectorKeys.SERVICE_ROCKETS].searchGallery(request.correlationId, request.user, request.body)).check(request);
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_ROCKETS].searchGallery(request.correlationId, request.body)).check(request);
 				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
 				return this._jsonResponse(reply, response);
 			}

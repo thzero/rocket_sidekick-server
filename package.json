@@ -29,13 +29,13 @@
     "id": "library-cli --nano"
   },
   "dependencies": {
-    "@thzero/library_common": "^0.18.9",
+    "@thzero/library_common": "^0.18.10",
     "@thzero/library_common_service": "^0.18.5",
     "@thzero/library_server": "^0.18.20",
     "@thzero/library_server_fastify": "^0.18.22",
     "@thzero/library_server_firebase": "^0.18.14",
     "@thzero/library_server_logger_pino": "^0.18.12",
-    "@thzero/library_server_repository_mongo": "^0.18.25",
+    "@thzero/library_server_repository_mongo": "^0.18.26",
     "@thzero/library_server_service_rest_axios": "^0.18.11",
     "@thzero/library_server_validation_joi": "^0.18.8",
     "cbor-x": "^1.6.0",

@@ -335,6 +335,7 @@ class RocketsRepository extends AppMongoRepository {
 					'length': 1,
 					'lengthMetric': 1,
 					'ownerId': 1,
+					'public': 1,
 					'rocketTypes': 1,
 					'stages': 1,
 					'videos': 1,
@@ -370,11 +371,22 @@ class RocketsRepository extends AppMongoRepository {
 
 	async searchGallery(correlationId, params) {
 		try {
-			const defaultFilter = { 
-				$and: [
+			let defaultFilterCriteria = [
+				{ 'promoted': true },
+				{ 'public': true },
+				{ 'deleted': { $ne: true } }
+			];
+
+			if (params && params.userId) {
+				defaultFilterCriteria = [
 					{ 'public': true },
+					{ 'ownerId': params.userId },
 					{ 'deleted': { $ne: true } }
-				]
+				];
+			}
+
+			const defaultFilter = { 
+				$and: defaultFilterCriteria
 			};
 	
 			const queryF = defaultFilter;
@@ -395,8 +407,7 @@ class RocketsRepository extends AppMongoRepository {
 					'lengthMetric': 1,
 					'ownerId': 1,
 					'rocketTypes': 1,
-					'typeId': 1,
-					'weight': 1
+					'typeId': 1
 				}
 			});
 	

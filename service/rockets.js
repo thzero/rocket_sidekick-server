@@ -1,4 +1,5 @@
 import AppConstants from '../constants.js';
+import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import ConvertUtility from 'rocket_sidekick_common/utility/convert.js';
 import LibraryCommonUtility from '@thzero/library_common/utility/index.js';
@@ -22,6 +23,7 @@ class RocketsService extends AppService {
 		
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
 		this._serviceLaunches = this._injector.getService(AppConstants.InjectorKeys.SERVICE_LAUNCHES);
+		this._serviceUsers = this._injector.getService(LibraryServerConstants.InjectorKeys.SERVICE_USERS);
 	}
 
 	async copy(correlationId, user, params) {
@@ -179,6 +181,13 @@ class RocketsService extends AppService {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.rocketsParams, params);
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
+
+			if (params && params.gamerTag) {
+				const responseGamerTag = await this._serviceUsers.fetchByGamerTag(correlationId, params.gamerTag);
+				if (this._hasFailed(responseGamerTag))
+					return responseGamerTag;
+				params.userId = responseGamerTag.results.id;
+			}
 	
 			return await this._repositoryRockets.searchGallery(correlationId, params);
 		}

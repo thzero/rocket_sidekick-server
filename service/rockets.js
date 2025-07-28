@@ -150,7 +150,26 @@ class RocketsService extends AppService {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryRockets.retrieveGallery(correlationId, id);
+			const response =  await this._repositoryRockets.retrieveGallery(correlationId, id);
+			if (this._hasFailed(response))
+				return response;
+
+			const responseUser =  await this._serviceUsers.fetch(correlationId, response.results.ownerId);
+			if (this._hasFailed(responseUser))
+				return responseUser;
+
+			let userName = responseUser.results.settings && responseUser.results.settings.gamerTagDisplay ? responseUser.results.settings.gamerTagDisplay : null;
+			if (!userName)
+				userName = responseUser.results.settings && responseUser.results.settings.gamerTag ? responseUser.results.settings.gamerTag : null;
+			if (!userName)
+				userName = responseUser.results.external && responseUser.results.external.name ? responseUser.results.external.name : '******';
+
+			response.results.owner = {
+				name: userName,
+				gamerTag: responseUser.results.settings ? responseUser.results.settings.gamerTag : null
+			};
+	
+			return response;
 		}
 		catch (err) {
 			return this._error('RocketsService', 'retrieveGallery', null, err, null, null, correlationId);

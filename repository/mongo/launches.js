@@ -591,6 +591,231 @@ class LaunchesRepository extends AppMongoRepository {
 		}
 	}
 
+	async searchGallery(correlationId, params) {
+		try {
+			let defaultFilterCriteria = [
+				{ 'promoted': true },
+				{ 'public': true },
+				{ 'deleted': { $ne: true } }
+			];
+
+			if (params && params.userId) {
+				defaultFilterCriteria = [
+					{ 'public': true },
+					{ 'ownerId': params.userId },
+					{ 'deleted': { $ne: true } }
+				];
+			}
+
+			const defaultFilter = { 
+				$and: defaultFilterCriteria
+			};
+	
+			const queryF = defaultFilter;
+			const queryA = [ {
+					$match: defaultFilter
+				}
+			];
+			queryA.push({
+				$match: defaultFilter
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'coverUrl': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+							},
+							$project: {
+								'stages.chuteProtectors': 0,
+								'stages.chuteReleases': 0,
+								'stages.deploymentBags': 0,
+								// 'stages.motors': 0,
+								'stages.parachutes': 0,
+								'stages.streamers': 0,
+								'stages.trackers': 0
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rocketSetups',
+					localField: 'rocketSetupId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1,
+								'stages': 1,
+								// 'stages.id': 1,
+								// 'stages.description': 1,
+								// 'stages.index': 1,
+								// 'stages.motors': 1,
+								// 'stages.name': 1
+							},
+							$project: {
+								'stages.chuteProtectors': 0,
+								'stages.chuteReleases': 0,
+								'stages.deploymentBags': 0,
+								// 'stages.motors': 0,
+								'stages.parachutes': 0,
+								'stages.streamers': 0,
+								'stages.trackers': 0
+							}
+						}
+					],
+					as: 'rocketSetups'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
+				}
+			});
+			queryA.push({
+				$project: { 
+					'locations': 0,
+					'rockets': 0,
+					'rocketSetups': 0
+				}
+			});
+			queryA.push({
+				$addFields: {
+					'location.iteration': {
+						$arrayElemAt: [ 
+							{ 
+								$filter: {
+									input: '$location.iterations',
+									cond: { 
+										$and: [
+											{ $eq: [ "$$this.id", "$locationIterationId" ] },
+										] 
+									}
+								}
+							}, 
+							0
+						] 
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					'location.iterations': 0
+				}
+			});
+	
+			const collection = await this._getCollectionLaunches(correlationId);
+			const results = await this._aggregateExtract(correlationId, await this._count(correlationId, collection, queryF), await this._aggregate(correlationId, collection, queryA), this._initResponseExtract(correlationId));
+			return this._successResponse(results, correlationId);
+		}
+		catch (err) {
+			return this._error('RocketsRepository', 'searchGallery', null, err, null, null, correlationId);
+		}
+	}
+
 	async update(correlationId, userId, launch) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {

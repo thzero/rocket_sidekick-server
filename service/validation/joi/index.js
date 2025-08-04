@@ -394,6 +394,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	launchesParams = Joi.object({
 		locationId: this.locationId.allow('').allow(null),
+		gamerTag: this._gamerTagFull.allow(null),
 		name: this._extendedName.allow('').allow(null),
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),

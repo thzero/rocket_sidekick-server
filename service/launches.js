@@ -1,4 +1,5 @@
 import AppConstants from '../constants.js';
+import LibraryServerConstants from '@thzero/library_server/constants.js';
 
 import AppService from './index.js';
 
@@ -7,6 +8,9 @@ class LaunchesService extends AppService {
 		super();
 
 		this._repositoryLaunches = null;
+		
+		this._serviceChecklists = null;
+		this._serviceUsers = null;
 	}
 
 	async init(injector) {
@@ -15,6 +19,7 @@ class LaunchesService extends AppService {
 		this._repositoryLaunches = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_LAUNCHES);
 		
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
+		this._serviceUsers = this._injector.getService(LibraryServerConstants.InjectorKeys.SERVICE_USERS);
 	}
 
 	async delete(correlationId, user, id) {
@@ -145,6 +150,26 @@ class LaunchesService extends AppService {
 		}
 		catch (err) {
 			return this._error('LaunchesService', 'search', null, err, null, null, correlationId);
+		}
+	}
+
+	async searchGallery(correlationId, params) {
+		try {
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.launchesParams, params);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
+
+			if (params && params.gamerTag) {
+				const responseGamerTag = await this._serviceUsers.fetchByGamerTag(correlationId, params.gamerTag);
+				if (this._hasFailed(responseGamerTag))
+					return responseGamerTag;
+				params.userId = responseGamerTag.results.id;
+			}
+	
+			return await this._repositoryLaunches.searchGallery(correlationId, params);
+		}
+		catch (err) {
+			return this._error('LaunchesService', 'searchGallery', null, err, null, null, correlationId);
 		}
 	}
 

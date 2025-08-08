@@ -312,6 +312,202 @@ class LaunchesRepository extends AppMongoRepository {
 			return this._error('LaunchesRepository', 'retrieve', null, err, null, null, correlationId);
 		}
 	}
+
+	async retrieveGallery(correlationId, id) {
+		try {
+			const queryA = [ { 
+					$match: {
+						$and: [
+							{ 'id': id },
+							{ 'public': true },
+							{ 'deleted': { $ne: true } }
+						]
+					}
+				}
+			];
+			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'rockets',
+					localField: 'rocketId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'coverUrl': 1,
+								'name': 1,
+								'rocketTypes': 1,
+								'stages': 1
+							},
+							$project: {
+								'stages.chuteProtectors': 0,
+								'stages.chuteReleases': 0,
+								'stages.deploymentBags': 0,
+								// 'stages.motors': 0,
+								'stages.parachutes': 0,
+								'stages.streamers': 0,
+								'stages.trackers': 0
+							}
+						}
+					],
+					as: 'rockets'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'locations',
+					localField: 'locationId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'address': 1,
+								'city': 1,
+								'iterations': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'locations'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'location': {
+						'$arrayElemAt': [
+							'$locations', 0
+						]
+					},
+					'rocketSetup': {
+						'$arrayElemAt': [
+							'$rocketSetups', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'rocketSetup.motors': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.motorCases': {
+						'$setDifference': [ {
+									'$setUnion': [ {
+										'$reduce': {
+											'input': '$rocketSetup.stages.motors',
+											'initialValue': [],
+											'in': { 
+												'$concatArrays': [ '$$value', '$$this.motorCaseId' ] 
+											}
+										}
+									}
+								]
+							}, 
+							[ null ] 
+						]
+					},
+					'rocketSetup.rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motors',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'motorId': 1, 'designation': 1, 'manufacturer': 1, 'manufacturerAbbrev': 1 } },
+					],
+					'as': 'rocketSetup.motors'
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					'from': 'parts',
+					'localField': 'rocketSetup.motorCases',
+					'foreignField': 'id',
+					'pipeline': [
+						{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1 } },
+					],
+					'as': 'rocketSetup.motorCases'
+				}
+			});
+			queryA.push({
+				$addFields: {
+					'location.iteration': {
+						$arrayElemAt: [ 
+							{ 
+								$filter: {
+									input: '$location.iterations',
+									cond: { 
+										$and: [
+											{ $eq: [ "$$this.id", "$locationIterationId" ] },
+										] 
+									}
+								}
+							}, 
+							0
+						] 
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'_id': 0,
+					locations: 0,
+					rockets: 0,
+					rocketSetups: 0
+				}
+			});
+	
+			const collection = await this._getCollectionLaunches(correlationId);
+			let results = await this._aggregate(correlationId, collection, queryA);
+			results = await results.toArray();
+			if (results.length > 0)
+				return this._successResponse(results[0], correlationId);
+			
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('LaunchesRepository', 'retrieveGallery', null, err, null, null, correlationId);
+		}
+	}
 	
 	async retrieveSecurity(correlationId, userId, id) {
 		try {

@@ -329,11 +329,10 @@ class RocketsRepository extends AppMongoRepository {
 					'description': 1,
 					'albums': 1,
 					'coverUrl': 1,
-					'diameterMajor': 1,
-					'diameterMajorMetric': 1,
 					'documents': 1,
-					'length': 1,
-					'lengthMetric': 1,
+					'manufacturerId': 1,
+					'manufacturerStockId': 1,
+					'manufacturerRocketName': 1,
 					'ownerId': 1,
 					'public': 1,
 					'rocketTypes': 1,
@@ -401,13 +400,50 @@ class RocketsRepository extends AppMongoRepository {
 					'name': 1,
 					'description': 1,
 					'coverUrl': 1,
-					'diameterMajor': 1,
-					'diameterMajorMetric': 1,
-					'length': 1,
-					'lengthMetric': 1,
+					'manufacturerId': 1,
+					'manufacturerStockId': 1,
+					'manufacturerRocketName': 1,
+					'stages.diameterMajor': 1,
+					'stages.diameterMajorMeasurementUnitId': 1,
+					'stages.diameterMajorMeasurementUnitsId': 1,
+					'stages.diameterMajorMetric': 1,
+					'stages.length': 1,
+					'stages.lengthMeasurementUnitId': 1,
+					'stages.lengthMeasurementUnitsId': 1,
+					'stages.lengthMetric': 1,
 					'ownerId': 1,
 					'rocketTypes': 1,
 					'typeId': 1
+				}
+			});
+			queryA.push({
+				'$lookup': {
+					from: 'manufacturers',
+					localField: 'manufacturerId',
+					foreignField: 'id',  
+					pipeline: [ {
+							$project: {
+								'_id': 0,
+								'id': 1,
+								'name': 1
+							}
+						}
+					],
+					as: 'manufacturers'
+				}
+			});
+			queryA.push({
+				'$addFields': {
+					'manufacturer': {
+						'$arrayElemAt': [
+							'$manufacturers', 0
+						]
+					}
+				}
+			});
+			queryA.push({
+				$project: { 
+					'manufacturers': 0 
 				}
 			});
 	

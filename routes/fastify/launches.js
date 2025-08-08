@@ -53,6 +53,16 @@ class LaunchesRoute extends BaseRoute {
 				return this._jsonResponse(reply, response);
 			}
 		);
+		router.get(this._join('/launches/gallery/:id'),
+			{
+			},
+			// eslint-disable-next-line
+			async (request, reply) => {
+				const response = (await router[AppConstants.InjectorKeys.SERVICE_LAUNCHES].retrieveGallery(request.correlationId, request.params.id)).check(request);
+				// https://github.com/fastify/fastify-compress/issues/215#issuecomment-1210598312
+				return this._jsonResponse(reply, response);
+			}
+		);
 		router.post(this._join('/launches/search'),
 			{
 				preHandler: router.auth([

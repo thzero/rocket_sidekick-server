@@ -216,10 +216,24 @@ Add these variables:
 * LOG_LEVEL - debug
 * IP_ADDRESS - 0.0.0.0
 
+#### Cloud Source Repository
+
+In Cloud Build, go to the Repositories section.
+
+* Select an appropriate region, should be for the same region as your Cloud Run is running on
+* Select 2nd Gen
+* Link Repository to create a link to your repository
+
 #### Cloud Build Trigger
 
 ##### Event
 * Push to branch
+
+###### Region
+* Select the same region as used with the Cloud Source Repository
+
+###### Repository Generation
+* Select 2nd
 
 ##### Source
 * Select the repository

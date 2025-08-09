@@ -15,7 +15,7 @@ The server application is a Fastify server application.  The server application 
 
 ### NodeJs
 
-Requires [NodeJs ](https://nodejs.org) version 18+.
+Requires [NodeJs ](https://nodejs.org) version 22+.
 
 ### NodeMon
 
@@ -223,6 +223,24 @@ In Cloud Build, go to the Repositories section.
 * Select an appropriate region, should be for the same region as your Cloud Run is running on
 * Select 2nd Gen
 * Link Repository to create a link to your repository
+
+##### Link Repository
+
+###### Connection
+* Create a new Host Connection
+
+###### Region
+* Select the same region as your Cloud Run is running on
+
+###### Name
+* Set name for the connection
+
+* Click Connect to create the connection
+* You may require the Security Manager API to be enabled
+* Click Continue in the confirmation dialog
+
+###### Github Installation
+* Select an installation user or Install a new account
 
 #### Cloud Build Trigger
 

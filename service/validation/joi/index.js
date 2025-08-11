@@ -898,6 +898,7 @@ class JoiValidationService extends GamerJoiValidationService {
 	settingSchema() {
 		const validation = super.settingSchema();
 		return validation.concat(Joi.object({
+			home: Joi.object().allow(null),
 			measurementUnits: this._settingsMeasurementUnitsSchema.required()
 		}));
 	}

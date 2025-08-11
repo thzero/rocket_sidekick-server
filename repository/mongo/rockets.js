@@ -400,6 +400,10 @@ class RocketsRepository extends AppMongoRepository {
 					'name': 1,
 					'description': 1,
 					'coverUrl': 1,
+					'stages.cp':1 ,
+					'stages.cpMeasurementUnitId': 1,
+					'stages.cp': 1,
+					'stages.cpMetric': 1,
 					'manufacturerId': 1,
 					'manufacturerStockId': 1,
 					'manufacturerRocketName': 1,
@@ -413,7 +417,11 @@ class RocketsRepository extends AppMongoRepository {
 					'stages.lengthMetric': 1,
 					'ownerId': 1,
 					'rocketTypes': 1,
-					'typeId': 1
+					'typeId': 1,
+					'stages.weight':1 ,
+					'stages.weightMeasurementUnitId': 1,
+					'stages.weightMeasurementUnitsId': 1,
+					'stages.weightMetric': 1
 				}
 			});
 			queryA.push({

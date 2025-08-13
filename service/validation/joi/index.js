@@ -397,8 +397,12 @@ class JoiValidationService extends GamerJoiValidationService {
 		locationId: this.locationId.allow('').allow(null),
 		gamerTag: this._gamerTagFull.allow(null),
 		name: this._extendedName.allow('').allow(null),
+		launchName: this._extendedName.allow('').allow(null),
+		locationName: this._extendedName.allow('').allow(null),
+		locations: Joi.array().items(this.locationId).allow(null),
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
+		rocketName: this._extendedName.allow('').allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null)
 	});
 	

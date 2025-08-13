@@ -293,13 +293,13 @@ class RocketsRepository extends AppMongoRepository {
 			if (!String.isNullOrEmpty(params.manufacturerStockId))
 				where.push({ 'manufacturerStockId': params.manufacturerStockId });
 			
-			if (params.rocketTypes && params.rocketTypes.length > 0) {
-				const arr = [];
-				params.rocketTypes.forEach(element => {
-					arr.push({ 'typeId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// if (params.rocketTypes && params.rocketTypes.length > 0) {
+			// 	const arr = [];
+			// 	params.rocketTypes.forEach(element => {
+			// 		arr.push({ 'typeId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
 
 			// Convert parameter to metric and then use metric comparisons...
 			if (!String.isNullOrEmpty(params.diameterMajor)) {
@@ -383,6 +383,15 @@ class RocketsRepository extends AppMongoRepository {
 					{ 'deleted': { $ne: true } }
 				];
 			}
+
+			// For now, just do the filtering on the client side.
+			// if (params && params.rocketTypes && params.rocketTypes.length > 0) {
+			// 	const arr = [];
+			// 	params.rocketTypes.forEach(element => {
+			// 		arr.push({ $expr: { $in: [ element, '$rocketTypes' ] } });
+			// 	});
+			// 	defaultFilterCriteria.push({ $or: arr});
+			// }
 
 			const defaultFilter = { 
 				$and: defaultFilterCriteria

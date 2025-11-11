@@ -625,6 +625,7 @@ class ChecklistsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			checklist.ownerId = userId;
+			checklist.sortName = checklist.name ? checklist.name.replace(' ', '') : null;
 			checklist.searchName = this._createEdgeNGrams(correlationId, checklist.name);
 			await this._update(correlationId, collection, userId, checklist.id, checklist);
 			response.results = checklist;

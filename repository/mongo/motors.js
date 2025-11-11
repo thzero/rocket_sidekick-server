@@ -150,6 +150,7 @@ class MotorsRepository extends AppMongoRepository {
 				motor.deleted = true;
 				motor.deletedUserId = this._ownerId;
 				motor.deletedTimestamp = LibraryMomentUtility.getTimestamp();
+				motor.sortName = motor.name ? motor.name.replace(' ', '') : null;
 				motor.searchName = this._createEdgeNGrams(correlationId, motor.commonName);
 				const response = await this._update(correlationId, collection, this._ownerId, motor.id, motor);
 				if (this._hasFailed(response))

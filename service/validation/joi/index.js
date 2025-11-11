@@ -199,6 +199,11 @@ class JoiValidationService extends GamerJoiValidationService {
 		.min(4)
 		.max(4);
 	
+	launchSortType = Joi.string()
+		.trim()
+		// .alphanum()
+		.regex(/^[a-zA-Z0-9-_]*$/);
+	
 	// manufacturersId = this._id.required();
 	manufacturersId = Joi.string()
 		.trim()
@@ -379,6 +384,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		rocketId: this.rocketId,
 		rocketSetupId: this.rocketSetupId.allow(null).allow(''),
 		searchName: this._extendedNameBase.allow(null).allow(''),
+		sortName: this._extendedName.allow(null).allow(''),
 		success: Joi.string().valid(...this.launchResultsReasonsSuccess()).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		temperature: Joi.number().allow(null),
@@ -403,7 +409,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		rocketId: this.rocketId.allow('').allow(null),
 		rocketName: this._extendedName.allow('').allow(null),
-		rocketTypes: Joi.array().items(this.rocketType).allow(null)
+		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		sortColumn1: this.launchSortType,
+		sortColumn2: this.launchSortType.allow('').allow(null),
+		sortColumn3: this.launchSortType.allow('').allow(null),
+		sortColumnDirection1: Joi.boolean().allow(null),
+		sortColumnDirection2: Joi.boolean().allow(null),
+		sortColumnDirection3: Joi.boolean().allow(null)
 	});
 	
 	locationsAddress = Joi.object({
@@ -464,6 +476,13 @@ class JoiValidationService extends GamerJoiValidationService {
 		organizations: Joi.array().items(this.rocketryOrganizations).allow(null),
 		postalCode: this._postalCode.allow(null).allow(''),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
+		shared: Joi.boolean().allow(null),
+		sortColumn1: this.launchSortType,
+		sortColumn2: this.launchSortType.allow('').allow(null),
+		sortColumn3: this.launchSortType.allow('').allow(null),
+		sortColumnDirection1: Joi.boolean().allow(null),
+		sortColumnDirection2: Joi.boolean().allow(null),
+		sortColumnDirection3: Joi.boolean().allow(null),
 		stateProvince: this._stateProvince.allow(null).allow('')
 	});
 	
@@ -760,6 +779,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		public: Joi.boolean().allow(null),
 		rocketTypes: Joi.array().items(this.rocketType).allow(null),
 		searchName: this._extendedNameBase.allow(null).allow(''),
+		sortName: this._extendedName.allow(null).allow(''),
 		stages: Joi.array().items(this.rocketStage).allow(null),
 		syncTimestamp: Joi.number().allow(null),
 		videos: Joi.array().items(this.albumDocVideoUrl).allow(null),

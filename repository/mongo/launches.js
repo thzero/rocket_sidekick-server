@@ -549,32 +549,34 @@ class LaunchesRepository extends AppMongoRepository {
 		try {
 			const queryA = [];
 
-			if (!String.isNullOrEmpty(params.name)) {
-				queryA.push(
-					this._searchFilterText(correlationId, params.name),
-				);
-			}
+			// TODO: search on client or backend?  
+			// if (!String.isNullOrEmpty(params.name)) {
+			// 	queryA.push(
+			// 		this._searchFilterText(correlationId, params.name),
+			// 	);
+			// }
 
 			const where = [];
 			
-			if (params.manufacturers && params.manufacturers.length > 0) {
-				const arr = [];
-				params.manufacturers.forEach(element => {
-					arr.push({ 'manufacturerId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// TODO: search on client or backend?  
+			// if (params.manufacturers && params.manufacturers.length > 0) {
+			// 	const arr = [];
+			// 	params.manufacturers.forEach(element => {
+			// 		arr.push({ 'manufacturerId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
 			
-			if (!String.isNullOrEmpty(params.manufacturerStockId))
-				where.push({ 'manufacturerStockId': params.manufacturerStockId });
+			// if (!String.isNullOrEmpty(params.manufacturerStockId))
+			// 	where.push({ 'manufacturerStockId': params.manufacturerStockId });
 			
-			if (params.rocketTypes && params.rocketTypes.length > 0) {
-				const arr = [];
-				params.rocketTypes.forEach(element => {
-					arr.push({ 'typeId': element });
-				});
-				where.push({ $or: arr});
-			}
+			// if (params.rocketTypes && params.rocketTypes.length > 0) {
+			// 	const arr = [];
+			// 	params.rocketTypes.forEach(element => {
+			// 		arr.push({ 'typeId': element });
+			// 	});
+			// 	where.push({ $or: arr});
+			// }
 
 			if (!String.isNullOrEmpty(params.launchId))
 				where.push({ 'id': params.launchId });
@@ -602,7 +604,8 @@ class LaunchesRepository extends AppMongoRepository {
 								'address': 1,
 								'city': 1,
 								'iterations': 1,
-								'name': 1
+								'name': 1,
+								'organizations': 1
 							}
 						}
 					],
@@ -827,7 +830,10 @@ class LaunchesRepository extends AppMongoRepository {
 								'address': 1,
 								'city': 1,
 								'iterations': 1,
-								'name': 1
+								'name': 1,
+								'organizations': 1,
+								'searchName': 1,
+								'sortName': 1
 							}
 						}
 					],
@@ -846,6 +852,8 @@ class LaunchesRepository extends AppMongoRepository {
 								'coverUrl': 1,
 								'name': 1,
 								'rocketTypes': 1,
+								'searchName': 1,
+								'sortName': 1,
 								'stages': 1
 							},
 							$project: {
@@ -1021,6 +1029,7 @@ class LaunchesRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			launch.ownerId = userId;
+			launch.sortName = launch.name ? launch.name.replace(' ', '') : null;
 			launch.searchName = this._createEdgeNGrams(correlationId, launch.name);
 			await this._update(correlationId, collection, userId, launch.id, launch);
 

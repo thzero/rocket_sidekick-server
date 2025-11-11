@@ -183,6 +183,7 @@ class LocationsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			location.ownerId = userId;
+			location.sortName = location.name ? location.name.replace(' ', '') : null;
 			location.searchName = this._createEdgeNGrams(correlationId, location.name);
 			await this._update(correlationId, collection, userId, location.id, location);
 

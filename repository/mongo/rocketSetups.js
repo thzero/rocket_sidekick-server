@@ -591,7 +591,7 @@ class RocketSetupsRepository extends AppMongoRepository {
 	// 	return output;
 	// }
 
-	async update(correlationId, userId, rocket) {
+	async update(correlationId, userId, rocketSetup) {
 		const session = await this._transactionInit(correlationId, await this._getClient(correlationId));
 		try {
 			await this._transactionStart(correlationId, session);
@@ -599,12 +599,13 @@ class RocketSetupsRepository extends AppMongoRepository {
 			const collection = await this._getCollectionRocketSetups(correlationId);
 			const response = this._initResponse(correlationId);
 
-			rocket.ownerId = userId;
-			rocket.searchName = this._createEdgeNGrams(correlationId, rocket.name);
-			await this._update(correlationId, collection, userId, rocket.id, rocket);
-			// response.results = rocket;
+			rocketSetup.ownerId = userId;
+			rocketSetup.sortName = rocketSetup.name ? rocketSetup.name.replace(' ', '') : null;
+			rocketSetup.searchName = this._createEdgeNGrams(correlationId, rocketSetup.name);
+			await this._update(correlationId, collection, userId, rocketSetup.id, rocketSetup);
+			// response.results = rocketSetup;
 
-			const responseRetrieve = await this.retrieve(correlationId, userId, rocket.id);
+			const responseRetrieve = await this.retrieve(correlationId, userId, rocketSetup.id);
 			if (this._hasFailed(responseRetrieve))
 				return response;
 			response.results = responseRetrieve.results;

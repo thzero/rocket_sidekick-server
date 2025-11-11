@@ -482,6 +482,7 @@ class RocketsRepository extends AppMongoRepository {
 			const response = this._initResponse(correlationId);
 
 			rocket.ownerId = userId;
+			rocket.sortName = rocket.name ? rocket.name.replace(' ', '') : null;
 			rocket.searchName = this._createEdgeNGrams(correlationId, rocket.name);
 			await this._update(correlationId, collection, userId, rocket.id, rocket);
 			// response.results = rocket;

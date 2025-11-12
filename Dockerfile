@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/node
-FROM node:18
+FROM node:22
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app

@@ -675,11 +675,20 @@ class JoiValidationService extends GamerJoiValidationService {
 	
 	partsTracker = this.parts.concat(Joi.object({
 	})).unknown();
-	
-	rocketRecovery = Joi.object({
-		name: this._extendedName,
-		type: Joi.string(),
-		link: this._url
+
+	rocketEjection = Joi.object({
+		drogue: Joi.number().allow(null),
+		drogueMeasurementUnitId: this._type.allow(null).allow(''),
+		drogueMeasurementUnitsId: this._type.allow(null).allow(''),
+		drogueBackup: Joi.number().allow(null),
+		drogueBackupMeasurementUnitId: this._type.allow(null).allow(''),
+		drogueBackupMeasurementUnitsId: this._type.allow(null).allow(''),
+		main: Joi.number().allow(null),
+		mainMeasurementUnitId: this._type.allow(null).allow(''),
+		mainMeasurementUnitsId: this._type.allow(null).allow(''),
+		mainBackup: Joi.number().allow(null),
+		mainBackupMeasurementUnitId: this._type.allow(null).allow(''),
+		mainBackupMeasurementUnitsId: this._type.allow(null).allow('')
 	});
 
 	rocketPart = Joi.object({
@@ -693,6 +702,10 @@ class JoiValidationService extends GamerJoiValidationService {
 		altitudeMain: Joi.number().allow(null).allow(''),
 		altitudeMainMeasurementUnitId: this._type.allow(null).allow(''),
 		altitudeMainMeasurementUnitsId: this._type.allow(null).allow(''),
+		ejectionDrogue: Joi.number().allow(null),
+		ejectionDrogueBackup: Joi.number().allow(null),
+		ejectionMain: Joi.number().allow(null),
+		ejectionMainBackup: Joi.number().allow(null),
 		motorDelay: Joi.number().allow(null).allow(''),
 		reefed: Joi.boolean().allow(null),
 		reefedLength: Joi.number().allow(null).allow(''),
@@ -700,11 +713,40 @@ class JoiValidationService extends GamerJoiValidationService {
 		reefedLengthMeasurementUnitsId: this._type.allow(null).allow('')
 	});
 
+	rocketPart = Joi.object({
+		id: this.partId.required(),
+		itemId: this.partId.required(),
+		typeId: this._type.required(),
+		apogeeDelay: Joi.number().allow(null).allow(''),
+		altitude: Joi.number().allow(null).allow(''),
+		altitudeMeasurementUnitId: this._type.allow(null).allow(''),
+		altitudeMeasurementUnitsId: this._type.allow(null).allow(''),
+		altitudeMain: Joi.number().allow(null).allow(''),
+		altitudeMainMeasurementUnitId: this._type.allow(null).allow(''),
+		altitudeMainMeasurementUnitsId: this._type.allow(null).allow(''),
+		ejectionDrogue: Joi.number().allow(null),
+		ejectionDrogueBackup: Joi.number().allow(null),
+		ejectionMain: Joi.number().allow(null),
+		ejectionMainainBackup: Joi.number().allow(null),
+		motorDelay: Joi.number().allow(null).allow(''),
+		reefed: Joi.boolean().allow(null),
+		reefedLength: Joi.number().allow(null).allow(''),
+		reefedLengthMeasurementUnitId: this._type.allow(null).allow(''),
+		reefedLengthMeasurementUnitsId: this._type.allow(null).allow('')
+	});
+	
+	rocketRecovery = Joi.object({
+		name: this._extendedName,
+		type: Joi.string(),
+		link: this._url
+	});
+
 	rocketStageMotor = Joi.object({
 		id: this.partId.allow(null),
 		index: this.motorIndex.required(),
 		diameter: this.motorDiameter.allow(null).allow(''),
-		count: Joi.number().allow(null)
+		count: Joi.number().allow(null),
+		sparky: Joi.boolean().allow(null)
 	});
 
 	rocketStage = Joi.object({
@@ -733,6 +775,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		diameterMinorMetric: Joi.number().allow(null),
 		diameterMinorMeasurementUnitId: this._measurementId.allow(null),
 		diameterMinorMeasurementUnitsId: this._measurementId.allow(null),
+		ejection: this.rocketEjection.allow(null),
 		index: Joi.number().allow(null),
 		length: Joi.number().allow(null),
 		lengthConvert: Joi.number().allow(null),
@@ -819,7 +862,8 @@ class JoiValidationService extends GamerJoiValidationService {
 		index: this.motorIndex.required(),
 		motorCaseId: this.partId.allow(null),
 		motorDelay: Joi.number().allow(null),
-		motorId: this.partId.allow(null)
+		motorId: this.partId.allow(null),
+		sparky: Joi.boolean().allow(null)
 	});
 
 	rocketSetupStage = Joi.object({

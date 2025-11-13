@@ -2,14 +2,14 @@
 #https://cloud.google.com/run/docs/deploying#service
 ---
   steps:
-  # - name: 'gcr.io/cloud-builders/git'
-  #   entrypoint: 'bash'
-  #   args:
-  #   - '-c'
-  #   - |
-  #     git config -f .gitmodules submodule.common.url https://source.developers.google.com/p/rocketsidekick/r/github_thzero_rocket_sidekick-common
-  #     git submodule init
-  #     git submodule update
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      git config -f .gitmodules submodule.common.url https://source.developers.google.com/p/rocketsidekick/r/github_thzero_rocket_sidekick-common
+      git submodule init
+      git submodule update
   - name: "docker:stable"
     args:
     - "build"

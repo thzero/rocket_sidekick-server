@@ -678,17 +678,17 @@ class JoiValidationService extends GamerJoiValidationService {
 
 	rocketEjection = Joi.object({
 		drogue: Joi.number().allow(null),
-		drogueMeasurementUnitId: this._type.allow(null).allow(''),
-		drogueMeasurementUnitsId: this._type.allow(null).allow(''),
+		drogueMeasurementUnitId: this._measurementId.allow(null).allow(''),
+		drogueMeasurementUnitsId: this._measurementId.allow(null).allow(''),
 		drogueBackup: Joi.number().allow(null),
-		drogueBackupMeasurementUnitId: this._type.allow(null).allow(''),
-		drogueBackupMeasurementUnitsId: this._type.allow(null).allow(''),
+		drogueBackupMeasurementUnitId: this._measurementId.allow(null).allow(''),
+		drogueBackupMeasurementUnitsId: this._measurementId.allow(null).allow(''),
 		main: Joi.number().allow(null),
-		mainMeasurementUnitId: this._type.allow(null).allow(''),
-		mainMeasurementUnitsId: this._type.allow(null).allow(''),
+		mainMeasurementUnitId: this._measurementId.allow(null).allow(''),
+		mainMeasurementUnitsId: this._measurementId.allow(null).allow(''),
 		mainBackup: Joi.number().allow(null),
-		mainBackupMeasurementUnitId: this._type.allow(null).allow(''),
-		mainBackupMeasurementUnitsId: this._type.allow(null).allow('')
+		mainBackupMeasurementUnitId: this._measurementId.allow(null).allow(''),
+		mainBackupMeasurementUnitsId: this._measurementId.allow(null).allow('')
 	});
 
 	rocketPart = Joi.object({
@@ -871,6 +871,9 @@ class JoiValidationService extends GamerJoiValidationService {
 		rocketStageId: this.rocketStageId,
 		rocketSetupId: this.rocketSetupId,
 		altimeters: Joi.array().items(this.rocketPart).allow(null),
+		ballast: Joi.number().allow(null),
+		ballastMeasurementUnitId: this._measurementId.allow(null),
+		ballastMeasurementUnitsId: this._measurementId.allow(null),
 		chuteProtectors: Joi.array().items(this.rocketPart).allow(null),
 		chuteReleases: Joi.array().items(this.rocketPart).allow(null),
 		deploymentBags: Joi.array().items(this.rocketPart).allow(null),
@@ -882,6 +885,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		// cpFrom: this.partId.allow(null),
 		// cpMeasurementUnitId: this._measurementId.allow(null),
 		// cpMeasurementUnitsId: this._measurementId.allow(null),
+		ejection: this.rocketEjection.allow(null),
 		enabled: Joi.boolean().allow(null),
 		index: Joi.number().allow(null),
 		motors: Joi.array().items(this.rocketSetupStageMotor).allow(null),
@@ -894,10 +898,7 @@ class JoiValidationService extends GamerJoiValidationService {
 		weightConvert: Joi.number().allow(null),
 		weightMeasurementUnitId: this._measurementId.allow(null),
 		weightMeasurementUnitsId: this._measurementId.allow(null),
-		weightNose: Joi.number().allow(null),
-		weightNoseConvert: Joi.number().allow(null),
-		weightNoseMeasurementUnitId: this._measurementId.allow(null),
-		weightNoseMeasurementUnitsId: this._measurementId.allow(null)
+		weightMetric: Joi.number().allow(null),
 	});
 	
 	rocketSetup = Joi.object({

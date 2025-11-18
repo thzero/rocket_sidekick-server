@@ -264,6 +264,11 @@ class LaunchesRepository extends AppMongoRepository {
 						'$arrayElemAt': [
 							'$rockets', 0
 						]
+					},
+					'rocket': {
+						'$arrayElemAt': [
+							'$rockets', 0
+						]
 					}
 				}
 			});

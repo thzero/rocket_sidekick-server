@@ -261,6 +261,28 @@ class PartsRepository extends AppMongoRepository {
 			queryA.push({
 				$match: defaultFilter
 			});
+			if (params.motorSearch === true) {
+				queryA.push({
+					'$lookup': {
+						'from': 'parts',
+						'localField': 'motorCaseId',
+						'foreignField': 'id',
+						'pipeline': [
+							{ '$project': { '_id': 0, 'id': 1, 'name': 1, 'manufacturer': 1, 'manufacturerId': 1 } },
+						],
+						'as': 'motorCaseTemp'
+					}
+				});
+				queryA.push({
+					'$addFields': {
+						'motorCase': {
+							'$arrayElemAt': [
+								'$motorCaseTemp', 0
+							]
+						}
+					}
+				});
+			}
 			queryA.push({
 				$project: { 
 					'_id': 0,
@@ -593,7 +615,7 @@ class PartsRepository extends AppMongoRepository {
 			});
 	
 			const collection = await this._getCollectionParts(correlationId);
-			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));if (results.data.length === 0)
+			const results = await this._aggregateExtract2(correlationId, collection, queryA, queryA, this._initResponseExtract(correlationId));
 			if (results.data.length === 0)
 				return this._successResponse(results, correlationId);
 			

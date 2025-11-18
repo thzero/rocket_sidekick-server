@@ -742,7 +742,6 @@ class JoiValidationService extends GamerJoiValidationService {
 	});
 
 	rocketStageMotor = Joi.object({
-		id: this.partId.allow(null),
 		index: this.motorIndex.required(),
 		diameter: this.motorDiameter.allow(null).allow(''),
 		count: Joi.number().allow(null),

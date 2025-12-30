@@ -1,10 +1,10 @@
 {
   "name": "rocket_sidekick_server",
   "type": "module",
-  "version": "0.2.66",
+  "version": "0.2.67",
   "version_major": 0,
   "version_minor": 2,
-  "version_patch": 66,
+  "version_patch": 67,
   "version_date": "12/30/2025",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",

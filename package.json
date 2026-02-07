@@ -8,6 +8,8 @@
   "version_date": "01/26/2026",
   "description": "An API layer to manage rocket sidekick.",
   "author": "thZero",
+  "author_url": "https://www.thzero.com",
+  "copyright": "2020-2025",
   "license": "MIT",
   "repository": {
     "type": "git",

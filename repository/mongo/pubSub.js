@@ -15,12 +15,8 @@ class PubSubRepository extends PubSubMongoRepository {
 		this._servicePubSub = this._injector.getService(AppConstants.InjectorKeys.SERVICE_PUBSUB);
 	}
 
-	async _getCollectionPubSub(correlationId) {
-		return await this._getCollectionFromConfig(correlationId, this._collectionsConfig.getCollectionPubSub(correlationId));
-	}
-
 	async _listen(correlationId, message) {
-		this._servicePubSub.perform(correlationId, message);
+		return await this._servicePubSub.perform(correlationId, message);
 	}
 }
 

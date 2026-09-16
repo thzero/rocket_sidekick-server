@@ -49,7 +49,7 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async contentListing(correlationId, body) {
-		this._enforceNotNull('AppUtilityService', 'contentListing', 'body', body, correlationId);
+		this._enforceNotNull('AppUtilityService', 'contentListing', body, 'body', correlationId);
 
 		try {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.content, body);
@@ -67,7 +67,7 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async contentMarkup(correlationId, body) {
-		this._enforceNotNull('AppUtilityService', 'contentMarkup', 'body', body, correlationId);
+		this._enforceNotNull('AppUtilityService', 'contentMarkup', body, 'body', correlationId);
 
 		try {
 			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.contentMarkup, body);
@@ -83,13 +83,13 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async contentReset(correlationId, body) {
-		this._enforceNotNull('AppUtilityService', 'contentReset', 'body', body, correlationId);
+		this._enforceNotNull('AppUtilityService', 'contentReset', body, 'body', correlationId);
 
 		return this._servicePubSub.send(correlationId, 'contentReset');
 	}
 
 	async contentResetPerform(correlationId, body) {
-		this._enforceNotNull('AppUtilityService', 'contentResetPerform', 'body', body, correlationId);
+		this._enforceNotNull('AppUtilityService', 'contentResetPerform', body, 'body', correlationId);
 
 		try {
 			this._cacheContentListing = null;
@@ -166,7 +166,7 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async _contentListing(correlationId, locale) {
-		this._enforceNotEmpty('AppUtilityService', '_contentListing', 'locale', locale, correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentListing', locale, 'locale', correlationId);
 
 		const now = LibraryMomentUtility.getTimestamp();
 		const ttlContent = this._ttlContentListing ? this._ttlContentListing : 0;
@@ -216,8 +216,8 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async _contentListingDetailsLocale(correlationId, data, locale) {
-		this._enforceNotNull('AppUtilityService', '_contentListingDetails', 'data', data, correlationId);
-		this._enforceNotEmpty('AppUtilityService', '_contentListingDetails', 'locale', locale, correlationId);
+		this._enforceNotNull('AppUtilityService', '_contentListingDetails', data, 'data', correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentListingDetails', locale, 'locale', correlationId);
 
 		const release = await this._mutexContentListingLocales.acquire();
 		try {
@@ -303,8 +303,8 @@ class AppUtilityService extends UtilityService {
 	}
 
 	async _contentMarkup(correlationId, contentId, locale) {
-		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'contentId', contentId, correlationId);
-		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', 'locale', locale, correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', contentId, 'contentId', correlationId);
+		this._enforceNotEmpty('AppUtilityService', '_contentMarkup', locale, 'locale', correlationId);
 
 		const now = LibraryMomentUtility.getTimestamp();
 		const ttlContent = this._ttlContentMarkup ? this._ttlContentMarkup : 0;

@@ -2,7 +2,7 @@ import Service from '@thzero/library_server/service/index.js';
 
 class AppService extends Service {
 	_isDefault(correlationId, user, item) {
-		this._enforceNotNull('LocationsService', '_isDefault', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', '_isDefault', user, 'user', correlationId);
 		if (!item)
 			return false;
 
@@ -10,7 +10,7 @@ class AppService extends Service {
 	}
 
 	_isOwner(correlationId, user, item) {
-		this._enforceNotNull('LocationsService', '_isOwner', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', '_isOwner', user, 'user', correlationId);
 		if (!item)
 			return true;
 
@@ -18,7 +18,7 @@ class AppService extends Service {
 	}
 
 	_isPublic(correlationId, user, item) {
-		this._enforceNotNull('LocationsService', '_isPublic', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', '_isPublic', user, 'user', correlationId);
 		if (!item)
 			return false;
 

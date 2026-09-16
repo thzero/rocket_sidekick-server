@@ -1,3 +1,5 @@
+import AppSharedConstants from 'rocket_sidekick_common/constants.js';
+
 import AppMongoRepository from './app.js';
 
 import InventoryData from 'rocket_sidekick_common/data/inventory/index.js';
@@ -13,6 +15,33 @@ class InventoryRepository extends AppMongoRepository {
 		await super.init(injector);
 
 		this._ownerId = this._config.get('ownerId');
+	}
+
+	async hasPart(correlationId, userId, id) {
+		try {
+			const collection = await this._getCollectionInventory(correlationId);
+
+			const results = await this._find(correlationId, collection, { 
+				$and: [ 
+					{ 'ownerId' : userId }, 
+					{ 'types.items.itemId' : id }, 
+					{ $expr: { $ne: [ 'deleted', true ] } } 
+				] 
+			});
+			if (results && results.length > 0) {
+				return this._errorResponse('InventoryRepository', 'hasPart', {
+						found: results.length,
+						results: results
+					},
+					AppSharedConstants.ErrorCodes.Parts.IncludedInInventory,
+					correlationId);
+			}
+
+			return this._success(correlationId);
+		}
+		catch (err) {
+			return this._error('InventoryRepository', 'hasPart', null, err, null, null, correlationId);
+		}
 	}
 	
 	async retrieve(correlationId, userId) {

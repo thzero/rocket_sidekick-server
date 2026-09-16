@@ -70,7 +70,7 @@ class ManufacturersService extends Service {
 			if (this._hasFailed(validationResponse))
 				return validationResponse;
 	
-			return await this._repositoryManufacturers.retrieve(correlationId, id);
+			return await this._repositoryManufacturers.retrieve(correlationId, user ? user.id : null, id);
 		}
 		catch (err) {
 			return this._error('ManufacturersService', 'retrieve', null, err, null, null, correlationId);

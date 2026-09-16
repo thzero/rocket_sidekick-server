@@ -63,7 +63,7 @@ class ManufacturersRepository extends AppMongoRepository {
 			const queryA = [ { 
 					$match: {
 						$and: [
-							{ 'id': id.toLowerCase() },
+							{ 'id': id },
 							{ 
 								$or: [
 									{ 'ownerId': this._ownerId },

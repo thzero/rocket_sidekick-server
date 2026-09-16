@@ -23,7 +23,7 @@ class LaunchesService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -55,7 +55,7 @@ class LaunchesService extends AppService {
 	}
 
 	async hasLocation(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'hasLocation', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'hasLocation', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -74,7 +74,7 @@ class LaunchesService extends AppService {
 	}
 
 	async hasRocket(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'hasRocket', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'hasRocket', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -93,7 +93,7 @@ class LaunchesService extends AppService {
 	}
 
 	async hasRocketSetup(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'hasRocketSetup', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'hasRocketSetup', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -116,7 +116,7 @@ class LaunchesService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('LaunchesService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -167,7 +167,7 @@ class LaunchesService extends AppService {
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('LaunchesService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('LaunchesService', 'search', user, 'user', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

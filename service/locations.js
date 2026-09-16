@@ -19,7 +19,7 @@ class LocationsService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('LocationsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -64,7 +64,7 @@ class LocationsService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('LocationsService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -83,7 +83,7 @@ class LocationsService extends AppService {
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('LocationsService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('LocationsService', 'search', user, 'user', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

@@ -59,7 +59,7 @@ class CountriesService extends Service {
 	}
 
 	async sync(correlationId, body) {
-		this._enforceNotNull('CountriesService', 'sync', 'body', body, correlationId);
+		this._enforceNotNull('CountriesService', 'sync', body, 'body', correlationId);
 
 		try {
 			let response = await this._get(correlationId, 'https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json');

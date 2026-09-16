@@ -1,5 +1,4 @@
 import AppConstants from '../constants.js';
-import AppSharedConstants from 'rocket_sidekick_common/constants.js';
 
 import AppService from './index.js';
 
@@ -18,27 +17,19 @@ class InventoryService extends AppService {
 		this._serviceChecklists = this._injector.getService(AppConstants.InjectorKeys.SERVICE_CHECKLISTS);
 	}
 
-	async hasPart(correlationId, userId, id) {
+	async hasPart(correlationId, user, id) {
+		this._enforceNotNull('InventoryService', 'hasPart', user, 'user', correlationId);
+
 		try {
-			const collection = await this._getCollectionInventory(correlationId);
+			const validationResponsUser = this._validateUser(correlationId, user);
+			if (this._hasFailed(validationResponsUser))
+				return validationResponsUser;
 
-			const results = await this._find(correlationId, collection, { 
-				$and: [ 
-					{ 'ownerId' : userId }, 
-					{ 'types.items.itemId' : id }, 
-					{ $expr: { $ne: [ 'deleted', true ] } } 
-				] 
-			});
-			if (results && results.length > 0) {
-				return this._errorResponse('RocketSetupsRepository', 'hasPart', {
-						found: results.length,
-						results: results
-					},
-					AppSharedConstants.ErrorCodes.Parts.IncludedInInventory,
-					correlationId);
-			}
+			const validationResponse = this._serviceValidation.check(correlationId, this._serviceValidation.partId, id);
+			if (this._hasFailed(validationResponse))
+				return validationResponse;
 
-			return this._success(correlationId);
+			return await this._repositoryInventory.hasPart(correlationId, user.id, id);
 		}
 		catch (err) {
 			return this._error('InventoryService', 'hasPart', null, err, null, null, correlationId);
@@ -46,7 +37,7 @@ class InventoryService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('InventoryService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('InventoryService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

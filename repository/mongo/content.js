@@ -63,7 +63,7 @@ class ContentMongoRepository extends AppMongoRepository {
 	}
 
 	async contentMarkup(correlationId, contentId, locale, defaultLocale) {
-		this._enforceNotEmpty('ContentMongoRepository', 'contentMarkup', 'contentId', contentId, correlationId);
+		this._enforceNotEmpty('ContentMongoRepository', 'contentMarkup', contentId, 'contentId', correlationId);
 
 		try {
 			let response = await this._contentMarkup(correlationId, contentId, locale);
@@ -81,7 +81,7 @@ class ContentMongoRepository extends AppMongoRepository {
 	}
 
 	async _contentMarkup(correlationId, contentId, locale) {
-		this._enforceNotEmpty('ContentMongoRepository', '_contentMarkup', 'contentId', contentId, correlationId);
+		this._enforceNotEmpty('ContentMongoRepository', '_contentMarkup', contentId, 'contentId', correlationId);
 		
 		const queryA = [
 			{

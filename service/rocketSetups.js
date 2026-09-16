@@ -25,7 +25,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async copy(correlationId, user, params) {
-		this._enforceNotNull('RocketSetupsService', 'copy', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'copy', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -65,7 +65,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('RocketSetupsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -101,7 +101,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async hasPart(correlationId, user, id) {
-		this._enforceNotNull('RocketSetupsService', 'hasPart', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'hasPart', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -120,7 +120,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async hasRocket(correlationId, user, id) {
-		this._enforceNotNull('RocketSetupsService', 'hasRocket', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'hasRocket', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -143,7 +143,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('RocketSetupsService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -196,7 +196,7 @@ class RocketSetupsService extends AppService {
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('RocketSetupsService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('RocketSetupsService', 'search', user, 'user', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

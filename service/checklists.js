@@ -24,7 +24,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async copy(correlationId, user, params) {
-		this._enforceNotNull('ChecklistsService', 'copy', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'copy', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -67,7 +67,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -99,7 +99,7 @@ class ChecklistsService extends AppService {
 	}
 
 	// async hasLaunch(correlationId, user, id) {
-	// 	this._enforceNotNull('ChecklistsService', 'hasLaunch', 'user', user, correlationId);
+	// 	this._enforceNotNull('ChecklistsService', 'hasLaunch', user, 'user', correlationId);
 
 	// 	try {
 	// 		const validationResponsUser = this._validateUser(correlationId, user);
@@ -118,7 +118,7 @@ class ChecklistsService extends AppService {
 	// }
 
 	async hasLocation(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'hasLocation', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'hasLocation', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -137,7 +137,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async hasRocket(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'hasRocket', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'hasRocket', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -156,7 +156,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async hasRocketSetup(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'hasRocketSetup', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'hasRocketSetup', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -179,7 +179,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -198,7 +198,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('ChecklistsService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'search', user, 'user', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -217,7 +217,7 @@ class ChecklistsService extends AppService {
 	}
 
 	async start(correlationId, user, id) {
-		this._enforceNotNull('ChecklistsService', 'start', 'user', user, correlationId);
+		this._enforceNotNull('ChecklistsService', 'start', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

@@ -27,7 +27,7 @@ class RocketsService extends AppService {
 	}
 
 	async copy(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'copy', 'user', user, correlationId);
+		this._enforceNotNull('RocketsService', 'copy', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -67,7 +67,7 @@ class RocketsService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('RocketsService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -103,7 +103,7 @@ class RocketsService extends AppService {
 	}
 
 	async hasPart(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'hasPart', 'user', user, correlationId);
+		this._enforceNotNull('RocketsService', 'hasPart', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -126,7 +126,7 @@ class RocketsService extends AppService {
 	}
 
 	async retrieve(correlationId, user, id) {
-		this._enforceNotNull('RocketsService', 'retrieve', 'user', user, correlationId);
+		this._enforceNotNull('RocketsService', 'retrieve', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -177,7 +177,7 @@ class RocketsService extends AppService {
 	}
 
 	async search(correlationId, user, params) {
-		this._enforceNotNull('RocketsService', 'search', 'user', user, correlationId);
+		this._enforceNotNull('RocketsService', 'search', user, 'user', correlationId);
 		
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

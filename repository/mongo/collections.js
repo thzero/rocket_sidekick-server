@@ -4,74 +4,73 @@ class AppCollectionsService extends UserApiCollectionsService {
 	getCollectionByName(correlationId, collectionName) {
 		if (String.isNullOrEmpty(collectionName))
 			return null;
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, collectionName);
+		return this._getCollection(correlationId, this.getClientName(), collectionName);
 	}
 
 	getCollectionChecklists(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionChecklists);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionChecklists);
 	}
 
 	getCollectionContent(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionContent);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionContent);
 	}
 
 	getCollectionCountries(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionCountries);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionCountries);
 	}
 
 	getCollectionInventory(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionInventory);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionInventory);
 	}
 
 	getCollectionLaunches(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionLaunches);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionLaunches);
 	}
 
 	getCollectionLocations(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionLocations);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionLocations);
 	}
 
 	getCollectionManufacturers(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionManufacturers);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionManufacturers);
 	}
 
 	getCollectionNews(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionNews);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionNews);
 	}
 
 	getCollectionParts(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionParts);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionParts);
 	}
 
 	getCollectionPlans(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionPlans);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionPlans);
 	}
 
 	getCollectionPubSub(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionPubSub);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionPubSub);
 	}
 
 	getCollectionRockets(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionRockets);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionRockets);
 	}
 
 	getCollectionRocketSetups(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionRocketSetups);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionRocketSetups);
 	}
 
 	getCollectionUsageMetrics(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionUsageMetrics);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionUsageMetrics);
 	}
 
 	getCollectionUsageMetricsMeasurements(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionUsageMetricsMeasurements);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionUsageMetricsMeasurements);
 	}
 
 	getCollectionUsers(correlationId) {
-		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.Database, AppCollectionsService.CollectionUsers);
+		return this._getCollection(correlationId, this.getClientName(), AppCollectionsService.CollectionUsers);
 	}
 
-	static Database = 'rocketSidekick';
 	static CollectionChecklists = 'checklists';
 	static CollectionContent = 'content';
 	static CollectionCountries = 'countries';

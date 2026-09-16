@@ -26,7 +26,7 @@ class PartsService extends AppService {
 	}
 
 	async copy(correlationId, user, params) {
-		this._enforceNotNull('PartsService', 'copy', 'user', user, correlationId);
+		this._enforceNotNull('PartsService', 'copy', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);
@@ -71,7 +71,7 @@ class PartsService extends AppService {
 	}
 
 	async delete(correlationId, user, id) {
-		this._enforceNotNull('PartsService', 'delete', 'user', user, correlationId);
+		this._enforceNotNull('PartsService', 'delete', user, 'user', correlationId);
 
 		try {
 			const validationResponsUser = this._validateUser(correlationId, user);

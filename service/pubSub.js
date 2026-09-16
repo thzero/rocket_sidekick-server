@@ -17,29 +17,18 @@ class PubSubService extends Service {
 		this._repositorPubSub = this._injector.getService(AppConstants.InjectorKeys.REPOSITORY_PUBSUB);
 	}
 
-	async initialize(correlationId) {
-		try {
-			return await this._repositorPubSub.listen(correlationId);
-		}
-		catch (err) {
-			return this._error('PubSubService', 'initialize', null, err, null, null, correlationId);
-		}
-	}
-
 	async perform(correlationId, message) {
-		this._enforceNotNull('PubSubService', 'perform', 'message', message, correlationId);
-		this._enforceNotEmpty('PubSubService', 'perform', 'message.type', message.type, correlationId);
-
 		try {
-			if (String.isNullOrEmpty(message.type))
-				return this._success(correlationId);
+			this._enforceNotNull('PubSubService', 'perform', message, 'message', correlationId);
+			this._enforceNotEmpty('PubSubService', 'perform', message.type, 'message.type', correlationId);
 
 			const hook = this._hooks[message.type];
-			if (!hook) 
+			if (!hook)
 				return this._error('PubSubService', 'perform', `No hook for '${message.type}'.`, null, null, null, correlationId);
-			
-			const response = hook.func.apply(hook.parent, correlationId);
-			return response;
+
+			// apply takes an argument list; handing it the correlationId called the hook
+			// with no arguments at all, so every hook saw an undefined document.
+			return await hook.func.call(hook.parent, correlationId, message);
 		}
 		catch (err) {
 			return this._error('PubSubService', 'perform', null, err, null, null, correlationId);
@@ -47,9 +36,9 @@ class PubSubService extends Service {
 	}
 
 	async registerHook(correlationId, key, parent, func) {
-		this._enforceNotEmpty('PubSubService', 'registerHook', 'key', key, correlationId);
-		this._enforceNotNull('PubSubService', 'registerHook', 'parent', parent, correlationId);
-		this._enforceNotNull('PubSubService', 'registerHook', 'func', func, correlationId);
+		this._enforceNotEmpty('PubSubService', 'registerHook', key, 'key', correlationId);
+		this._enforceNotNull('PubSubService', 'registerHook', parent, 'parent', correlationId);
+		this._enforceNotNull('PubSubService', 'registerHook', func, 'func', correlationId);
 
 		try {
 			this._hooks[key] = { parent: parent, func: func };
@@ -59,11 +48,11 @@ class PubSubService extends Service {
 		}
 	}
 
-	async send(correlationId, type) {
-		this._enforceNotEmpty('PubSubService', 'send', 'type', type, correlationId);
-		
+	async send(correlationId, type, params) {
+		this._enforceNotEmpty('PubSubService', 'send', type, 'type', correlationId);
+
 		try {
-			return await this._repositorPubSub.send(correlationId, type);
+			return await this._repositorPubSub.send(correlationId, type, params);
 		}
 		catch (err) {
 			return this._error('PubSubService', 'send', null, err, null, null, correlationId);
